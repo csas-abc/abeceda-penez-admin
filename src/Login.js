@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
@@ -65,7 +66,8 @@ function SignIn(props) {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        href="/dashboard"
+                        component={Link}
+                        to="/dashboard"
                     >
                         Přihlásit
                     </Button>
