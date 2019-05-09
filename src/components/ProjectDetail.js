@@ -22,7 +22,7 @@ const ProjectDetail = ({ onClose, classes }) => (
     >
         <DialogTitle>Projekt - detail</DialogTitle>
         <DialogContent>
-            Obsah TBD
+            Obsah TODO
         </DialogContent>
     </Dialog>
 );
