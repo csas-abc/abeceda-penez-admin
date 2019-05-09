@@ -7,6 +7,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Popover from '@material-ui/core/Popover';
 import withStyles from '@material-ui/core/styles/withStyles';
+import ProjectDetail from './ProjectDetail';
 
 const styles = (theme) => ({
     table: {
@@ -19,8 +20,10 @@ const styles = (theme) => ({
 
 const OverviewTable = ({ classes }) => {
     const [popoverEl, setPopoverEl] = useState(null);
+    const [projectDetail, setProjectDetail] = useState(null);
     return (
         <React.Fragment>
+            {projectDetail ? <ProjectDetail onClose={() => setProjectDetail(null)} /> : null}
             <Popover
                 id="simple-popper"
                 open={!!popoverEl}
@@ -58,7 +61,9 @@ const OverviewTable = ({ classes }) => {
                             Adam R <br />
                             Jarda Z
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                            onClick={() => setProjectDetail({ id: 1 })}
+                        >
                             Skola 1
                         </TableCell>
                         <TableCell
