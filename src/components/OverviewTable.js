@@ -1,4 +1,9 @@
 import React, { useState } from 'react';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import compose from 'ramda/src/compose';
+import map from 'ramda/src/map';
+import tail from 'ramda/src/tail';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -8,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import Popover from '@material-ui/core/Popover';
 import withStyles from '@material-ui/core/styles/withStyles';
 import ProjectDetail from './ProjectDetail';
+import CreateUser from './CreateUser';
 
 const styles = (theme) => ({
     table: {
@@ -18,12 +24,15 @@ const styles = (theme) => ({
     },
 });
 
-const OverviewTable = ({ classes }) => {
+const OverviewTable = ({ classes, teamsQuery }) => {
     const [popoverEl, setPopoverEl] = useState(null);
     const [projectDetail, setProjectDetail] = useState(null);
+    const [createUserTeam, setCreateUserTeam] = useState(null);
+    if (teamsQuery.loading) return 'Loading...';
     return (
         <React.Fragment>
             {projectDetail ? <ProjectDetail onClose={() => setProjectDetail(null)} /> : null}
+            {createUserTeam ? <CreateUser teamId={createUserTeam} onClose={() => setCreateUserTeam(null)} /> : null}
             <Popover
                 id="simple-popper"
                 open={!!popoverEl}
@@ -43,6 +52,7 @@ const OverviewTable = ({ classes }) => {
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
+                        <TableCell>ID</TableCell>
                         <TableCell>Tym</TableCell>
                         <TableCell>Projekt</TableCell>
                         <TableCell>Faze 1</TableCell>
@@ -51,116 +61,101 @@ const OverviewTable = ({ classes }) => {
                         <TableCell>Faze 4</TableCell>
                         <TableCell>Faze 5</TableCell>
                         <TableCell>Faze 6</TableCell>
-                        <TableCell>Faze 7</TableCell>
-                        <TableCell>Faze 8</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    <TableRow>
-                        <TableCell rowSpan={3}>
-                            Adam R <br />
-                            Jarda Z
-                        </TableCell>
-                        <TableCell
-                            onClick={() => setProjectDetail({ id: 1 })}
-                        >
-                            Skola 1
-                        </TableCell>
-                        <TableCell
-                            style={{
-                                backgroundColor: 'red',
-                                color: 'white'
-                            }}
-                            onClick={(e) => {
-                                setPopoverEl(e.currentTarget);
-                            }}
-                        >
-                            1.1. - 25.1. 2019 - PROBLEM, KLIKNI
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            Skola 2
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                    </TableRow>
-                    <TableRow>
-                        <TableCell>
-                            Skola 3
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                        <TableCell>
-                            1.1. - 25.1. 2019
-                        </TableCell>
-                    </TableRow>
+                    {teamsQuery.teams.map((team) => (
+                        <React.Fragment key={team.id}>
+                            <TableRow>
+                                <TableCell rowSpan={team.classrooms.length || 1}>{team.id}</TableCell>
+                                <TableCell rowSpan={team.classrooms.length || 1}>
+                                    <React.Fragment>
+                                        {team.users.map((user) => (
+                                            <React.Fragment>
+                                                {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
+                                            </React.Fragment>
+                                        ))}
+                                        <span onClick={() => setCreateUserTeam(team.id)}>Pridat</span>
+                                    </React.Fragment>
+                                </TableCell>
+                                <TableCell>
+                                    {team.classrooms && team.classrooms[0] && team.classrooms[0].classroomName}
+                                </TableCell>
+                                {team.classrooms && team.classrooms[0] ? map((phase) => (
+                                    <TableCell>{phase.name}</TableCell>
+                                ))(team.classrooms[0].phases) : null}
+                            </TableRow>
+                            {compose(
+                                map((classroom) => (
+                                    <React.Fragment>
+                                        <TableRow key={classroom.id}>
+                                            <TableCell>{classroom.classroomName}</TableCell>
+                                            {map((phase) => (
+                                                <TableCell>{phase.name}</TableCell>
+                                            ))(classroom.phases)}
+                                        </TableRow>
+                                    </React.Fragment>
+                                )),
+                                tail,
+                            )(team.classrooms)}
+                        </React.Fragment>
+                    ))}
                 </TableBody>
             </Table>
         </React.Fragment>
     );
 };
 
-export default withStyles(styles)(OverviewTable);
+const teamsQuery = graphql(gql`
+    {
+        teams {
+            id,
+            classrooms {
+                id,
+                classroomName,
+                phases {
+                    id,
+                    number,
+                    name,
+                    targets
+                },
+            }
+            users {
+                id
+                email,
+                firstname,
+                lastname,
+                activated,
+            }
+        }
+    }
+`, {
+    name: 'teamsQuery',
+    options: {
+        fetchPolicy: 'network-only',
+    }
+});
+
+export default compose(
+    withStyles(styles),
+    teamsQuery,
+)(OverviewTable);
+
+/*
+<TableCell
+    onClick={() => setProjectDetail({ id: 1 })}
+>
+    Skola 1
+</TableCell>
+<TableCell
+    style={{
+        backgroundColor: 'red',
+        color: 'white'
+    }}
+    onClick={(e) => {
+        setPopoverEl(e.currentTarget);
+    }}
+>
+    1.1. - 25.1. 2019 - PROBLEM, KLIKNI
+</TableCell>
+ */
