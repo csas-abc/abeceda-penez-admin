@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import compose from 'ramda/src/compose';
+import { withRouter } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Hidden from '@material-ui/core/Hidden';
 import Drawer from '@material-ui/core/Drawer';
-import Menu from './Menu';
 import { withStyles } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import Typography from '@material-ui/core/Typography';
+import MenuIcon from '@material-ui/icons/Menu';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Menu from './Menu';
 
 const drawerWidth = 240;
 
@@ -44,7 +47,7 @@ const styles = theme => ({
     toolbar: theme.mixins.toolbar,
 });
 
-const Layout = ({ children, classes, container, theme, title }) => {
+const Layout = ({ children, classes, container, theme, title, history: { push } }) => {
 
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -89,10 +92,20 @@ const Layout = ({ children, classes, container, theme, title }) => {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" color="inherit" noWrap>
+                        <Typography variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
                             {title}
                         </Typography>
+                        <IconButton
+                            onClick={() => {
+                                localStorage.removeItem('token');
+                                push('/login');
+                            }}
+                            color="inherit"
+                        >
+                            <AccountCircle />
+                        </IconButton>
                     </Toolbar>
+
                 </AppBar>
                 <div className={classes.toolbar} />
                 {children}
@@ -101,4 +114,7 @@ const Layout = ({ children, classes, container, theme, title }) => {
     );
 };
 
-export default withStyles(styles, { withTheme: true })(Layout);
+export default compose(
+    withStyles(styles, { withTheme: true }),
+    withRouter,
+)(Layout);

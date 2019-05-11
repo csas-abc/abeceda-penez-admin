@@ -1,10 +1,14 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { withRouter } from 'react-router-dom';
+import compose from 'ramda/src/compose';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Paper from '@material-ui/core/Paper';
 import withStyles from '@material-ui/core/styles/withStyles';
 import logo from './abeceda-logo.png'
@@ -42,32 +46,72 @@ const styles = theme => ({
     logo: {
         width: '100%',
     },
+    errorMessage: {
+        backgroundColor: theme.palette.error.dark,
+        margin: theme.spacing.unit,
+    }
 });
 
-function SignIn(props) {
-    const { classes } = props;
-
+const Login = ({ classes, loginMutation, history: { push } }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
     return (
         <main className={classes.main}>
             <CssBaseline />
             <Paper className={classes.paper}>
-                <img src={logo} className={classes.logo} />
-                <form className={classes.form}>
+                <img src={logo} alt="Abeceda penez logo" className={classes.logo} />
+                {error ? (
+                    <SnackbarContent
+                        className={classes.errorMessage}
+                        message="Přihlášení se nezdařilo"
+                    />
+                ) : null}
+                <form
+                    className={classes.form}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        loginMutation({
+                            variables: {
+                                email,
+                                password,
+                            }
+                        }).then((res) => {
+                            localStorage.setItem('token', res.data.login.token);
+                            push('/');
+                        }).catch((e) => {
+                            setError(e);
+                        })
+                    }}
+                >
                     <FormControl margin="normal" required fullWidth>
                         <InputLabel htmlFor="email">E-mail</InputLabel>
-                        <Input id="email" name="email" autoComplete="email" autoFocus />
+                        <Input
+                            id="email"
+                            name="email"
+                            autoComplete="email"
+                            autoFocus
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
                         <InputLabel htmlFor="password">Heslo</InputLabel>
-                        <Input name="password" type="password" id="password" autoComplete="current-password" />
+                        <Input
+                            name="password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </FormControl>
                     <Button
                         fullWidth
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        component={Link}
-                        to="/dashboard"
+                        type="submit"
                     >
                         Přihlásit
                     </Button>
@@ -75,6 +119,21 @@ function SignIn(props) {
             </Paper>
         </main>
     );
-}
+};
 
-export default withStyles(styles)(SignIn);
+const loginMutation = gql`
+    mutation LoginMutation($email: String!, $password: String!) {
+        login(data: { email: $email, password: $password }) {
+            token,
+            user { email, classrooms { classroomName } }
+        }
+    }
+`;
+
+export default compose(
+    withRouter,
+    withStyles(styles),
+    graphql(loginMutation, {
+        name: 'loginMutation'
+    })
+)(Login);

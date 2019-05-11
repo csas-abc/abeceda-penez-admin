@@ -20,11 +20,11 @@ const styles = theme => ({
 const Menu = ({ classes }) => (
     <div>
         <div className={classes.toolbar}>
-            <img src={logo} className={classes.logo} />
+            <img src={logo} alt="Abeceda penez logo" className={classes.logo} />
         </div>
         <Divider />
         <List>
-            <ListItem button component={Link} to="/dashboard">
+            <ListItem button component={Link} to="/">
                 <ListItemIcon><MailIcon /></ListItemIcon>
                 <ListItemText primary="Přehled" />
             </ListItem>
