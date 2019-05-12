@@ -8,18 +8,18 @@ import { persistCache } from 'apollo-cache-persist';
 const ENDPOINT = 'abeceda.adane.cz';
 
 export default async() => {
-    const token = await localStorage.getItem('token');
     /** INIT HTTPS & WS CONNECTION TO GRAPH-QL SERVER **/
 
     // inject auth header to HTPP request
     const middlewareLink = new ApolloLink((operation, forward) => {
-            operation.setContext({
-                headers: {
-                    Authorization: token,
-                },
-            });
-            return forward(operation);
+        const token = localStorage.getItem('token');
+        operation.setContext({
+            headers: {
+                Authorization: token,
+            },
         });
+        return forward(operation);
+    });
 
     // init HTTP connection
     // const httpLink = new HttpLink({ uri: `https://${ENDPOINT}` });
@@ -32,7 +32,7 @@ export default async() => {
         options: {
             reconnect: true,
             connectionParams: {
-                Authorization: token,
+                Authorization: localStorage.getItem('token'),
             },
         },
     });

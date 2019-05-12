@@ -125,7 +125,7 @@ const loginMutation = gql`
     mutation LoginMutation($email: String!, $password: String!) {
         login(data: { email: $email, password: $password }) {
             token,
-            user { email, classrooms { classroomName } }
+            user { id, email }
         }
     }
 `;

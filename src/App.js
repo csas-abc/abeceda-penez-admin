@@ -21,7 +21,7 @@ const App = () => {
     return (
       <ApolloProvider client={client}>
           <Router>
-              <Authenticated />
+              <Route path="/" component={Authenticated} />
               <Route path="/login" component={Login} />
           </Router>
       </ApolloProvider>
