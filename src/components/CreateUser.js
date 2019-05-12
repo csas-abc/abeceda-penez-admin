@@ -37,7 +37,7 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                         createUserMutation({
                             variables: {
                                 email,
-                                securityCode: `${Math.floor((Math.random() * 99999) + 10000)}`,
+                                securityCode: `${Math.floor((Math.random() * 999999) + 100000)}`,
                                 teamId,
                                 role: 'VOLUNTEER',
                             }

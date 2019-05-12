@@ -38,6 +38,7 @@ const UsersTable = ({ classes, usersQuery }) => {
                 <TableRow>
                     <TableCell />
                     <TableCell>Jméno</TableCell>
+                    <TableCell>Bezpečnostní kód</TableCell>
                     <TableCell>Projekty</TableCell>
                     <TableCell>E-mail</TableCell>
                     <TableCell>Telefon</TableCell>
@@ -54,6 +55,9 @@ const UsersTable = ({ classes, usersQuery }) => {
                         </TableCell>
                         <TableCell>
                             {`${user.firstname || ''} ${user.lastname || ''}`}
+                        </TableCell>
+                        <TableCell>
+                            {user.securityCode}
                         </TableCell>
                         <TableCell>
                             {user.team ? map((classroom) => (
@@ -82,6 +86,7 @@ const usersQuery = graphql(gql`
             firstname
             lastname
             activated
+            securityCode
             roles {
                 name
             }
