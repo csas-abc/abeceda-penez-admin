@@ -5,7 +5,7 @@ import Layout from './components/Layout';
 const Dashboard = () => {
 
     return (
-        <Layout title="Přehled">
+        <Layout title="Týmy">
             <OverviewTable />
         </Layout>
     );

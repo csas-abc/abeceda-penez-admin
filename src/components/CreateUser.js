@@ -23,7 +23,7 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
             open
             onClose={onClose}
             fullWidth
-            maxWidth="md"
+            maxWidth="sm"
             classes={{
                 paperWidthMd: classes.paper,
             }}
@@ -37,11 +37,11 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                         createUserMutation({
                             variables: {
                                 email,
-                                securityCode: '123',
+                                securityCode: `${Math.floor((Math.random() * 99999) + 10000)}`,
                                 teamId,
                                 role: 'VOLUNTEER',
                             }
-                        }).then((res) => {
+                        }).then(() => {
                             onClose();
                         }).catch((e) => {
                             console.error('ERROR', e);
@@ -66,7 +66,7 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                         className={classes.submit}
                         type="submit"
                     >
-                        Vytvorit
+                        Vytvořit
                     </Button>
                 </form>
             </DialogContent>

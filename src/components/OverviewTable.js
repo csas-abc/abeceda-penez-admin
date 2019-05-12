@@ -11,9 +11,12 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Popover from '@material-ui/core/Popover';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import ProjectDetail from './ProjectDetail';
 import CreateUser from './CreateUser';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 
 const styles = (theme) => ({
     table: {
@@ -22,17 +25,35 @@ const styles = (theme) => ({
     popover: {
         margin: theme.spacing.unit * 2,
     },
+    errorMessage: {
+        backgroundColor: theme.palette.error.dark,
+        margin: theme.spacing.unit,
+    }
 });
 
 const OverviewTable = ({ classes, teamsQuery }) => {
     const [popoverEl, setPopoverEl] = useState(null);
     const [projectDetail, setProjectDetail] = useState(null);
     const [createUserTeam, setCreateUserTeam] = useState(null);
-    if (teamsQuery.loading) return 'Loading...';
+    if (teamsQuery.loading) return <CircularProgress />;
+    if (teamsQuery.error) return (
+        <SnackbarContent
+            className={classes.errorMessage}
+            message="Načtení se nezdařilo"
+        />
+    );
     return (
         <React.Fragment>
             {projectDetail ? <ProjectDetail onClose={() => setProjectDetail(null)} /> : null}
-            {createUserTeam ? <CreateUser teamId={createUserTeam} onClose={() => setCreateUserTeam(null)} /> : null}
+            {createUserTeam ? (
+                <CreateUser
+                    teamId={createUserTeam}
+                    onClose={() => {
+                        teamsQuery.refetch();
+                        setCreateUserTeam(null);
+                    }}
+                />
+            ): null}
             <Popover
                 id="simple-popper"
                 open={!!popoverEl}
@@ -52,8 +73,8 @@ const OverviewTable = ({ classes, teamsQuery }) => {
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Tym</TableCell>
+                        <TableCell>Id</TableCell>
+                        <TableCell>Tým</TableCell>
                         <TableCell>Projekt</TableCell>
                         <TableCell>Faze 1</TableCell>
                         <TableCell>Faze 2</TableCell>
@@ -71,27 +92,35 @@ const OverviewTable = ({ classes, teamsQuery }) => {
                                 <TableCell rowSpan={team.classrooms.length || 1}>
                                     <React.Fragment>
                                         {team.users.map((user) => (
-                                            <React.Fragment>
-                                                {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
+                                            <React.Fragment key={user.id}>
+                                                {user.activated ? `${user.firstname} ${user.lastname}` : `${user.email} (${user.securityCode})`}<br />
                                             </React.Fragment>
                                         ))}
-                                        <span onClick={() => setCreateUserTeam(team.id)}>Pridat</span>
+                                        <Button
+                                            size="small"
+                                            onClick={() => setCreateUserTeam(team.id)}
+                                            variant="outlined"
+                                        >
+                                            Přidat
+                                        </Button>
                                     </React.Fragment>
                                 </TableCell>
-                                <TableCell>
-                                    {team.classrooms && team.classrooms[0] && team.classrooms[0].classroomName}
-                                </TableCell>
+                                {team.classrooms && team.classrooms[0] ? (
+                                    <TableCell>
+                                        {team.classrooms[0].classroomName}
+                                    </TableCell>) : null
+                                }
                                 {team.classrooms && team.classrooms[0] ? map((phase) => (
-                                    <TableCell>{phase.name}</TableCell>
+                                    <TableCell key={phase.id}>{phase.name}</TableCell>
                                 ))(team.classrooms[0].phases) : null}
                             </TableRow>
                             {compose(
                                 map((classroom) => (
-                                    <React.Fragment>
-                                        <TableRow key={classroom.id}>
+                                    <React.Fragment key={classroom.id}>
+                                        <TableRow>
                                             <TableCell>{classroom.classroomName}</TableCell>
                                             {map((phase) => (
-                                                <TableCell>{phase.name}</TableCell>
+                                                <TableCell key={phase.id}>{phase.name}</TableCell>
                                             ))(classroom.phases)}
                                         </TableRow>
                                     </React.Fragment>
@@ -126,6 +155,7 @@ const teamsQuery = graphql(gql`
                 firstname,
                 lastname,
                 activated,
+                securityCode
             }
         }
     }

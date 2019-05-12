@@ -3,8 +3,8 @@ import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import InboxIcon from '@material-ui/icons/Inbox';
-import MailIcon from '@material-ui/icons/Mail';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import People from '@material-ui/icons/People';
 import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles } from '@material-ui/core';
 import logo from '../abeceda-logo.png';
@@ -25,11 +25,11 @@ const Menu = ({ classes }) => (
         <Divider />
         <List>
             <ListItem button component={Link} to="/">
-                <ListItemIcon><MailIcon /></ListItemIcon>
-                <ListItemText primary="Přehled" />
+                <ListItemIcon><People /></ListItemIcon>
+                <ListItemText primary="Týmy" />
             </ListItem>
             <ListItem button component={Link} to="/users">
-                <ListItemIcon><InboxIcon /></ListItemIcon>
+                <ListItemIcon><AccountCircle /></ListItemIcon>
                 <ListItemText primary="Uživatelé" />
             </ListItem>
         </List>
