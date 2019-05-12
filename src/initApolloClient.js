@@ -28,7 +28,7 @@ export default async() => {
 
     // init WebSocket connection
     const wsLink = new WebSocketLink({
-        uri: `wss://${ENDPOINT}`,
+        uri: `ws://${ENDPOINT}`,
         options: {
             reconnect: true,
             connectionParams: {

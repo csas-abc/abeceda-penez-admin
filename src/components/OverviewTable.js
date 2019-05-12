@@ -79,8 +79,9 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                             createTeam {
                                 id
                             }
-                        }`
-                    }).then(() => {
+                        }`,
+                        fetchPolicy: 'network-only',
+                    }).then((res) => {
                         teamsQuery.refetch();
                     })
                 }}
