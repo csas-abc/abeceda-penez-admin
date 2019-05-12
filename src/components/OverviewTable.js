@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { graphql } from 'react-apollo';
+import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import map from 'ramda/src/map';
 import tail from 'ramda/src/tail';
+import Divider from '@material-ui/core/Divider';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -31,7 +32,7 @@ const styles = (theme) => ({
     }
 });
 
-const OverviewTable = ({ classes, teamsQuery }) => {
+const OverviewTable = ({ classes, teamsQuery, client }) => {
     const [popoverEl, setPopoverEl] = useState(null);
     const [projectDetail, setProjectDetail] = useState(null);
     const [createUserTeam, setCreateUserTeam] = useState(null);
@@ -70,6 +71,23 @@ const OverviewTable = ({ classes, teamsQuery }) => {
             >
                 <Typography className={classes.popover}>Toto vidim velky <span style={{ fontWeight: 'bold', color: 'red' }}>spatny</span></Typography>
             </Popover>
+            <Button
+                color="primary"
+                onClick={() => {
+                    client.query({
+                        query: gql`query CreateTeamQuery {
+                            createTeam {
+                                id
+                            }
+                        }`
+                    }).then(() => {
+                        teamsQuery.refetch();
+                    })
+                }}
+            >
+                Vytvořit tým
+            </Button>
+            <Divider />
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -169,6 +187,7 @@ const teamsQuery = graphql(gql`
 export default compose(
     withStyles(styles),
     teamsQuery,
+    withApollo,
 )(OverviewTable);
 
 /*
