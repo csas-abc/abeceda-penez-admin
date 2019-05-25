@@ -14,10 +14,12 @@ import Typography from '@material-ui/core/Typography';
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Message from '@material-ui/icons/Message';
 import withStyles from '@material-ui/core/styles/withStyles';
 import ProjectDetail from './ProjectDetail';
 import CreateUser from './CreateUser';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import CreateMessageModal from './CreateMessageModal';
 
 const styles = (theme) => ({
     table: {
@@ -35,6 +37,7 @@ const styles = (theme) => ({
 const OverviewTable = ({ classes, teamsQuery, client }) => {
     const [popoverEl, setPopoverEl] = useState(null);
     const [projectDetail, setProjectDetail] = useState(null);
+    const [messageTeamId, setMessageTeamId] = useState(null);
     const [createUserTeam, setCreateUserTeam] = useState(null);
     if (teamsQuery.loading) return <CircularProgress />;
     if (teamsQuery.error) return (
@@ -52,6 +55,14 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                     onClose={() => {
                         teamsQuery.refetch();
                         setCreateUserTeam(null);
+                    }}
+                />
+            ): null}
+            {messageTeamId ? (
+                <CreateMessageModal
+                    teamId={messageTeamId}
+                    onClose={() => {
+                        setMessageTeamId(null);
                     }}
                 />
             ): null}
@@ -93,6 +104,7 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Id</TableCell>
+                        <TableCell>Zpráva</TableCell>
                         <TableCell>Tým</TableCell>
                         <TableCell>Projekt</TableCell>
                         <TableCell>Faze 1</TableCell>
@@ -108,6 +120,9 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                         <React.Fragment key={team.id}>
                             <TableRow>
                                 <TableCell rowSpan={team.classrooms.length || 1}>{team.id}</TableCell>
+                                <TableCell>
+                                    <Message onClick={() => setMessageTeamId(team.id)} />
+                                </TableCell>
                                 <TableCell rowSpan={team.classrooms.length || 1}>
                                     <React.Fragment>
                                         {team.users.map((user) => (
@@ -190,22 +205,3 @@ export default compose(
     teamsQuery,
     withApollo,
 )(OverviewTable);
-
-/*
-<TableCell
-    onClick={() => setProjectDetail({ id: 1 })}
->
-    Skola 1
-</TableCell>
-<TableCell
-    style={{
-        backgroundColor: 'red',
-        color: 'white'
-    }}
-    onClick={(e) => {
-        setPopoverEl(e.currentTarget);
-    }}
->
-    1.1. - 25.1. 2019 - PROBLEM, KLIKNI
-</TableCell>
- */

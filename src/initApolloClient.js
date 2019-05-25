@@ -37,7 +37,6 @@ export default async() => {
         },
     });
 
-
     // split requests between HTTP and WS --> depends on operation, subscriptions over WS, rest over HTTP
     const link = split(
         ({ query }) => {
@@ -52,7 +51,7 @@ export default async() => {
     // sync in-memory cache with localStorage and recover after every reload
     const cache = new InMemoryCache();
 
-    // connect apollo cache to localStorage (or recover cache from AsyncStorage)
+    // connect apollo cache to localStorage (or recover cache from localStorage)
     await persistCache({
         cache,
         storage: localStorage,
