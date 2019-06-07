@@ -4,6 +4,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import ShoppingCart from '@material-ui/icons/ShoppingCart';
 import People from '@material-ui/icons/People';
 import ListItemText from '@material-ui/core/ListItemText';
 import { withStyles } from '@material-ui/core';
@@ -31,6 +32,10 @@ const Menu = ({ classes }) => (
             <ListItem button component={Link} to="/users">
                 <ListItemIcon><AccountCircle /></ListItemIcon>
                 <ListItemText primary="Uživatelé" />
+            </ListItem>
+            <ListItem button component={Link} to="/toolboxes">
+                <ListItemIcon><ShoppingCart /></ListItemIcon>
+                <ListItemText primary="Toolboxy" />
             </ListItem>
         </List>
     </div>

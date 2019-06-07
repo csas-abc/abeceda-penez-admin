@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import compose from 'ramda/src/compose';
 import map from 'ramda/src/map';
 import Table from '@material-ui/core/Table';
@@ -13,6 +13,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import UserDetail from './UserDetail';
 
 const styles = theme => ({
     table: {
@@ -24,7 +25,8 @@ const styles = theme => ({
     }
 });
 
-const UsersTable = ({ classes, usersQuery }) => {
+const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
+    const [userId, setUserId] = useState(null);
     if (usersQuery.loading) return <CircularProgress />;
     if (usersQuery.error) return (
         <SnackbarContent
@@ -33,48 +35,81 @@ const UsersTable = ({ classes, usersQuery }) => {
         />
     );
     return (
-        <Table className={classes.table}>
-            <TableHead>
-                <TableRow>
-                    <TableCell />
-                    <TableCell>Jméno</TableCell>
-                    <TableCell>Bezpečnostní kód</TableCell>
-                    <TableCell>Projekty</TableCell>
-                    <TableCell>E-mail</TableCell>
-                    <TableCell>Telefon</TableCell>
-                    <TableCell>Role</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {map((user) => (
-                    <TableRow key={user.id}>
-                        <TableCell>
-                            <Badge color={user.activated ? "primary" : "error"} variant="dot">
-                                <AccountCircle />
-                            </Badge>
-                        </TableCell>
-                        <TableCell>
-                            {`${user.firstname || ''} ${user.lastname || ''}`}
-                        </TableCell>
-                        <TableCell>
-                            {user.securityCode}
-                        </TableCell>
-                        <TableCell>
-                            {user.team ? map((classroom) => (
-                                <React.Fragment key={classroom.id}>{classroom.classroomName} <br /></React.Fragment>
-                            ))(user.team.classrooms) : null}
-                        </TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.phone}</TableCell>
-                        <TableCell>
-                            {map((role) => (
-                                <React.Fragment key={role.name}>{role.name} <br /></React.Fragment>
-                            ))(user.roles)}
-                        </TableCell>
+        <Fragment>
+            {userId ? (
+                <UserDetail userId={userId} onClose={() => setUserId(null)} />
+            ) : null}
+            <Table className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell />
+                        <TableCell />
+                        <TableCell>Jméno</TableCell>
+                        <TableCell>Bezpečnostní kód</TableCell>
+                        <TableCell>Projekty</TableCell>
+                        <TableCell>E-mail</TableCell>
+                        <TableCell>Telefon</TableCell>
+                        <TableCell>Role</TableCell>
                     </TableRow>
-                ))(usersQuery.users)}
-            </TableBody>
-        </Table>
+                </TableHead>
+                <TableBody>
+                    {map((user) => (
+                        <TableRow key={user.id}>
+                            <TableCell
+                                onClick={() => setUserId(user.id)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <Badge color={user.activated ? "primary" : "error"} variant="dot">
+                                    <AccountCircle />
+                                </Badge>
+                            </TableCell>
+                            <TableCell
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    if (user.banned) {
+                                        unbanMutation({
+                                            variables: {
+                                                id: user.id,
+                                            },
+                                        }).then(() => {
+                                            usersQuery.refetch();
+                                        })
+                                    } else {
+                                        banMutation({
+                                            variables: {
+                                                id: user.id,
+                                            },
+                                        }).then(() => {
+                                            usersQuery.refetch();
+                                        })
+                                    }
+                                }}
+                            >
+                                {user.banned ?  'Aktivovat': 'Blokovat'}
+                            </TableCell>
+                            <TableCell>
+                                {`${user.firstname || ''} ${user.lastname || ''}`}
+                            </TableCell>
+                            <TableCell>
+                                {user.securityCode}
+                            </TableCell>
+                            <TableCell>
+                                {user.team ? map((classroom) => (
+                                    <React.Fragment key={classroom.id}>{classroom.classroomName || classroom.id} <br /></React.Fragment>
+                                ))(user.team.classrooms) : null}
+                            </TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell>{user.phone}</TableCell>
+                            <TableCell>
+                                {map((role) => (
+                                    <React.Fragment key={role.name}>{role.name} <br /></React.Fragment>
+                                ))(user.roles)}
+                            </TableCell>
+                        </TableRow>
+                    ))(usersQuery.users)}
+                </TableBody>
+            </Table>
+        </Fragment>
     );
 };
 
@@ -83,10 +118,12 @@ const usersQuery = graphql(gql`
         users {
             id
             email
+            phone
             firstname
             lastname
             activated
             securityCode
+            banned
             roles {
                 name
             }
@@ -106,7 +143,31 @@ const usersQuery = graphql(gql`
     }
 });
 
+const banMutation = graphql(gql`
+    mutation BanUser($id: ID!) {
+        banUser(id: $id) {
+            id
+            banned
+        }
+    }
+`, {
+    name: 'banMutation',
+});
+
+const unbanMutation = graphql(gql`
+    mutation UnbanUser($id: ID!) {
+        unbanUser(id: $id) {
+            id
+            banned
+        }
+    }
+`, {
+    name: 'unbanMutation',
+});
+
 export default compose(
     withStyles(styles),
     usersQuery,
+    banMutation,
+    unbanMutation,
 )(UsersTable);

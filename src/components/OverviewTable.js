@@ -107,12 +107,14 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                         <TableCell>Zpráva</TableCell>
                         <TableCell>Tým</TableCell>
                         <TableCell>Projekt</TableCell>
-                        <TableCell>Faze 1</TableCell>
-                        <TableCell>Faze 2</TableCell>
-                        <TableCell>Faze 3</TableCell>
-                        <TableCell>Faze 4</TableCell>
-                        <TableCell>Faze 5</TableCell>
-                        <TableCell>Faze 6</TableCell>
+                        <TableCell>Krok 1</TableCell>
+                        <TableCell>Krok 2</TableCell>
+                        <TableCell>Krok 3</TableCell>
+                        <TableCell>Krok 4</TableCell>
+                        <TableCell>Krok 5</TableCell>
+                        <TableCell>Krok 6</TableCell>
+                        <TableCell>Krok 7</TableCell>
+                        <TableCell>Krok 8</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -120,7 +122,7 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                         <React.Fragment key={team.id}>
                             <TableRow>
                                 <TableCell rowSpan={team.classrooms.length || 1}>{team.id}</TableCell>
-                                <TableCell>
+                                <TableCell  rowSpan={team.classrooms.length || 1}>
                                     <Message onClick={() => setMessageTeamId(team.id)} />
                                 </TableCell>
                                 <TableCell rowSpan={team.classrooms.length || 1}>

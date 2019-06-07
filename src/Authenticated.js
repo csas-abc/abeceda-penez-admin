@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dashboard from './Dashboard';
 import Users from './Users';
+import Toolboxes from './Toolboxes';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -28,6 +29,7 @@ const Authenticated = ({ client, history: { push } }) => {
         <Fragment>
             <Route path="/" exact component={Dashboard} />
             <Route path="/users" exact component={Users} />
+            <Route path="/toolboxes" exact component={Toolboxes} />
         </Fragment>
     )
 };
