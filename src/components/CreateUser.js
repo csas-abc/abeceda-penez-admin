@@ -9,6 +9,8 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const styles =  {
     paper: {
@@ -18,6 +20,10 @@ const styles =  {
 
 const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [lastname, setLastname] = useState('');
+    const [region, setRegion] = useState(null);
     return (
         <Dialog
             open
@@ -37,6 +43,10 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                         createUserMutation({
                             variables: {
                                 email,
+                                firstname,
+                                lastname,
+                                region,
+                                phone,
                                 securityCode: `${Math.floor((Math.random() * 999999) + 100000)}`,
                                 teamId,
                                 role: 'VOLUNTEER',
@@ -59,6 +69,47 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="fistname">Jméno</InputLabel>
+                        <Input
+                            id="firstname"
+                            name="firstname"
+                            value={firstname}
+                            onChange={(e) => setFirstname(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="lastname">Příjmení</InputLabel>
+                        <Input
+                            id="lastname"
+                            name="lastname"
+                            value={lastname}
+                            onChange={(e) => setLastname(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="phone">Telefon</InputLabel>
+                        <Input
+                            id="phone"
+                            name="phone"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="phone">Region</InputLabel>
+                        <Select
+                            inputProps={{
+                                id: 'region',
+                                name: 'region'
+                            }}
+                            value={region}
+                            onChange={(e) => setRegion(e.target.value)}
+                        >
+                            <MenuItem value="PHA">Praha</MenuItem>
+                            <MenuItem value="KV">Kraj Vysocina</MenuItem>
+                        </Select>
+                    </FormControl>
                     <Button
                         fullWidth
                         variant="contained"
@@ -75,8 +126,8 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
 };
 
 const createUserMutation = graphql(gql`
-    mutation CreateUserMutation($email: String!, $securityCode: String!, $teamId: ID!, $role: String!) {
-        createUser(data: { email: $email, securityCode: $securityCode, teamId: $teamId, role: $role })
+    mutation CreateUserMutation($email: String!, $firstname: String!, $lastname: String!, $region: String!, $phone: String!, $securityCode: String!, $teamId: ID!, $role: String!) {
+        createUser(data: { email: $email, firstname: $firstname, lastname: $lastname, region: $region, phone: $phone, securityCode: $securityCode, teamId: $teamId, role: $role })
     }
 `, {
     name: 'createUserMutation',

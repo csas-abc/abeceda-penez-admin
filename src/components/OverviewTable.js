@@ -4,6 +4,7 @@ import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import map from 'ramda/src/map';
 import tail from 'ramda/src/tail';
+import find from 'ramda/src/find';
 import Divider from '@material-ui/core/Divider';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -33,6 +34,8 @@ const styles = (theme) => ({
         margin: theme.spacing.unit,
     }
 });
+
+const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const OverviewTable = ({ classes, teamsQuery, client }) => {
     const [popoverEl, setPopoverEl] = useState(null);
@@ -83,7 +86,7 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                 <Typography className={classes.popover}>Toto vidim velky <span style={{ fontWeight: 'bold', color: 'red' }}>spatny</span></Typography>
             </Popover>
             <Button
-                color="primary"
+                variant="outlined"
                 onClick={() => {
                     client.query({
                         query: gql`query CreateTeamQuery {
@@ -103,25 +106,18 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Id</TableCell>
                         <TableCell>Zpráva</TableCell>
                         <TableCell>Tým</TableCell>
                         <TableCell>Projekt</TableCell>
-                        <TableCell>Krok 1</TableCell>
-                        <TableCell>Krok 2</TableCell>
-                        <TableCell>Krok 3</TableCell>
-                        <TableCell>Krok 4</TableCell>
-                        <TableCell>Krok 5</TableCell>
-                        <TableCell>Krok 6</TableCell>
-                        <TableCell>Krok 7</TableCell>
-                        <TableCell>Krok 8</TableCell>
+                        <TableCell>Stav projektu</TableCell>
+                        <TableCell>Poznámka</TableCell>
+                        <TableCell>Id</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {teamsQuery.teams.map((team) => (
                         <React.Fragment key={team.id}>
                             <TableRow>
-                                <TableCell rowSpan={team.classrooms.length || 1}>{team.id}</TableCell>
                                 <TableCell  rowSpan={team.classrooms.length || 1}>
                                     <Message onClick={() => setMessageTeamId(team.id)} />
                                 </TableCell>
@@ -136,28 +132,32 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                                             size="small"
                                             onClick={() => setCreateUserTeam(team.id)}
                                             variant="outlined"
+                                            style={{ height: '28px', marginTop: '4px' }}
                                         >
-                                            Přidat
+                                            Přidat člena
                                         </Button>
                                     </React.Fragment>
                                 </TableCell>
                                 {team.classrooms && team.classrooms[0] ? (
                                     <TableCell>
                                         {team.classrooms[0].classroomName}
-                                    </TableCell>) : null
+                                    </TableCell>) : <TableCell>-</TableCell>
                                 }
-                                {team.classrooms && team.classrooms[0] ? map((phase) => (
-                                    <TableCell key={phase.id}>{phase.name}</TableCell>
-                                ))(team.classrooms[0].phases) : null}
+                                {team.classrooms && team.classrooms[0] ?
+                                    <TableCell key={getActivePhase(team.classrooms[0]).id}>
+                                        {`${getActivePhase(team.classrooms[0]).number}/${team.classrooms[0].phases.length}: ${getActivePhase(team.classrooms[0]).name}`}
+                                    </TableCell> : <TableCell>-</TableCell>}
+                                <TableCell rowSpan={team.classrooms.length || 1}>{team.note || '-'}</TableCell>
+                                <TableCell rowSpan={team.classrooms.length || 1}>{team.id}</TableCell>
                             </TableRow>
                             {compose(
                                 map((classroom) => (
                                     <React.Fragment key={classroom.id}>
                                         <TableRow>
                                             <TableCell>{classroom.classroomName}</TableCell>
-                                            {map((phase) => (
-                                                <TableCell key={phase.id}>{phase.name}</TableCell>
-                                            ))(classroom.phases)}
+                                            <TableCell key={getActivePhase(classroom).id}>
+                                                {`${getActivePhase(classroom).number}/${classroom.phases.length}: ${getActivePhase(classroom).name}`}
+                                            </TableCell>
                                         </TableRow>
                                     </React.Fragment>
                                 )),

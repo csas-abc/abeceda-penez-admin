@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import gql from 'graphql-tag';
-import { graphql } from 'react-apollo';
+import compose from 'ramda/src/compose';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -9,6 +8,8 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
+import updateClassroomMutation from '../utils/updateClassroomMutation';
+import { graphql } from 'react-apollo';
 
 const styles =  {
     paper: {
@@ -16,16 +17,16 @@ const styles =  {
     },
 };
 
-const UserDetail = ({
+const BranchModal = ({
     onClose,
     classes,
-    updateUserMutation,
-    user,
+    updateClassroomMutation,
+    classroom,
 }) => {
-    const [firstname, setFirstname] = useState(user.firstname);
-    const [lastname, setLastname] = useState(user.lastname);
-    const [phone, setPhone] = useState(user.phone);
-    const [region, setRegion] = useState(user.region);
+    const [schoolAddress, setSchoolAddress] = useState(classroom.schoolAddress);
+    const [directorName, setDirectorName] = useState(classroom.directorName);
+    const [directorPhone, setDirectorPhone] = useState(classroom.directorPhone);
+    const [directorEmail, setDirectorEmail] = useState(classroom.directorEmail);
 
     return (
         <Dialog
@@ -37,19 +38,19 @@ const UserDetail = ({
                 paperWidthMd: classes.paper,
             }}
         >
-            <DialogTitle>Detail uživatele</DialogTitle>
+            <DialogTitle>Detail školy</DialogTitle>
             <DialogContent>
                 <form
                     className={classes.form}
                     onSubmit={(e) => {
                         e.preventDefault();
-                        updateUserMutation({
+                        updateClassroomMutation({
                             variables: {
-                                id: user.id,
-                                firstname,
-                                lastname,
-                                phone,
-                                region,
+                                id: classroom.id,
+                                schoolAddress,
+                                directorName,
+                                directorPhone,
+                                directorEmail,
                             }
                         }).then(() => {
                             onClose();
@@ -59,40 +60,40 @@ const UserDetail = ({
                     }}
                 >
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="firstname">Jméno</InputLabel>
+                        <InputLabel htmlFor="directorName">Jméno zástupce</InputLabel>
                         <Input
-                            id="firstname"
-                            name="firstname"
+                            id="directorName"
+                            name="directorName"
                             autoFocus
-                            value={firstname}
-                            onChange={(e) => setFirstname(e.target.value)}
+                            value={directorName}
+                            onChange={(e) => setDirectorName(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="lastname">Příjmení</InputLabel>
+                        <InputLabel htmlFor="directorEmail">E-mail zástupce</InputLabel>
                         <Input
-                            id="lastname"
-                            name="lastname"
-                            value={lastname}
-                            onChange={(e) => setLastname(e.target.value)}
+                            id="directorEmail"
+                            name="directorEmail"
+                            value={directorEmail}
+                            onChange={(e) => setDirectorEmail(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="phone">Telefon</InputLabel>
+                        <InputLabel htmlFor="directorPhone">Telefon</InputLabel>
                         <Input
-                            id="phone"
-                            name="phone"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            id="directorPhone"
+                            name="directorPhone"
+                            value={directorPhone}
+                            onChange={(e) => setDirectorPhone(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="region">Region</InputLabel>
+                        <InputLabel htmlFor="schoolAddress">Adresa školy</InputLabel>
                         <Input
-                            id="region"
-                            name="region"
-                            value={region}
-                            onChange={(e) => setRegion(e.target.value)}
+                            id="schoolAddress"
+                            name="schoolAddress"
+                            value={schoolAddress}
+                            onChange={(e) => setSchoolAddress(e.target.value)}
                         />
                     </FormControl>
                     <Button
@@ -110,26 +111,12 @@ const UserDetail = ({
     );
 };
 
-const updateUserMutation = graphql(gql`
-    mutation UpdateUserMutation($firstname: String, $lastname: String, $phone: String, $region: String, $id: ID!) {
-        updateUser(
-            data: {
-                firstname: $firstname
-                lastname: $lastname
-                phone: $phone
-                region: $region
-            },
-            id: $id
-        ){
-            id
-            firstname
-            lastname
-            region
-            phone
-        }
-    }
-`, {
-    name: 'updateUserMutation',
-});
-
-export default updateUserMutation(withStyles(styles)(UserDetail));
+export default compose(
+    graphql(
+        updateClassroomMutation,
+        {
+            name: 'updateClassroomMutation',
+        },
+    ),
+    withStyles(styles)
+)(BranchModal);

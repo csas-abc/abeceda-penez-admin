@@ -26,7 +26,7 @@ const styles = theme => ({
 });
 
 const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
-    const [userId, setUserId] = useState(null);
+    const [user, setUser] = useState(null);
     if (usersQuery.loading) return <CircularProgress />;
     if (usersQuery.error) return (
         <SnackbarContent
@@ -36,8 +36,8 @@ const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
     );
     return (
         <Fragment>
-            {userId ? (
-                <UserDetail userId={userId} onClose={() => setUserId(null)} />
+            {user ? (
+                <UserDetail user={user} onClose={() => setUser(null)} />
             ) : null}
             <Table className={classes.table}>
                 <TableHead>
@@ -56,7 +56,7 @@ const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
                     {map((user) => (
                         <TableRow key={user.id}>
                             <TableCell
-                                onClick={() => setUserId(user.id)}
+                                onClick={() => setUser(user)}
                                 style={{ cursor: 'pointer' }}
                             >
                                 <Badge color={user.activated ? "primary" : "error"} variant="dot">
@@ -124,6 +124,7 @@ const usersQuery = graphql(gql`
             activated
             securityCode
             banned
+            region
             roles {
                 name
             }

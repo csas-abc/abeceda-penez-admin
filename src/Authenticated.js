@@ -6,6 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dashboard from './Dashboard';
 import Users from './Users';
 import Toolboxes from './Toolboxes';
+import Projects from './Projects';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -27,7 +28,8 @@ const Authenticated = ({ client, history: { push } }) => {
     );
     return (
         <Fragment>
-            <Route path="/" exact component={Dashboard} />
+            <Route path="/" exact component={Projects} />
+            <Route path="/teams" exact component={Dashboard} />
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />
         </Fragment>
