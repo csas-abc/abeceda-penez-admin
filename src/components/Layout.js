@@ -11,7 +11,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import MuiMenu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import Menu from './Menu';
+import ChangePassword from './ChangePassword';
 
 const drawerWidth = 240;
 
@@ -48,11 +51,23 @@ const styles = theme => ({
 });
 
 const Layout = ({ children, classes, container, theme, title, history: { push } }) => {
-
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [changePassword, setChangePassword] = React.useState(false);
+
+    function handleClick(event) {
+        setAnchorEl(event.currentTarget);
+    }
+
+    function handleClose() {
+        setAnchorEl(null);
+    }
 
     return (
         <div className={classes.root}>
+            {changePassword ? (
+                <ChangePassword onClose={() => setChangePassword(false)} />
+            ): null}
             <CssBaseline />
             <nav className={classes.drawer}>
                 <Hidden smUp implementation="css">
@@ -96,16 +111,37 @@ const Layout = ({ children, classes, container, theme, title, history: { push } 
                             {title}
                         </Typography>
                         <IconButton
-                            onClick={() => {
-                                localStorage.removeItem('token');
-                                push('/login');
-                            }}
+                            onClick={handleClick}
                             color="inherit"
                         >
                             <AccountCircle />
                         </IconButton>
                     </Toolbar>
-
+                    <MuiMenu
+                        id="simple-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={Boolean(anchorEl)}
+                        onClose={handleClose}
+                    >
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                setChangePassword(true);
+                            }}
+                        >
+                            Změnit heslo
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                handleClose();
+                                localStorage.removeItem('token');
+                                push('/login');
+                            }}
+                        >
+                            Odhlásit
+                        </MenuItem>
+                    </MuiMenu>
                 </AppBar>
                 <div className={classes.toolbar} />
                 {children}

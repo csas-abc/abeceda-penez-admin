@@ -55,8 +55,8 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Projekt</TableCell>
-                        <TableCell>Region</TableCell>
                         <TableCell>Tým</TableCell>
+                        <TableCell>Region</TableCell>
                         <TableCell>Pobočka</TableCell>
                         <TableCell>Škola</TableCell>
                         <TableCell>Toolbox</TableCell>
@@ -64,7 +64,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                         <TableCell>Název firmy</TableCell>
                         <TableCell>V čem děti podnikají</TableCell>
                         <TableCell>Výdělek použití</TableCell>
-                        <TableCell>Výdělek</TableCell>
+                        <TableCell>Výdělek (Kč)</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -77,9 +77,6 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                                 {path(['classroomName'])(classroom)}
                             </TableCell>
                             <TableCell>
-                                {path(['region'])(classroom)}
-                            </TableCell>
-                            <TableCell>
                                 {compose(
                                     map((user) => (
                                         <React.Fragment key={user.id}>
@@ -89,6 +86,13 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                                     defaultTo([]),
                                     path(['team', 'users']),
                                 )(classroom)}
+                            </TableCell>
+                            <TableCell>
+                                {classroom.team.users.map((user) => (
+                                    <React.Fragment key={user.id}>
+                                        {user.region}<br />
+                                    </React.Fragment>
+                                ))}
                             </TableCell>
                             <TableCell style={{ cursor: 'pointer' }} onClick={() => setBranchDetail(classroom)}>
                                 {path(['branchAddress'])(classroom)}
@@ -106,10 +110,10 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                                 {path(['companyName'])(classroom)}
                             </TableCell>
                             <TableCell>
-                                {path(['businessPurpose'])(classroom)}
+                                {path(['businessDescription'])(classroom)}
                             </TableCell>
                             <TableCell>
-                                {path(['businessDescription'])(classroom)}
+                                {path(['businessPurpose'])(classroom)}
                             </TableCell>
                             <TableCell>
                                 {path(['moneyGoalAmount'])(classroom)}
@@ -159,6 +163,7 @@ const classroomsQuery = graphql(gql`
                     lastname
                     activated
                     email
+                    region
                 }
             }
         }

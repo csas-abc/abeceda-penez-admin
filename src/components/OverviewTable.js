@@ -108,6 +108,7 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                     <TableRow>
                         <TableCell>Zpráva</TableCell>
                         <TableCell>Tým</TableCell>
+                        <TableCell>Region</TableCell>
                         <TableCell>Projekt</TableCell>
                         <TableCell>Stav projektu</TableCell>
                         <TableCell>Poznámka</TableCell>
@@ -126,17 +127,27 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
                                         {team.users.map((user) => (
                                             <React.Fragment key={user.id}>
                                                 {user.activated ? `${user.firstname} ${user.lastname}` : `${user.email} (${user.securityCode})`}<br />
+                                                <span style={{ color: '#9d9d9d' }}>{user.phone}, {user.email}</span><br/>
                                             </React.Fragment>
                                         ))}
-                                        <Button
-                                            size="small"
-                                            onClick={() => setCreateUserTeam(team.id)}
-                                            variant="outlined"
-                                            style={{ height: '28px', marginTop: '4px' }}
-                                        >
-                                            Přidat člena
-                                        </Button>
+                                        {!team.users || team.users.length < 2 ? (
+                                            <Button
+                                                size="small"
+                                                onClick={() => setCreateUserTeam(team.id)}
+                                                variant="outlined"
+                                                style={{ height: '28px', marginTop: '4px' }}
+                                            >
+                                                Přidat člena
+                                            </Button>
+                                        ) : null}
                                     </React.Fragment>
+                                </TableCell>
+                                <TableCell  rowSpan={team.classrooms.length || 1}>
+                                    {team.users.map((user) => (
+                                        <React.Fragment key={user.id}>
+                                            {user.region}<br /><br/>
+                                        </React.Fragment>
+                                    ))}
                                 </TableCell>
                                 {team.classrooms && team.classrooms[0] ? (
                                     <TableCell>
@@ -187,11 +198,13 @@ const teamsQuery = graphql(gql`
             }
             users {
                 id
-                email,
-                firstname,
-                lastname,
-                activated,
+                email
+                firstname
+                lastname
+                activated
                 securityCode
+                phone
+                region
             }
         }
     }

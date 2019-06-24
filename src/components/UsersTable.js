@@ -14,6 +14,8 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import UserDetail from './UserDetail';
+import Button from '@material-ui/core/Button';
+import CreateAdminUser from './CreateAdminUser';
 
 const styles = theme => ({
     table: {
@@ -27,6 +29,7 @@ const styles = theme => ({
 
 const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
     const [user, setUser] = useState(null);
+    const [createAdmin, setCreateAdmin] = useState(false);
     if (usersQuery.loading) return <CircularProgress />;
     if (usersQuery.error) return (
         <SnackbarContent
@@ -39,6 +42,23 @@ const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
             {user ? (
                 <UserDetail user={user} onClose={() => setUser(null)} />
             ) : null}
+            {createAdmin ? (
+                <CreateAdminUser
+                    onClose={() => {
+                        usersQuery.refetch();
+                        setCreateAdmin(false);
+                    }}
+                />
+            ) : null}
+
+            <div>
+                <Button
+                    variant="outlined"
+                    onClick={() => setCreateAdmin(true)}
+                >
+                    Vytvorit admina
+                </Button>
+            </div>
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>

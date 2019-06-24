@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Login from './Login';
 import Authenticated from './Authenticated';
 import initApolloClient from './initApolloClient';
+import ForgotPassword from './ForgotPassword';
 
 const App = () => {
     const [client, setClient] = useState(null);
@@ -23,6 +24,7 @@ const App = () => {
           <Router>
               <Route path="/" component={Authenticated} />
               <Route path="/login" component={Login} />
+              <Route path="/forgot-password" component={ForgotPassword} />
           </Router>
       </ApolloProvider>
     );

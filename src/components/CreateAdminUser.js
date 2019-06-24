@@ -18,12 +18,12 @@ const styles =  {
     },
 };
 
-const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
+const CreateAdminUser = ({ onClose, classes, createUserMutation }) => {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
-    const [region, setRegion] = useState(null);
+    const [role, setRole] = useState('ADMIN');
     return (
         <Dialog
             open
@@ -34,7 +34,7 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                 paperWidthMd: classes.paper,
             }}
         >
-            <DialogTitle>Vytvořit uživatele v týmu</DialogTitle>
+            <DialogTitle>Vytvořit uživatele administrátorské aplikace</DialogTitle>
             <DialogContent>
                 <form
                     className={classes.form}
@@ -45,11 +45,9 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                                 email,
                                 firstname,
                                 lastname,
-                                region,
                                 phone,
                                 securityCode: `${Math.floor((Math.random() * 999999) + 100000)}`,
-                                teamId,
-                                role: 'VOLUNTEER',
+                                role,
                             }
                         }).then(() => {
                             onClose();
@@ -97,21 +95,17 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="region">Region</InputLabel>
+                        <InputLabel htmlFor="role">Role</InputLabel>
                         <Select
                             inputProps={{
-                                id: 'region',
-                                name: 'region'
+                                id: 'role',
+                                name: 'role'
                             }}
-                            value={region}
-                            onChange={(e) => setRegion(e.target.value)}
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
                         >
-                            <MenuItem value="PHA">PHA</MenuItem>
-                            <MenuItem value="JZČ">JZČ</MenuItem>
-                            <MenuItem value="JM">JM</MenuItem>
-                            <MenuItem value="SM">SM</MenuItem>
-                            <MenuItem value="SZČ">SZČ</MenuItem>
-                            <MenuItem value="VČ">VČ</MenuItem>
+                            <MenuItem value="ADMIN">Administrátor</MenuItem>
+                            <MenuItem value="AGENCY">Agentura</MenuItem>
                         </Select>
                     </FormControl>
                     <Button
@@ -130,11 +124,11 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
 };
 
 const createUserMutation = graphql(gql`
-    mutation CreateUserMutation($email: String!, $firstname: String!, $lastname: String!, $region: String!, $phone: String!, $securityCode: String!, $teamId: ID!, $role: String!) {
-        createUser(data: { email: $email, firstname: $firstname, lastname: $lastname, region: $region, phone: $phone, securityCode: $securityCode, teamId: $teamId, role: $role })
+    mutation CreateUserMutation($email: String!, $firstname: String!, $lastname: String!, $phone: String!, $securityCode: String!, $role: String!) {
+        createUser(data: { email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, securityCode: $securityCode, role: $role })
     }
 `, {
     name: 'createUserMutation',
 });
 
-export default createUserMutation(withStyles(styles)(CreateUser));
+export default createUserMutation(withStyles(styles)(CreateAdminUser));

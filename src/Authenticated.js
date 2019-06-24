@@ -7,6 +7,11 @@ import Dashboard from './Dashboard';
 import Users from './Users';
 import Toolboxes from './Toolboxes';
 import Projects from './Projects';
+import compose from 'ramda/src/compose';
+import contains from 'ramda/src/contains';
+import pluck from 'ramda/src/pluck';
+import defaultTo from 'ramda/src/defaultTo';
+import path from 'ramda/src/path';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -14,8 +19,16 @@ const Authenticated = ({ client, history: { push } }) => {
         client.query({
             query: meQUery,
             fetchPolicy: 'network-only',
-        }).then(() => {
+        }).then((res) => {
             setLoading(false);
+            if (compose(
+                contains('AGENCY'),
+                pluck('name'),
+                defaultTo([]),
+                path(['data', 'me', 'roles']),
+            )(res)) {
+                push('/toolboxes');
+            }
         }).catch((e) => {
             setLoading(false);
             push('/login');
@@ -39,7 +52,11 @@ const Authenticated = ({ client, history: { push } }) => {
 const meQUery = gql`
     {
         me {
-            email,
+            id
+            email
+            roles {
+                name
+            }
         }
     }
 `;

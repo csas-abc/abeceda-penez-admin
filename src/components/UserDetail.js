@@ -9,6 +9,8 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const styles =  {
     paper: {
@@ -87,13 +89,22 @@ const UserDetail = ({
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="region">Region</InputLabel>
-                        <Input
-                            id="region"
-                            name="region"
+                        <InputLabel htmlFor="phone">Region</InputLabel>
+                        <Select
+                            inputProps={{
+                                id: 'region',
+                                name: 'region'
+                            }}
                             value={region}
                             onChange={(e) => setRegion(e.target.value)}
-                        />
+                        >
+                            <MenuItem value="PHA">PHA</MenuItem>
+                            <MenuItem value="JZČ">JZČ</MenuItem>
+                            <MenuItem value="JM">JM</MenuItem>
+                            <MenuItem value="SM">SM</MenuItem>
+                            <MenuItem value="SZČ">SZČ</MenuItem>
+                            <MenuItem value="VČ">VČ</MenuItem>
+                        </Select>
                     </FormControl>
                     <Button
                         fullWidth
