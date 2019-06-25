@@ -17,7 +17,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Message from '@material-ui/icons/Message';
 import withStyles from '@material-ui/core/styles/withStyles';
-import ProjectDetail from './ProjectDetail';
 import CreateUser from './CreateUser';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import CreateMessageModal from './CreateMessageModal';
@@ -39,7 +38,6 @@ const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom
 
 const OverviewTable = ({ classes, teamsQuery, client }) => {
     const [popoverEl, setPopoverEl] = useState(null);
-    const [projectDetail, setProjectDetail] = useState(null);
     const [messageTeamId, setMessageTeamId] = useState(null);
     const [createUserTeam, setCreateUserTeam] = useState(null);
     if (teamsQuery.loading) return <CircularProgress />;
@@ -51,7 +49,7 @@ const OverviewTable = ({ classes, teamsQuery, client }) => {
     );
     return (
         <React.Fragment>
-            {projectDetail ? <ProjectDetail onClose={() => setProjectDetail(null)} /> : null}
+
             {createUserTeam ? (
                 <CreateUser
                     teamId={createUserTeam}

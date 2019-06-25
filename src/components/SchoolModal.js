@@ -27,6 +27,9 @@ const BranchModal = ({
     const [directorName, setDirectorName] = useState(classroom.directorName);
     const [directorPhone, setDirectorPhone] = useState(classroom.directorPhone);
     const [directorEmail, setDirectorEmail] = useState(classroom.directorEmail);
+    const [teacherName, setTeacherName] = useState(classroom.teacherName);
+    const [teacherPhone, setTeacherPhone] = useState(classroom.teacherPhone);
+    const [teacherEmail, setTeacherEmail] = useState(classroom.teacherEmail);
 
     return (
         <Dialog
@@ -51,6 +54,9 @@ const BranchModal = ({
                                 directorName,
                                 directorPhone,
                                 directorEmail,
+                                teacherName,
+                                teacherEmail,
+                                teacherPhone
                             }
                         }).then(() => {
                             onClose();
@@ -79,12 +85,39 @@ const BranchModal = ({
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>
-                        <InputLabel htmlFor="directorPhone">Telefon</InputLabel>
+                        <InputLabel htmlFor="directorPhone">Telefon zástupce</InputLabel>
                         <Input
                             id="directorPhone"
                             name="directorPhone"
                             value={directorPhone}
                             onChange={(e) => setDirectorPhone(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="teacherName">Jméno učitele</InputLabel>
+                        <Input
+                            id="teacherName"
+                            name="teacherName"
+                            value={teacherName}
+                            onChange={(e) => setTeacherName(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="teacherEmail">E-mail učitele</InputLabel>
+                        <Input
+                            id="teacherEmail"
+                            name="teacherEmail"
+                            value={teacherEmail}
+                            onChange={(e) => setTeacherEmail(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="teacherPhone">Telefon učitele</InputLabel>
+                        <Input
+                            id="teacherPhone"
+                            name="teacherPhone"
+                            value={teacherPhone}
+                            onChange={(e) => setTeacherPhone(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" required fullWidth>

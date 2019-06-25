@@ -56,7 +56,7 @@ const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
                     variant="outlined"
                     onClick={() => setCreateAdmin(true)}
                 >
-                    Vytvorit admina
+                    Vytvořit uživatele adm. aplikace
                 </Button>
             </div>
             <Table className={classes.table}>

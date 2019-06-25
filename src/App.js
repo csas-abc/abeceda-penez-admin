@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { ApolloProvider } from 'react-apollo';
+import moment from 'moment';
+import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider';
+import MomentUtils from '@date-io/moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Login from './Login';
 import Authenticated from './Authenticated';
 import initApolloClient from './initApolloClient';
 import ForgotPassword from './ForgotPassword';
 
+import 'moment/locale/cs';
+
 const App = () => {
     const [client, setClient] = useState(null);
     useEffect(() => {
+        moment.locale('cs');
         initApolloClient().then((initializedClient) => {
             setClient(initializedClient);
         });
@@ -21,11 +27,13 @@ const App = () => {
     );
     return (
       <ApolloProvider client={client}>
-          <Router>
-              <Route path="/" component={Authenticated} />
-              <Route path="/login" component={Login} />
-              <Route path="/forgot-password" component={ForgotPassword} />
-          </Router>
+          <MuiPickersUtilsProvider utils={MomentUtils} locale="cs">
+              <Router>
+                  <Route path="/" component={Authenticated} />
+                  <Route path="/login" component={Login} />
+                  <Route path="/forgot-password" component={ForgotPassword} />
+              </Router>
+          </MuiPickersUtilsProvider>
       </ApolloProvider>
     );
 };

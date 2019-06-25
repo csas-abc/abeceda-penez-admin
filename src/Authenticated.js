@@ -12,6 +12,7 @@ import contains from 'ramda/src/contains';
 import pluck from 'ramda/src/pluck';
 import defaultTo from 'ramda/src/defaultTo';
 import path from 'ramda/src/path';
+import Fairs from './Fairs';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -45,6 +46,7 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/teams" exact component={Dashboard} />
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />
+            <Route path="/fairs" exact component={Fairs} />
         </Fragment>
     )
 };

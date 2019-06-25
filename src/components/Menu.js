@@ -75,10 +75,6 @@ const Menu = ({ classes, meQuery }) => (
                             <ListItemIcon><Person /></ListItemIcon>
                             <ListItemText primary="Uživatelé" />
                         </ListItem>
-                        <ListItem button component={Link} to="/files">
-                            <ListItemIcon><Attachment /></ListItemIcon>
-                            <ListItemText primary="Dokumenty" />
-                        </ListItem>
                     </React.Fragment>
                     ) : null}
             </List>

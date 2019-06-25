@@ -27,6 +27,10 @@ const updateClassroomMutation = gql`
         $kioskReadyTime: DateTime
         $fairEnd: DateTime
         $kioskPlace: String
+        $fairNote: String
+        $fairElectricity: String
+        $fairAnnexationState: String
+        $fairAnnexationNote: String
     ) {
         updateClassroom(data: {
             id: $id,
@@ -54,6 +58,10 @@ const updateClassroomMutation = gql`
             fairEnd: $fairEnd
             fairTime: $fairTime
             kioskPlace: $kioskPlace
+            fairNote: $fairNote
+            fairElectricity: $fairElectricity
+            fairAnnexationState: $fairAnnexationState
+            fairAnnexationNote: $fairAnnexationNote
         }) {
             id
             classroomName
@@ -62,7 +70,7 @@ const updateClassroomMutation = gql`
             directorName
             directorPhone
             directorEmail
-            teacherName:
+            teacherName
             teacherEmail
             teacherPhone
             branchRepresentativeName
@@ -80,6 +88,10 @@ const updateClassroomMutation = gql`
             kioskReadyTime
             fairEnd
             kioskPlace
+            fairNote
+            fairElectricity
+            fairAnnexationState
+            fairAnnexationNote
         }
     }
 `;

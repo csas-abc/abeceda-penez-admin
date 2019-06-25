@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
 import path from 'ramda/src/path';
@@ -17,6 +18,7 @@ import find from 'ramda/src/find';
 import validateProject from '../utils/validateProject';
 import BranchModal from './BranchModal';
 import SchoolModal from './SchoolModal';
+import ProjectModal from './ProjectModal';
 
 const styles = theme => ({
     table: {
@@ -36,6 +38,7 @@ const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom
 const ProjectsTable = ({ classes, classroomsQuery }) => {
     const [branchDetail, setBranchDetail] = useState(null);
     const [schoolDetail, setSchoolDetail] = useState(null);
+    const [projectDetail, setProjectDetail] = useState(null);
     if (classroomsQuery.loading) return <CircularProgress />;
     if (classroomsQuery.error) return (
         <SnackbarContent
@@ -51,6 +54,9 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
             {schoolDetail ? (
                 <SchoolModal classroom={schoolDetail} onClose={() => setSchoolDetail(null)} />
             ) : null}
+            {projectDetail ? (
+                <ProjectModal classroom={projectDetail} onClose={() => setProjectDetail(null)} />
+            ) : null}
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -59,8 +65,10 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                         <TableCell>Region</TableCell>
                         <TableCell>Pobočka</TableCell>
                         <TableCell>Škola</TableCell>
+                        <TableCell>Pololetí</TableCell>
                         <TableCell>Toolbox</TableCell>
                         <TableCell>Stav projektu</TableCell>
+                        <TableCell>Schůzka ve škole</TableCell>
                         <TableCell>Název firmy</TableCell>
                         <TableCell>V čem děti podnikají</TableCell>
                         <TableCell>Výdělek použití</TableCell>
@@ -73,7 +81,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                             key={classroom.id}
                             className={validateProject(classroom) ? classes.errorProjectRow : null}
                         >
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['classroomName'])(classroom)}
                             </TableCell>
                             <TableCell>
@@ -100,22 +108,28 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                             <TableCell style={{ cursor: 'pointer' }} onClick={() => setSchoolDetail(classroom)}>
                                 {path(['schoolAddress'])(classroom)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
+                                {path(['semester'])(classroom)}
+                            </TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['toolboxOrder', 'state'])(classroom)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {`${getActivePhase(classroom).number}/${classroom.phases.length}: ${getActivePhase(classroom).name}`}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
+                                {path(['schoolMeeting'])(classroom) ? moment(classroom.schoolMeeting).format('L') : '-'}
+                            </TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['companyName'])(classroom)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['businessDescription'])(classroom)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['businessPurpose'])(classroom)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['moneyGoalAmount'])(classroom)}
                             </TableCell>
                         </TableRow>
@@ -135,7 +149,11 @@ const classroomsQuery = graphql(gql`
             directorName
             directorEmail
             directorPhone
+            teacherName
+            teacherPhone
+            teacherEmail
             schoolMeeting
+            semester
             branchAddress
             branchRepresentativeEmail
             branchRepresentativePhone

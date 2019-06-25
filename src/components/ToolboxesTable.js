@@ -21,6 +21,7 @@ import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { Button } from '@material-ui/core';
 import pluck from 'ramda/src/pluck';
+import ToolboxModal from './ToolboxModal';
 
 const styles = theme => ({
     table: {
@@ -41,6 +42,7 @@ const ToolboxesTable = ({
     meQuery,
 }) => {
     const [selected, setSelected] = useState([]);
+    const [toolboxDetail, setToolboxDetail] = useState(null);
     const isAdmin = compose(
         contains('ADMIN'),
         pluck('name'),
@@ -78,6 +80,9 @@ const ToolboxesTable = ({
                     </Button>
                 </div>
             ) : null}
+            {toolboxDetail ? (
+                <ToolboxModal toolbox={toolboxDetail} onClose={() => setToolboxDetail(null)} />
+            ) : null}
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -112,16 +117,16 @@ const ToolboxesTable = ({
                                     />
                                 </TableCell>
                             ) : null}
-                            <TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {path(['state'])(toolbox)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {path(['recipient'])(toolbox)}
                             </TableCell>
                             <TableCell>
                                 {path(['address'])(toolbox)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {compose(
                                     map((user) => (
                                         <React.Fragment key={user.id}>
@@ -132,13 +137,13 @@ const ToolboxesTable = ({
                                     path(['classroom', 'team', 'users']),
                                 )(toolbox)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {path(['classroom', 'classroomName'])(toolbox)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {path(['classroom', 'fairDate'])(toolbox) ? moment(path(['classroom', 'fairDate'])(toolbox)).format('L') : '-'}
                             </TableCell>
-                            <TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {path(['childrenCount'])(toolbox) || '-'}
                             </TableCell>
                             <TableCell>
