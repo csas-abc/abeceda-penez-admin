@@ -115,7 +115,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                                 {path(['toolboxOrder', 'state'])(classroom)}
                             </TableCell>
                             <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {`${getActivePhase(classroom).number}/${classroom.phases.length}: ${getActivePhase(classroom).name}`}
+                                {`${getActivePhase(classroom) ? getActivePhase(classroom).number : 1}/${classroom.phases.length}: ${getActivePhase(classroom) ? getActivePhase(classroom).name : '-'}`}
                             </TableCell>
                             <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['schoolMeeting'])(classroom) ? moment(classroom.schoolMeeting).format('L') : '-'}

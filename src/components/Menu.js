@@ -11,7 +11,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Person from '@material-ui/icons/Person';
 import People from '@material-ui/icons/People';
 import Mood from '@material-ui/icons/Mood';
-import Attachment from '@material-ui/icons/Attachment';
 import ListItemText from '@material-ui/core/ListItemText';
 import Subject from '@material-ui/icons/Subject';
 import Work from '@material-ui/icons/Work';
