@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -16,8 +17,9 @@ const styles =  {
     },
 };
 
-const CreateMessageModal = ({ onClose, classes, teamId, createMessageMutation }) => {
+const CreateMessageModal = ({ onClose, classes, teamId, createMessageMutation, teamQuery }) => {
     const [text, setText] = useState('');
+    const [loading, setLoading] = useState(false);
     return (
         <Dialog
             open
@@ -33,6 +35,7 @@ const CreateMessageModal = ({ onClose, classes, teamId, createMessageMutation })
                 <form
                     className={classes.form}
                     onSubmit={(e) => {
+                        setLoading(true);
                         e.preventDefault();
                         createMessageMutation({
                             variables: {
@@ -40,8 +43,12 @@ const CreateMessageModal = ({ onClose, classes, teamId, createMessageMutation })
                                 teamId,
                             }
                         }).then(() => {
+                            return teamQuery.refetch();
+                        }).then(() => {
+                            setLoading(false);
                             onClose();
                         }).catch((e) => {
+                            setLoading(false);
                             console.error('ERROR', e);
                         })
                     }}
@@ -62,8 +69,9 @@ const CreateMessageModal = ({ onClose, classes, teamId, createMessageMutation })
                         color="primary"
                         className={classes.submit}
                         type="submit"
+                        disabled={loading}
                     >
-                        Odeslat
+                        {loading ? <CircularProgress /> : 'Odeslat'}
                     </Button>
                 </form>
             </DialogContent>

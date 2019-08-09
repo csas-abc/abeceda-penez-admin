@@ -49,8 +49,6 @@ const ToolboxesTable = ({
         defaultTo([]),
         path(['me', 'roles']),
     )(meQuery);
-    console.log('ME', meQuery);
-    console.log('ADMIN?', isAdmin);
     if (toolboxOrdersQuery.loading) return <CircularProgress />;
     if (toolboxOrdersQuery.error) return (
         <SnackbarContent
@@ -112,7 +110,7 @@ const ToolboxesTable = ({
                                                 setSelected(append(toolbox.id)(selected));
                                             }
                                         }}
-                                        disabled={path(['state'])(toolbox) !== 'Objednaný'}
+                                        disabled={path(['state'])(toolbox) !== 'Objednaný přes aplikaci'}
                                         color="primary"
                                     />
                                 </TableCell>
@@ -147,7 +145,7 @@ const ToolboxesTable = ({
                                 {path(['childrenCount'])(toolbox) || '-'}
                             </TableCell>
                             <TableCell>
-                                {!isAdmin && propEq('state', 'Předaný')(toolbox) ? (
+                                {!isAdmin && propEq('state', 'Předáno do agentury')(toolbox) ? (
                                     <Button
                                         variant="outlined"
                                         onClick={() => registerOrderMutation({
@@ -161,7 +159,7 @@ const ToolboxesTable = ({
                                 ) : (path(['registrationDate'])(toolbox) ? moment(path(['registrationDate'])(toolbox)).format('L') : '-')}
                             </TableCell>
                             <TableCell>
-                                {!isAdmin && propEq('state', 'Evidovaný')(toolbox) ? (
+                                {!isAdmin && propEq('state', 'Agentura eviduje')(toolbox) ? (
                                     <Button
                                         variant="outlined"
                                         onClick={() => {

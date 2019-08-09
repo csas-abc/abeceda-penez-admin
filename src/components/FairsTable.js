@@ -57,7 +57,6 @@ const FairsTable = ({
                     <TableRow>
                         <TableCell>Datum jarmarku</TableCell>
                         <TableCell>Adresa pobočky</TableCell>
-                        <TableCell>Počet žáků</TableCell>
                         <TableCell>Postavení stánků</TableCell>
                         <TableCell>Začátek jarmarku</TableCell>
                         <TableCell>Konec jarmarku</TableCell>
@@ -68,6 +67,7 @@ const FairsTable = ({
                         <TableCell>Stav záboru</TableCell>
                         <TableCell>Poznámka k záboru</TableCell>
                         <TableCell>Prostor ČS?</TableCell>
+                        <TableCell>Počet žáků</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -78,9 +78,6 @@ const FairsTable = ({
                             </TableCell>
                             <TableCell>
                                 {path(['branchAddress'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['childrenCount'])(fair) || '-'}
                             </TableCell>
                             <TableCell>
                                 {path(['kioskReadyTime'])(fair) ? moment(fair.kioskReadyTime).format('LT') : '-' }
@@ -121,6 +118,9 @@ const FairsTable = ({
                             </TableCell>
                             <TableCell>
                                 {path(['kioskPlace'])(fair) || '-'}
+                            </TableCell>
+                            <TableCell>
+                                {path(['childrenCount'])(fair) || '-'}
                             </TableCell>
                         </TableRow>
                     ))(fairsQuery.fairs)}

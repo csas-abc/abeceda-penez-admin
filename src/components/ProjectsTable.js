@@ -62,13 +62,12 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                     <TableRow>
                         <TableCell>Projekt</TableCell>
                         <TableCell>Tým</TableCell>
+                        <TableCell>Stav projektu</TableCell>
                         <TableCell>Region</TableCell>
                         <TableCell>Pobočka</TableCell>
                         <TableCell>Škola</TableCell>
                         <TableCell>Pololetí</TableCell>
                         <TableCell>Toolbox</TableCell>
-                        <TableCell>Stav projektu</TableCell>
-                        <TableCell>Schůzka ve škole</TableCell>
                         <TableCell>Název firmy</TableCell>
                         <TableCell>V čem děti podnikají</TableCell>
                         <TableCell>Výdělek použití</TableCell>
@@ -95,6 +94,9 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                                     path(['team', 'users']),
                                 )(classroom)}
                             </TableCell>
+                            <TableCell onClick={() => setProjectDetail(classroom)}>
+                                {`${getActivePhase(classroom) ? getActivePhase(classroom).number : 1}/${classroom.phases.length}: ${getActivePhase(classroom) ? getActivePhase(classroom).name : '-'}`}
+                            </TableCell>
                             <TableCell>
                                 {classroom.team.users.map((user) => (
                                     <React.Fragment key={user.id}>
@@ -113,12 +115,6 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                             </TableCell>
                             <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['toolboxOrder', 'state'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {`${getActivePhase(classroom) ? getActivePhase(classroom).number : 1}/${classroom.phases.length}: ${getActivePhase(classroom) ? getActivePhase(classroom).name : '-'}`}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['schoolMeeting'])(classroom) ? moment(classroom.schoolMeeting).format('L') : '-'}
                             </TableCell>
                             <TableCell onClick={() => setProjectDetail(classroom)}>
                                 {path(['companyName'])(classroom)}

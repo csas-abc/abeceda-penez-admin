@@ -51,7 +51,7 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                         <ListItem button component={Link} to="/teams">
                             <ListItemIcon><People /></ListItemIcon>
-                            <ListItemText primary="Týmy" />
+                            <ListItemText primary="Správa týmů" />
                         </ListItem>
                     </React.Fragment>
                 ) : null}

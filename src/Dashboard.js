@@ -1,12 +1,12 @@
 import React from 'react';
-import OverviewTable from './components/OverviewTable';
+import TeamsTable from './components/TeamsTable';
 import Layout from './components/Layout';
 
 const Dashboard = () => {
 
     return (
-        <Layout title="Týmy">
-            <OverviewTable />
+        <Layout title="Správa týmů">
+            <TeamsTable />
         </Layout>
     );
 };
