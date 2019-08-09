@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import moment from 'moment';
@@ -24,6 +24,7 @@ import descend from 'ramda/src/descend';
 import prop from 'ramda/src/prop';
 import { graphql } from 'react-apollo';
 import CreateMessageModal from './CreateMessageModal';
+import { CircularProgress } from '@material-ui/core';
 
 const styles =  {
     paper: {
@@ -52,16 +53,20 @@ const TeamModal = ({
     onClose,
     classes,
     updateTeamMutation,
-    teamsQuery,
     // team,
     teamQuery: {
         team,
         ...teamQuery,
     },
 }) => {
+    console.log('Q', teamQuery);
     const [activeTab, setActiveTab] = useState(0);
     const [messageTeamId, setMessageTeamId] = useState(null);
-    const [adminNote, setAdminNote] = useState(team.adminNote || '');
+    const [adminNote, setAdminNote] = useState(prop('adminNote')(team) || '');
+    useEffect(() => {
+        setAdminNote(prop('adminNote')(team) || '');
+    }, [teamQuery.loading]);
+    if (teamQuery.loading) return <CircularProgress />;
     return (
         <Dialog
             open
