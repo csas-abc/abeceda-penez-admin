@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { ApolloProvider } from 'react-apollo';
 import moment from 'moment';
+import { SnackbarProvider } from 'notistack';
 import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider';
 import MomentUtils from '@date-io/moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -28,11 +29,13 @@ const App = () => {
     return (
       <ApolloProvider client={client}>
           <MuiPickersUtilsProvider utils={MomentUtils} locale="cs">
-              <Router>
-                  <Route path="/" component={Authenticated} />
-                  <Route path="/login" component={Login} />
-                  <Route path="/forgot-password" component={ForgotPassword} />
-              </Router>
+              <SnackbarProvider maxSnack={3}>
+                  <Router>
+                      <Route path="/" component={Authenticated} />
+                      <Route path="/login" component={Login} />
+                      <Route path="/forgot-password" component={ForgotPassword} />
+                  </Router>
+              </SnackbarProvider>
           </MuiPickersUtilsProvider>
       </ApolloProvider>
     );

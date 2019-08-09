@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSnackbar } from 'notistack';
+import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -25,7 +27,9 @@ const ProjectModal = ({
     classes,
     updateClassroomMutation,
     classroom,
+    exportMutation,
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const [classroomName, setClassroomName] = useState(classroom.classroomName);
     const [schoolMeeting, setSchoolMeeting] = useState(classroom.schoolMeeting);
     const [semester, setSemester] = useState(classroom.semester);
@@ -138,20 +142,44 @@ const ProjectModal = ({
                             onChange={(e) => setBusinessPurpose(e.target.value)}
                         />
                     </FormControl>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        type="submit"
-                    >
-                        Uložit
-                    </Button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            onClick={() => {
+                                exportMutation({
+                                    variables: {
+                                        id: classroom.id,
+                                    }
+                                });
+                                enqueueSnackbar('Projekt byl odeslaný na e-mail');
+                            }}
+                        >
+                            Export
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            type="submit"
+                        >
+                            Uložit
+                        </Button>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>
     );
 };
+
+const exportMutation = graphql(gql`
+    mutation Export($id: ID!) {
+        export(id: $id)
+    }
+`, {
+    name: 'exportMutation'
+});
 
 export default compose(
     graphql(
@@ -160,5 +188,6 @@ export default compose(
             name: 'updateClassroomMutation',
         },
     ),
+    exportMutation,
     withStyles(styles)
 )(ProjectModal);

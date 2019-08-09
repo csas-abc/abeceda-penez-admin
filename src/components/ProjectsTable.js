@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
 import path from 'ramda/src/path';
