@@ -52,7 +52,7 @@ const TeamsTable = ({ classes, teamsQuery, client }) => {
     return (
         <React.Fragment>
             {teamDetail ? (
-                <TeamModal teamsQuery={teamsQuery} team={teamDetail} onClose={() => setTeamDetail(null)} />
+                <TeamModal team={teamDetail} onClose={() => setTeamDetail(null)} />
             ) : null}
             {createUserTeam ? (
                 <CreateUser

@@ -59,7 +59,6 @@ const TeamModal = ({
         ...teamQuery,
     },
 }) => {
-    console.log('Q', teamQuery);
     const [activeTab, setActiveTab] = useState(0);
     const [messageTeamId, setMessageTeamId] = useState(null);
     const [adminNote, setAdminNote] = useState(prop('adminNote')(team) || '');

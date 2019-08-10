@@ -21,6 +21,7 @@ const drawerWidth = 240;
 const styles = theme => ({
     root: {
         display: 'flex',
+        height: '100%'
     },
     drawer: {
         [theme.breakpoints.up('sm')]: {
@@ -33,7 +34,11 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing.unit * 3,
+        paddingTop: theme.spacing.unit * 3,
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingBottom: 0,
+        height: '100%',
     },
     appBar: {
         marginLeft: drawerWidth,
@@ -144,7 +149,9 @@ const Layout = ({ children, classes, container, theme, title, history: { push } 
                     </MuiMenu>
                 </AppBar>
                 <div className={classes.toolbar} />
-                {children}
+                <div style={{ height: '100%' }}>
+                    {children}
+                </div>
             </main>
         </div>
     );

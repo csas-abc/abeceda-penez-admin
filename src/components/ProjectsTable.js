@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
+import MUIDataTable from 'mui-datatables';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
 import path from 'ramda/src/path';
+import sort from 'ramda/src/sort';
+import find from 'ramda/src/find';
+import reverse from 'ramda/src/reverse';
+import type from 'ramda/src/type';
+import includes from 'ramda/src/includes';
+import indexOf from 'ramda/src/indexOf';
 import compose from 'ramda/src/compose';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import find from 'ramda/src/find';
-import validateProject from '../utils/validateProject';
 import BranchModal from './BranchModal';
 import SchoolModal from './SchoolModal';
 import ProjectModal from './ProjectModal';
+import TeamModal from './TeamModal';
+import ToolboxModal from './ToolboxModal';
 
 const styles = theme => ({
     table: {
@@ -38,6 +40,8 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
     const [branchDetail, setBranchDetail] = useState(null);
     const [schoolDetail, setSchoolDetail] = useState(null);
     const [projectDetail, setProjectDetail] = useState(null);
+    const [teamDetail, setTeamDetail] = useState(null);
+    const [toolboxDetail, setToolboxDetail] = useState(null);
     if (classroomsQuery.loading) return <CircularProgress />;
     if (classroomsQuery.error) return (
         <SnackbarContent
@@ -45,6 +49,96 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
             message="Načtení se nezdařilo"
         />
     );
+
+    const options = {
+        filterType: 'multiselect',
+        selectableRows: 'none',
+        fixedHeader: true,
+        // search: false,
+        download: false,
+        print: false,
+        filter: false,
+        responsive: 'scroll',
+        customSearch: (searchQuery, row, columns) => {
+            const found = !!find((column) => {
+                const columnIndex = indexOf(column)(row);
+                if (columns[columnIndex].search) {
+                    return columns[columnIndex].search(searchQuery, column);
+                }
+                if (type(column) === 'String') {
+                    return !!includes(searchQuery)(column);
+                }
+                if (type(column) === 'Array') {
+                    return !!find(includes(searchQuery))(column);
+                }
+                return false;
+            })(row);
+            return !!found;
+        },
+        onCellClick: (colData, colMetadata) => {
+            const classroom = classroomsQuery.classrooms[colMetadata.dataIndex];
+            switch (colMetadata.colIndex) {
+                case 0:
+                case 2:
+                case 6:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    setProjectDetail(classroom);
+                    return;
+                case 1:
+                case 3:
+                    setTeamDetail(classroom.team);
+                    return;
+                case 4:
+                    setBranchDetail(classroom);
+                    return;
+                case 5:
+                    setSchoolDetail(classroom);
+                    return;
+                case 7:
+                    setToolboxDetail(classroom.toolboxOrder);
+                    return;
+            }
+        },
+        customSort: (data, colIndex, order) => {
+            switch(colIndex) {
+                case 0:
+                case 2:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                    const sorted = sort((a, b) => a.data[colIndex].localeCompare(b.data[colIndex]), data);
+                    if (order === 'asc') return sorted;
+                    return reverse(sorted);
+            }
+            const sorted = sort((a, b) => {
+                let intA = 0;
+                let intB = 0;
+                try {
+                    intA = parseInt(a.data[colIndex], 10);
+                    intA = isNaN(intA) ? 0 : intA;
+                } catch (e) {
+                    // nothing..
+                }
+                try {
+                    intB = parseInt(b.data[colIndex], 10);
+                    intB = isNaN(intB) ? 0 : intB;
+                } catch (e) {
+                    // nothing..
+                }
+                return intA - intB;
+            }, data);
+            if (order === 'asc') return sorted;
+            return reverse(sorted);
+        }
+    };
+
     return (
         <React.Fragment>
             {branchDetail ? (
@@ -56,81 +150,94 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
             {projectDetail ? (
                 <ProjectModal classroom={projectDetail} onClose={() => setProjectDetail(null)} />
             ) : null}
-            <Table className={classes.table}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Projekt</TableCell>
-                        <TableCell>Tým</TableCell>
-                        <TableCell>Stav projektu</TableCell>
-                        <TableCell>Region</TableCell>
-                        <TableCell>Pobočka</TableCell>
-                        <TableCell>Škola</TableCell>
-                        <TableCell>Pololetí</TableCell>
-                        <TableCell>Toolbox</TableCell>
-                        <TableCell>Název firmy</TableCell>
-                        <TableCell>V čem děti podnikají</TableCell>
-                        <TableCell>Výdělek použití</TableCell>
-                        <TableCell>Výdělek (Kč)</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {map((classroom) => (
-                        <TableRow
-                            key={classroom.id}
-                            className={validateProject(classroom) ? classes.errorProjectRow : null}
-                        >
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['classroomName'])(classroom)}
-                            </TableCell>
-                            <TableCell>
-                                {compose(
-                                    map((user) => (
+            {teamDetail ? (
+                <TeamModal team={teamDetail} onClose={() => setTeamDetail(null)} />
+            ) : null}
+            {toolboxDetail ? (
+                <ToolboxModal toolbox={toolboxDetail} onClose={() => setToolboxDetail(null)} />
+            ) : null}
+            <div style={{ width: '100%', height: '100%' }}>
+                <MUIDataTable
+                    columns={[
+                        'Projekt',
+                        {
+                            name: 'Tým',
+                            options: {
+                                sort: false,
+                                customBodyRender: (value) => (
+                                    <div>
+                                        {map((user) => (
                                         <React.Fragment key={user.id}>
                                             {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
                                         </React.Fragment>
-                                    )),
-                                    defaultTo([]),
-                                    path(['team', 'users']),
-                                )(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {`${getActivePhase(classroom) ? getActivePhase(classroom).number : 1}/${classroom.phases.length}: ${getActivePhase(classroom) ? getActivePhase(classroom).name : '-'}`}
-                            </TableCell>
-                            <TableCell>
-                                {classroom.team.users.map((user) => (
-                                    <React.Fragment key={user.id}>
-                                        {user.region}<br />
-                                    </React.Fragment>
-                                ))}
-                            </TableCell>
-                            <TableCell style={{ cursor: 'pointer' }} onClick={() => setBranchDetail(classroom)}>
-                                {path(['branchAddress'])(classroom)}
-                            </TableCell>
-                            <TableCell style={{ cursor: 'pointer' }} onClick={() => setSchoolDetail(classroom)}>
-                                {path(['schoolAddress'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['semester'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['toolboxOrder', 'state'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['companyName'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['businessDescription'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['businessPurpose'])(classroom)}
-                            </TableCell>
-                            <TableCell onClick={() => setProjectDetail(classroom)}>
-                                {path(['moneyGoalAmount'])(classroom)}
-                            </TableCell>
-                        </TableRow>
-                    ))(classroomsQuery.classrooms)}
-                </TableBody>
-            </Table>
+                                    ))(value)}
+                                    </div>
+                                ),
+                                search: (query, values) => {
+                                    return !!find((user) => {
+                                        const valueString =  user.activated ? `${user.firstname} ${user.lastname}` : user.email;
+                                        return includes(query)(valueString);
+                                    })(values)
+                                },
+                            },
+
+                        },
+                        'Stav projektu',
+                        {
+                            name: 'Region',
+                            options: {
+                                sort: false,
+                                customBodyRender: (value) => (
+                                    <div>
+                                        {map((region) => (
+                                            <React.Fragment>
+                                                {region}<br />
+                                            </React.Fragment>
+                                        ))(value)}
+                                    </div>
+                                ),
+                            }
+                        },
+                        'Pobočka',
+                        'Škola',
+                        'Pololetí',
+                        'Toolbox',
+                        'Název firmy',
+                        'V čem děti podnikají',
+                        'Výdělek použití',
+                        'Výdělek (Kč)',
+                    ]}
+                    options={options}
+                    data={map((classroom) => {
+                        return [
+                            path(['classroomName'])(classroom) || '-',
+                            compose(
+                                defaultTo([]),
+                                path(['team', 'users']),
+                            )(classroom),
+                            getActivePhase(classroom) ? (
+                                `${getActivePhase(classroom) ? getActivePhase(classroom).number : 1}/${classroom.phases.length}: ${getActivePhase(classroom) ? getActivePhase(classroom).name : '-'}`
+                            ) : 'Dokončeno',
+                            classroom.team.users.map((user) => user.region),
+                            path(['branchAddress'])(classroom) || '-',
+                            path(['schoolAddress'])(classroom) || '-',
+                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}` : '-',
+                            path(['toolboxOrder', 'state'])(classroom) || '-',
+                            path(['companyName'])(classroom) || '-',
+                            path(['businessDescription'])(classroom) || '-',
+                            path(['businessPurpose'])(classroom) || '-',
+                            path(['moneyGoalAmount'])(classroom) || '-',
+                        ]
+                    })(classroomsQuery.classrooms || [])}
+                />
+            </div>
+            {/*
+                <TableRow
+                    key={classroom.id}
+                    className={validateProject(classroom) ? classes.errorProjectRow : null}
+                >
+                </TableRow>>
+            */}
         </React.Fragment>
     );
 };
@@ -156,6 +263,9 @@ const classroomsQuery = graphql(gql`
             toolboxOrder {
                 id
                 state
+                recipient
+                address
+                childrenCount
             }
             phases {
                 id
