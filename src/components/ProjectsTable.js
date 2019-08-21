@@ -59,6 +59,8 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
         print: false,
         filter: false,
         responsive: 'scroll',
+        rowsPerPage: 1000,
+        rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
         customSearch: (searchQuery, row, columns) => {
             const found = !!find((column) => {
                 const columnIndex = indexOf(column)(row);
@@ -78,6 +80,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
         onCellClick: (colData, colMetadata) => {
             const classroom = classroomsQuery.classrooms[colMetadata.dataIndex];
             switch (colMetadata.colIndex) {
+                default:
                 case 0:
                 case 2:
                 case 6:

@@ -89,6 +89,7 @@ const ToolboxesTable = ({
                         <TableCell>Adresát</TableCell>
                         <TableCell>Adresa</TableCell>
                         <TableCell>Tým</TableCell>
+                        <TableCell>V aplikaci odeslal</TableCell>
                         <TableCell>Projekt</TableCell>
                         <TableCell>Datum Jarmarku</TableCell>
                         <TableCell>Počet dětí</TableCell>
@@ -134,6 +135,9 @@ const ToolboxesTable = ({
                                     defaultTo([]),
                                     path(['classroom', 'team', 'users']),
                                 )(toolbox)}
+                            </TableCell>
+                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                {`${path(['author', 'firstname'])(toolbox)} ${path(['author', 'lastname'])(toolbox)}`}
                             </TableCell>
                             <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
                                 {path(['classroom', 'classroomName'])(toolbox)}
