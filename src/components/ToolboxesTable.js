@@ -8,6 +8,7 @@ import compose from 'ramda/src/compose';
 import without from 'ramda/src/without';
 import append from 'ramda/src/append';
 import propEq from 'ramda/src/propEq';
+import sortBy from 'ramda/src/sortBy';
 import Table from '@material-ui/core/Table';
 import Checkbox from '@material-ui/core/Checkbox';
 import TableBody from '@material-ui/core/TableBody';
@@ -22,6 +23,13 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { Button } from '@material-ui/core';
 import pluck from 'ramda/src/pluck';
 import ToolboxModal from './ToolboxModal';
+
+const toolboxState = {
+    'Objednaný přes aplikaci': 1,
+    'Předáno do agentury': 2,
+    'Agentura eviduje': 3,
+    'Odesláno na pobočku': 4,
+};
 
 const styles = theme => ({
     table: {
@@ -86,6 +94,7 @@ const ToolboxesTable = ({
                     <TableRow>
                         {isAdmin ? <TableCell /> : null}
                         <TableCell>Stav</TableCell>
+                        <TableCell>Do agentury odeslal</TableCell>
                         <TableCell>Adresát</TableCell>
                         <TableCell>Adresa</TableCell>
                         <TableCell>Tým</TableCell>
@@ -98,88 +107,94 @@ const ToolboxesTable = ({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {map((toolbox) => (
-                        <TableRow key={toolbox.id}>
-                            {isAdmin ? (
-                                <TableCell>
-                                    <Checkbox
-                                        checked={contains(toolbox.id)(selected)}
-                                        onChange={() => {
-                                            if (contains(toolbox.id)(selected)) {
-                                                setSelected(without([toolbox.id])(selected));
-                                            } else {
-                                                setSelected(append(toolbox.id)(selected));
-                                            }
-                                        }}
-                                        disabled={path(['state'])(toolbox) !== 'Objednaný přes aplikaci'}
-                                        color="primary"
-                                    />
-                                </TableCell>
-                            ) : null}
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {path(['state'])(toolbox)}
-                            </TableCell>
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {path(['recipient'])(toolbox)}
-                            </TableCell>
-                            <TableCell>
-                                {path(['address'])(toolbox)}
-                            </TableCell>
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {compose(
-                                    map((user) => (
-                                        <React.Fragment key={user.id}>
-                                            {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
-                                        </React.Fragment>
-                                    )),
-                                    defaultTo([]),
-                                    path(['classroom', 'team', 'users']),
-                                )(toolbox)}
-                            </TableCell>
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {`${path(['author', 'firstname'])(toolbox)} ${path(['author', 'lastname'])(toolbox)}`}
-                            </TableCell>
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {path(['classroom', 'classroomName'])(toolbox)}
-                            </TableCell>
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {path(['classroom', 'fairDate'])(toolbox) ? moment(path(['classroom', 'fairDate'])(toolbox)).format('L') : '-'}
-                            </TableCell>
-                            <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
-                                {path(['childrenCount'])(toolbox) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {!isAdmin && propEq('state', 'Předáno do agentury')(toolbox) ? (
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => registerOrderMutation({
-                                            variables: {
-                                                id: toolbox.id
-                                            }
-                                        })}
-                                    >
-                                        Evidováno
-                                    </Button>
-                                ) : (path(['registrationDate'])(toolbox) ? moment(path(['registrationDate'])(toolbox)).format('L') : '-')}
-                            </TableCell>
-                            <TableCell>
-                                {!isAdmin && propEq('state', 'Agentura eviduje')(toolbox) ? (
-                                    <Button
-                                        variant="outlined"
-                                        onClick={() => {
-                                            finishOrderMutation({
-                                                variables: {
-                                                    id: toolbox.id,
+                    {compose(
+                        map((toolbox) => (
+                            <TableRow key={toolbox.id}>
+                                {isAdmin ? (
+                                    <TableCell>
+                                        <Checkbox
+                                            checked={contains(toolbox.id)(selected)}
+                                            onChange={() => {
+                                                if (contains(toolbox.id)(selected)) {
+                                                    setSelected(without([toolbox.id])(selected));
+                                                } else {
+                                                    setSelected(append(toolbox.id)(selected));
                                                 }
-                                            })
-                                        }}
-                                    >
-                                        Posláno
-                                    </Button>
-                                ) : (path(['sendDate'])(toolbox) ? moment(path(['sendDate'])(toolbox)).format('L') : '-')}
-                            </TableCell>
-                        </TableRow>
-                    ))(toolboxOrdersQuery.toolboxOrders)}
+                                            }}
+                                            disabled={path(['state'])(toolbox) !== 'Objednaný přes aplikaci'}
+                                            color="primary"
+                                        />
+                                    </TableCell>
+                                ) : null}
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {path(['state'])(toolbox)}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['sendAdmin', 'email'])(toolbox) ? `${path(['sendAdmin', 'firstname'])(toolbox)} ${path(['sendAdmin', 'lastname'])(toolbox)} (${path(['sendAdmin', 'email'])(toolbox)})` : '-'}
+                                </TableCell>
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {path(['recipient'])(toolbox)}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['address'])(toolbox)}
+                                </TableCell>
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {compose(
+                                        map((user) => (
+                                            <React.Fragment key={user.id}>
+                                                {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
+                                            </React.Fragment>
+                                        )),
+                                        defaultTo([]),
+                                        path(['classroom', 'team', 'users']),
+                                    )(toolbox)}
+                                </TableCell>
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {`${path(['author', 'firstname'])(toolbox)} ${path(['author', 'lastname'])(toolbox)}`}
+                                </TableCell>
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {path(['classroom', 'classroomName'])(toolbox)}
+                                </TableCell>
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {path(['classroom', 'fairDate'])(toolbox) ? moment(path(['classroom', 'fairDate'])(toolbox)).format('L') : '-'}
+                                </TableCell>
+                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                    {path(['childrenCount'])(toolbox) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {!isAdmin && propEq('state', 'Předáno do agentury')(toolbox) ? (
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => registerOrderMutation({
+                                                variables: {
+                                                    id: toolbox.id
+                                                }
+                                            })}
+                                        >
+                                            Evidováno
+                                        </Button>
+                                    ) : (path(['registrationDate'])(toolbox) ? moment(path(['registrationDate'])(toolbox)).format('L') : '-')}
+                                </TableCell>
+                                <TableCell>
+                                    {!isAdmin && propEq('state', 'Agentura eviduje')(toolbox) ? (
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                finishOrderMutation({
+                                                    variables: {
+                                                        id: toolbox.id,
+                                                    }
+                                                })
+                                            }}
+                                        >
+                                            Posláno
+                                        </Button>
+                                    ) : (path(['sendDate'])(toolbox) ? moment(path(['sendDate'])(toolbox)).format('L') : '-')}
+                                </TableCell>
+                            </TableRow>
+                        )),
+                        sortBy((x) => toolboxState[x.state]),
+                    )(toolboxOrdersQuery.toolboxOrders || [])}
                 </TableBody>
             </Table>
         </React.Fragment>
@@ -219,6 +234,12 @@ const toolboxOrdersQuery = graphql(gql`
             recipient
             address
             childrenCount
+            sendAdmin {
+                id
+                email
+                firstname
+                lastname
+            }
         }
     }
 `, {

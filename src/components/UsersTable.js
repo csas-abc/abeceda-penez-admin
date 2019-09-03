@@ -27,7 +27,7 @@ const styles = theme => ({
     }
 });
 
-const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
+const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation, forgotPasswordMutation }) => {
     const [user, setUser] = useState(null);
     const [createAdmin, setCreateAdmin] = useState(false);
     if (usersQuery.loading) return <CircularProgress />;
@@ -64,6 +64,7 @@ const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
                     <TableRow>
                         <TableCell />
                         <TableCell />
+                        <TableCell>Obnova hesla</TableCell>
                         <TableCell>Jméno</TableCell>
                         <TableCell>Bezpečnostní kód</TableCell>
                         <TableCell>Projekty</TableCell>
@@ -106,6 +107,21 @@ const UsersTable = ({ classes, usersQuery, banMutation, unbanMutation }) => {
                                 }}
                             >
                                 {user.banned ?  'Aktivovat': 'Blokovat'}
+                            </TableCell>
+                            <TableCell>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={() => {
+                                        forgotPasswordMutation({
+                                            variables: { email: user.email } ,
+                                        }).then(() => {
+                                            alert('Heslo obnoveno');
+                                        })
+                                    }}
+                                >
+                                    Obnovit
+                                </Button>
                             </TableCell>
                             <TableCell>
                                 {`${user.firstname || ''} ${user.lastname || ''}`}
@@ -186,9 +202,18 @@ const unbanMutation = graphql(gql`
     name: 'unbanMutation',
 });
 
+const forgotPassword = graphql(gql`
+    mutation ForgotPasswordMutation($email: String!) {
+        forgotPassword(email: $email)
+    }
+`, {
+    name: 'forgotPasswordMutation'
+})
+
 export default compose(
     withStyles(styles),
     usersQuery,
     banMutation,
     unbanMutation,
+    forgotPassword,
 )(UsersTable);

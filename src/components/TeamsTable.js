@@ -130,7 +130,7 @@ const TeamsTable = ({ classes, teamsQuery, client }) => {
                                                     variant="outlined"
                                                     style={{ height: '28px', marginTop: '4px' }}
                                                 >
-                                                    Přidat člena
+                                                    Vytvořit člena
                                                 </Button>
                                             ) : null}
                                         </React.Fragment>

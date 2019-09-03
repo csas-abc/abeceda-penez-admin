@@ -25,6 +25,7 @@ import prop from 'ramda/src/prop';
 import { graphql } from 'react-apollo';
 import CreateMessageModal from './CreateMessageModal';
 import { CircularProgress } from '@material-ui/core';
+import SelectUnassignedUserModal from './SelectUnassignedUserModal';
 
 const styles =  {
     paper: {
@@ -53,15 +54,18 @@ const TeamModal = ({
     onClose,
     classes,
     updateTeamMutation,
-    // team,
     teamQuery: {
         team,
         ...teamQuery,
     },
+    unassignUserMutation,
+    assignUserMutation,
 }) => {
     const [activeTab, setActiveTab] = useState(0);
     const [messageTeamId, setMessageTeamId] = useState(null);
     const [adminNote, setAdminNote] = useState(prop('adminNote')(team) || '');
+    const [unassignLoading, setUnassignLoading] = useState(null);
+    const [selectUnassignedUserVisible, setSelectUnassignedUserVisible] = useState(false);
     useEffect(() => {
         setAdminNote(prop('adminNote')(team) || '');
     }, [teamQuery.loading]);
@@ -87,6 +91,15 @@ const TeamModal = ({
                         }}
                     />
                 ): null}
+                {selectUnassignedUserVisible ? (
+                    <SelectUnassignedUserModal
+                        onClose={() => {
+                            setSelectUnassignedUserVisible(false);
+                        }}
+                        assignUserMutation={assignUserMutation}
+                        teamId={prop('id')(team)}
+                    />
+                ) : null}
                 <Tabs value={activeTab} onChange={(e, value) => setActiveTab(value)}>
                     <Tab label="Uživatelé"></Tab>
                     <Tab label="Zprávy"></Tab>
@@ -106,7 +119,7 @@ const TeamModal = ({
                         <Input
                             id="phone1"
                             name="phone1"
-                            value={path(['users', 0, 'phone'])(team)}
+                            value={path(['users', 0, 'phone'])(team) || ''}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -114,7 +127,7 @@ const TeamModal = ({
                         <Input
                             id="email1"
                             name="email1"
-                            value={path(['users', 0, 'email'])(team)}
+                            value={path(['users', 0, 'email'])(team) || ''}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -122,9 +135,37 @@ const TeamModal = ({
                         <Input
                             id="region1"
                             name="region1"
-                            value={path(['users', 0, 'region'])(team)}
+                            value={path(['users', 0, 'region'])(team) || ''}
                         />
                     </FormControl>
+                    {path(['users', 0, 'email'])(team) ? (
+                        <Button
+                            variant="outlined"
+                            disabled={unassignLoading === 1}
+                            onClick={() => {
+                                setUnassignLoading(1);
+                                unassignUserMutation({
+                                    variables: {
+                                        id: prop('id')(team),
+                                        userId: path(['users', 0, 'id'])(team),
+                                    }
+                                }).then(() => {
+                                    setUnassignLoading(null);
+                                })
+                            }}
+                        >
+                            {unassignLoading === 1 ? <CircularProgress /> : null} Odebrat uživatele z týmu
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                setSelectUnassignedUserVisible(true);
+                            }}
+                        >
+                            Vybrat uživatele
+                        </Button>
+                    )}
 
                     <FormControl style={{ marginTop: '50px' }} margin="normal" fullWidth>
                         <InputLabel htmlFor="name2">Jméno</InputLabel>
@@ -139,7 +180,7 @@ const TeamModal = ({
                         <Input
                             id="phone2"
                             name="phone2"
-                            value={path(['users', 1, 'phone'])(team)}
+                            value={path(['users', 1, 'phone'])(team) || ''}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -147,7 +188,7 @@ const TeamModal = ({
                         <Input
                             id="email2"
                             name="email2"
-                            value={path(['users', 1, 'email'])(team)}
+                            value={path(['users', 1, 'email'])(team) || ''}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -155,9 +196,37 @@ const TeamModal = ({
                         <Input
                             id="region2"
                             name="region2"
-                            value={path(['users', 1, 'region'])(team)}
+                            value={path(['users', 1, 'region'])(team) || ''}
                         />
                     </FormControl>
+                    {path(['users', 1, 'email'])(team) ? (
+                        <Button
+                            variant="outlined"
+                            disabled={unassignLoading === 2}
+                            onClick={() => {
+                                setUnassignLoading(2);
+                                unassignUserMutation({
+                                    variables: {
+                                        id: prop('id')(team),
+                                        userId: path(['users', 1, 'id'])(team),
+                                    }
+                                }).then(() => {
+                                    setUnassignLoading(null);
+                                })
+                            }}
+                        >
+                            {unassignLoading === 2 ? <CircularProgress /> : null} Odebrat uživatele z týmu
+                        </Button>
+                    ) : (
+                        <Button
+                            variant="outlined"
+                            onClick={() => {
+                                setSelectUnassignedUserVisible(true);
+                            }}
+                        >
+                            Vybrat uživatele
+                        </Button>
+                    )}
                 </TabPanel>
                 <TabPanel value={activeTab} index={1}>
                     <Button
@@ -236,6 +305,31 @@ export default compose(
         {
             name: 'updateTeamMutation',
         },
+    ),
+    graphql(
+        gql`mutation UnassignUserMutation($id: ID!, $userId: ID!) {
+            updateTeam(data: {
+                id: $id
+                users: {
+                    disconnect: {
+                        id: $userId
+                    }
+                }
+            }) {
+                id
+                users {
+                    id
+                    email
+                    firstname
+                    lastname
+                    phone
+                    region
+                }
+            }
+        }
+        `, {
+            name: 'unassignUserMutation',
+        }
     ),
     graphql(
         gql`query Team($id: ID!) {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import MUIDataTable from 'mui-datatables';
+import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
 import path from 'ramda/src/path';
@@ -61,6 +62,12 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
         responsive: 'scroll',
         rowsPerPage: 1000,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
+        onColumnSortChange: (...args) => {
+            // console.log('Sort change', args);
+        },
+        onTableChange: (...args) => {
+            // console.log('Table change', args);
+        },
         customSearch: (searchQuery, row, columns) => {
             const found = !!find((column) => {
                 const columnIndex = indexOf(column)(row);
@@ -106,6 +113,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
             }
         },
         customSort: (data, colIndex, order) => {
+            // console.log('Sort');
             switch(colIndex) {
                 case 0:
                 case 2:
@@ -203,10 +211,13 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                         },
                         'Pobočka',
                         'Škola',
+                        'Termín návštěvy školy',
                         'Pololetí',
                         'Toolbox',
+                        'Termín exkurze ',
                         'Název firmy',
                         'V čem děti podnikají',
+                        'Termín jarmarku',
                         'Výdělek použití',
                         'Výdělek (Kč)',
                     ]}
@@ -224,10 +235,13 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                             classroom.team.users.map((user) => user.region),
                             path(['branchAddress'])(classroom) || '-',
                             path(['schoolAddress'])(classroom) || '-',
+                            path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
                             path(['semester'])(classroom) ? `${path(['semester'])(classroom)}` : '-',
                             path(['toolboxOrder', 'state'])(classroom) || '-',
+                            path(['excursionDate'])(classroom) || '-',
                             path(['companyName'])(classroom) || '-',
                             path(['businessDescription'])(classroom) || '-',
+                            path(['fairDate'])(classroom) ? moment(path(['fairDate'])(classroom)).format('L') : '-',
                             path(['businessPurpose'])(classroom) || '-',
                             path(['moneyGoalAmount'])(classroom) || '-',
                         ]
@@ -263,6 +277,7 @@ const classroomsQuery = graphql(gql`
             branchRepresentativeEmail
             branchRepresentativePhone
             branchRepresentativeName
+            fairDate
             toolboxOrder {
                 id
                 state

@@ -72,7 +72,7 @@ const ProjectModal = ({
                         })
                     }}
                 >
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="classroomName">Jméno třídy</InputLabel>
                         <Input
                             id="classroomName"
@@ -82,7 +82,7 @@ const ProjectModal = ({
                             onChange={(e) => setClassroomName(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <DatePicker
                             id="schoolMeeting"
                             name="schoolMeeting"
@@ -92,7 +92,7 @@ const ProjectModal = ({
                             format="DD.MM.YYYY"
                         />
                     </FormControl>
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="semester">Pololetí</InputLabel>
                         <Select
                             inputProps={{
@@ -106,7 +106,7 @@ const ProjectModal = ({
                             <MenuItem value={2}>2. pololetí</MenuItem>
                         </Select>
                     </FormControl>
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="moneyGoalAmount">Výdělek</InputLabel>
                         <Input
                             id="moneyGoalAmount"
@@ -115,7 +115,7 @@ const ProjectModal = ({
                             onChange={(e) => setMoneyGoalAmount(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="companyName">Název firmy</InputLabel>
                         <Input
                             id="companyName"
@@ -124,7 +124,7 @@ const ProjectModal = ({
                             onChange={(e) => setCompanyName(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="businessDescription">V čem děti podnikají</InputLabel>
                         <Input
                             id="businessDescription"
@@ -133,7 +133,7 @@ const ProjectModal = ({
                             onChange={(e) => setBusinessDescription(e.target.value)}
                         />
                     </FormControl>
-                    <FormControl margin="normal" required fullWidth>
+                    <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="businessPurpose">Výdělek - použití</InputLabel>
                         <Input
                             id="businessPurpose"
