@@ -16,8 +16,6 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import BranchModal from './BranchModal';
-import SchoolModal from './SchoolModal';
 import ProjectModal from './ProjectModal';
 import TeamModal from './TeamModal';
 import ToolboxModal from './ToolboxModal';
@@ -38,8 +36,6 @@ const styles = theme => ({
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const ProjectsTable = ({ classes, classroomsQuery }) => {
-    const [branchDetail, setBranchDetail] = useState(null);
-    const [schoolDetail, setSchoolDetail] = useState(null);
     const [projectDetail, setProjectDetail] = useState(null);
     const [teamDetail, setTeamDetail] = useState(null);
     const [toolboxDetail, setToolboxDetail] = useState(null);
@@ -86,31 +82,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
         },
         onCellClick: (colData, colMetadata) => {
             const classroom = classroomsQuery.classrooms[colMetadata.dataIndex];
-            switch (colMetadata.colIndex) {
-                default:
-                case 0:
-                case 2:
-                case 6:
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                    setProjectDetail(classroom);
-                    return;
-                case 1:
-                case 3:
-                    setTeamDetail(classroom.team);
-                    return;
-                case 4:
-                    setBranchDetail(classroom);
-                    return;
-                case 5:
-                    setSchoolDetail(classroom);
-                    return;
-                case 7:
-                    setToolboxDetail(classroom.toolboxOrder);
-                    return;
-            }
+            setProjectDetail(classroom);
         },
         customSort: (data, colIndex, order) => {
             // console.log('Sort');
@@ -152,12 +124,6 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
 
     return (
         <React.Fragment>
-            {branchDetail ? (
-                <BranchModal classroom={branchDetail} onClose={() => setBranchDetail(null)} />
-            ) : null}
-            {schoolDetail ? (
-                <SchoolModal classroom={schoolDetail} onClose={() => setSchoolDetail(null)} />
-            ) : null}
             {projectDetail ? (
                 <ProjectModal classroom={projectDetail} onClose={() => setProjectDetail(null)} />
             ) : null}
@@ -238,7 +204,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                             path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
                             path(['semester'])(classroom) ? `${path(['semester'])(classroom)}` : '-',
                             path(['toolboxOrder', 'state'])(classroom) || '-',
-                            path(['excursionDate'])(classroom) || '-',
+                            path(['excursionDate'])(classroom) ? moment(path(['excursionDate'])(classroom)).format('L') : '-',
                             path(['companyName'])(classroom) || '-',
                             path(['businessDescription'])(classroom) || '-',
                             path(['fairDate'])(classroom) ? moment(path(['fairDate'])(classroom)).format('L') : '-',
@@ -263,6 +229,7 @@ const classroomsQuery = graphql(gql`
     {
         classrooms {
             id
+            excursionDate
             classroomName
             schoolAddress
             directorName

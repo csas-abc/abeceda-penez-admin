@@ -6,6 +6,7 @@ const updateClassroomMutation = gql`
         $classroomName: String
         $schoolAddress: String
         $schoolMeeting: DateTime
+        $excursionDate: DateTime
         $directorName: String
         $directorPhone: String
         $directorEmail: String
@@ -42,6 +43,7 @@ const updateClassroomMutation = gql`
             semester: $semester,
             moneyGoalAmount: $moneyGoalAmount
             schoolMeeting: $schoolMeeting
+            excursionDate: $excursionDate
             directorName: $directorName
             directorPhone: $directorPhone
             directorEmail: $directorEmail
@@ -67,6 +69,7 @@ const updateClassroomMutation = gql`
             classroomName
             schoolAddress
             schoolMeeting
+            excursionDate
             directorName
             directorPhone
             directorEmail

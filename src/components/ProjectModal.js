@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { useSnackbar } from 'notistack';
-import gql from 'graphql-tag';
-import compose from 'ramda/src/compose';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import withStyles from '@material-ui/core/styles/withStyles';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
-import updateClassroomMutation from '../utils/updateClassroomMutation';
-import { graphql } from 'react-apollo';
-import DatePicker from 'material-ui-pickers/DatePicker/DatePickerModal';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import propOr from 'ramda/src/propOr';
+import TabPanel from './TabPanel';
+import ProjectForm from './forms/ProjectForm';
+import BranchForm from './forms/BranchForm';
+import SchoolForm from './forms/SchoolForm';
+import TeamUsersForm from './forms/TeamUsersForm';
+import MessagesForm from './forms/MessagesForm';
+import AdminNoteForm from './forms/AdminNoteForm';
+import FairForm from './forms/FairForm';
 
 const styles =  {
     paper: {
@@ -25,19 +24,10 @@ const styles =  {
 const ProjectModal = ({
     onClose,
     classes,
-    updateClassroomMutation,
     classroom,
-    exportMutation,
+    defaultTab = 0,
 }) => {
-    const { enqueueSnackbar } = useSnackbar();
-    const [classroomName, setClassroomName] = useState(classroom.classroomName);
-    const [schoolMeeting, setSchoolMeeting] = useState(classroom.schoolMeeting);
-    const [semester, setSemester] = useState(classroom.semester);
-    const [moneyGoalAmount, setMoneyGoalAmount] = useState(classroom.moneyGoalAmount);
-    const [companyName, setCompanyName] = useState(classroom.companyName);
-    const [businessPurpose, setBusinessPurpose] = useState(classroom.businessPurpose);
-    const [businessDescription, setBusinessDescription] = useState(classroom.businessDescription);
-
+    const [activeTab, setActiveTab] = useState(defaultTab);
     return (
         <Dialog
             open
@@ -50,144 +40,56 @@ const ProjectModal = ({
         >
             <DialogTitle>Detail projektu</DialogTitle>
             <DialogContent>
-                <form
-                    className={classes.form}
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        updateClassroomMutation({
-                            variables: {
-                                id: classroom.id,
-                                classroomName,
-                                schoolMeeting,
-                                semester,
-                                moneyGoalAmount,
-                                companyName,
-                                businessPurpose,
-                                businessDescription,
-                            }
-                        }).then(() => {
-                            onClose();
-                        }).catch((e) => {
-                            console.error('ERROR', e);
-                        })
-                    }}
+                <Tabs
+                    value={activeTab}
+                    onChange={(e, value) => setActiveTab(value)}
+                    variant="scrollable"
+                    scrollButtons="auto"
                 >
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="classroomName">Jméno třídy</InputLabel>
-                        <Input
-                            id="classroomName"
-                            name="classroomName"
-                            autoFocus
-                            value={classroomName}
-                            onChange={(e) => setClassroomName(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl margin="normal" fullWidth>
-                        <DatePicker
-                            id="schoolMeeting"
-                            name="schoolMeeting"
-                            value={schoolMeeting}
-                            onChange={setSchoolMeeting}
-                            label="Schůzka ve škole"
-                            format="DD.MM.YYYY"
-                        />
-                    </FormControl>
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="semester">Pololetí</InputLabel>
-                        <Select
-                            inputProps={{
-                                id: 'semester',
-                                name: 'semester'
-                            }}
-                            value={semester}
-                            onChange={(e) => setSemester(e.target.value)}
-                        >
-                            <MenuItem value={1}>1. pololetí</MenuItem>
-                            <MenuItem value={2}>2. pololetí</MenuItem>
-                        </Select>
-                    </FormControl>
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="moneyGoalAmount">Výdělek</InputLabel>
-                        <Input
-                            id="moneyGoalAmount"
-                            name="moneyGoalAmount"
-                            value={moneyGoalAmount}
-                            onChange={(e) => setMoneyGoalAmount(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="companyName">Název firmy</InputLabel>
-                        <Input
-                            id="companyName"
-                            name="companyName"
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="businessDescription">V čem děti podnikají</InputLabel>
-                        <Input
-                            id="businessDescription"
-                            name="businessDescription"
-                            value={businessDescription}
-                            onChange={(e) => setBusinessDescription(e.target.value)}
-                        />
-                    </FormControl>
-                    <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="businessPurpose">Výdělek - použití</InputLabel>
-                        <Input
-                            id="businessPurpose"
-                            name="businessPurpose"
-                            value={businessPurpose}
-                            onChange={(e) => setBusinessPurpose(e.target.value)}
-                        />
-                    </FormControl>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                            onClick={() => {
-                                exportMutation({
-                                    variables: {
-                                        id: classroom.id,
-                                    }
-                                });
-                                enqueueSnackbar('Projekt byl odeslaný na e-mail');
-                            }}
-                        >
-                            Export
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                            type="submit"
-                        >
-                            Uložit
-                        </Button>
-                    </div>
-                </form>
+                    <Tab label="Detail projektu"></Tab>
+                    <Tab label="Pobočka"></Tab>
+                    <Tab label="Škola"></Tab>
+                    <Tab label="Jarmark"></Tab>
+                    <Tab label="Uživatelé"></Tab>
+                    <Tab label="Zprávy"></Tab>
+                    <Tab label="Poznámka"></Tab>
+                </Tabs>
+                <TabPanel value={activeTab} index={0}>
+                    <ProjectForm
+                        classroom={classroom}
+                        onClose={onClose}
+                    />
+                </TabPanel>
+                <TabPanel value={activeTab} index={1}>
+                    <BranchForm
+                        classroom={classroom}
+                        onClose={onClose}
+                    />
+                </TabPanel>
+                <TabPanel value={activeTab} index={2}>
+                    <SchoolForm
+                        classroom={classroom}
+                        onClose={onClose}
+                    />
+                </TabPanel>
+                <TabPanel value={activeTab} index={3}>
+                    <FairForm
+                        classroom={classroom}
+                        onClose={onClose}
+                    />
+                </TabPanel>
+                <TabPanel value={activeTab} index={4}>
+                    <TeamUsersForm team={propOr({}, 'team')(classroom)} />
+                </TabPanel>
+                <TabPanel value={activeTab} index={5}>
+                    <MessagesForm team={propOr({}, 'team')(classroom)} />
+                </TabPanel>
+                <TabPanel value={activeTab} index={6}>
+                    <AdminNoteForm team={propOr({}, 'team')(classroom)} />
+                </TabPanel>
             </DialogContent>
         </Dialog>
     );
 };
 
-const exportMutation = graphql(gql`
-    mutation Export($id: ID!) {
-        export(id: $id)
-    }
-`, {
-    name: 'exportMutation'
-});
-
-export default compose(
-    graphql(
-        updateClassroomMutation,
-        {
-            name: 'updateClassroomMutation',
-        },
-    ),
-    exportMutation,
-    withStyles(styles)
-)(ProjectModal);
+export default withStyles(styles)(ProjectModal);
