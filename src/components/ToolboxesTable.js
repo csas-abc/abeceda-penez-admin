@@ -104,6 +104,7 @@ const ToolboxesTable = ({
                         <TableCell>Počet dětí</TableCell>
                         <TableCell>Datum zaevidování</TableCell>
                         <TableCell>Datum odeslání</TableCell>
+                        <TableCell>Datum exkurze</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -191,6 +192,7 @@ const ToolboxesTable = ({
                                         </Button>
                                     ) : (path(['sendDate'])(toolbox) ? moment(path(['sendDate'])(toolbox)).format('L') : '-')}
                                 </TableCell>
+                                <TableCell>{(path(['classroom', 'excursionDate'])(toolbox) ? moment(path(['classroom', 'excursionDate'])(toolbox)).format('L') : '-')}</TableCell>
                             </TableRow>
                         )),
                         sortBy((x) => toolboxState[x.state]),
@@ -219,6 +221,7 @@ const toolboxOrdersQuery = graphql(gql`
                 id
                 classroomName
                 fairDate
+                excursionDate
                 team {
                     id
                     users {
