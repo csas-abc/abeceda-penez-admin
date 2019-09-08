@@ -245,6 +245,16 @@ const classroomsQuery = graphql(gql`
             branchRepresentativePhone
             branchRepresentativeName
             fairDate
+            childrenCount
+            fairNote
+            fairElectricity
+            fairAnnexationState
+            fairAnnexationNote
+            fairDate
+            fairTime
+            fairEnd
+            kioskReadyTime
+            kioskPlace
             toolboxOrder {
                 id
                 state
