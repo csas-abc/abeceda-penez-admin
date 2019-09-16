@@ -4,12 +4,15 @@ import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
 import path from 'ramda/src/path';
+import prop from 'ramda/src/prop';
 import sort from 'ramda/src/sort';
 import find from 'ramda/src/find';
 import reverse from 'ramda/src/reverse';
 import type from 'ramda/src/type';
 import includes from 'ramda/src/includes';
 import indexOf from 'ramda/src/indexOf';
+import reject from 'ramda/src/reject';
+import isNil from 'ramda/src/isNil';
 import compose from 'ramda/src/compose';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -38,6 +41,59 @@ const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom
 const ProjectsTable = ({ classes, classroomsQuery }) => {
     const [projectDetail, setProjectDetail] = useState(null);
     const [teamDetail, setTeamDetail] = useState(null);
+    const [columns, setColumns] = useState([
+        'Projekt',
+        {
+            name: 'Tým',
+            options: {
+                sort: false,
+                customBodyRender: (value) => (
+                    <div>
+                        {map((user) => (
+                            <React.Fragment key={user.id}>
+                                {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
+                            </React.Fragment>
+                        ))(value)}
+                    </div>
+                ),
+                search: (query, values) => {
+                    return !!find((user) => {
+                        const valueString =  user.activated ? `${user.firstname} ${user.lastname}` : user.email;
+                        return includes(query)(valueString);
+                    })(values)
+                },
+            },
+
+        },
+        'Stav projektu',
+        {
+            name: 'Region',
+            options: {
+                sort: false,
+                customBodyRender: (value) => (
+                    <div>
+                        {(value || []).map((region, index) => (
+                            <React.Fragment key={index}>
+                                {region}<br />
+                            </React.Fragment>
+                        ))}
+                    </div>
+                ),
+            }
+        },
+        'Pobočka',
+        'Škola',
+        'Termín návštěvy školy',
+        'Pololetí',
+        'Toolbox',
+        'Termín exkurze ',
+        'Název firmy',
+        'V čem děti podnikají',
+        'Termín jarmarku',
+        'Výdělek použití',
+        'Výdělek (Kč)',
+    ]);
+    console.log('Default Columns', columns);
     const [toolboxDetail, setToolboxDetail] = useState(null);
     if (classroomsQuery.loading) return <CircularProgress />;
     if (classroomsQuery.error) return (
@@ -61,8 +117,19 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
         onColumnSortChange: (...args) => {
             // console.log('Sort change', args);
         },
-        onTableChange: (...args) => {
-            // console.log('Table change', args);
+        onTableChange: (actionName, tableData) => {
+            const newCols = map((column) => ({
+                name: column.name,
+                options: {
+                    ...reject(isNil)(column),
+                }
+            }))(tableData.columns);
+            const sortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(newCols);
+            const oldSortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(columns);
+            if (prop('name')(oldSortColumn) !== prop('name')(sortColumn)) {
+                setColumns(newCols);
+            }
+            console.log('Table columns', newCols);
         },
         customSearch: (searchQuery, row, columns) => {
             const found = !!find((column) => {
@@ -135,58 +202,7 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
             ) : null}
             <div style={{ width: '100%', height: '100%' }}>
                 <MUIDataTable
-                    columns={[
-                        'Projekt',
-                        {
-                            name: 'Tým',
-                            options: {
-                                sort: false,
-                                customBodyRender: (value) => (
-                                    <div>
-                                        {map((user) => (
-                                        <React.Fragment key={user.id}>
-                                            {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
-                                        </React.Fragment>
-                                    ))(value)}
-                                    </div>
-                                ),
-                                search: (query, values) => {
-                                    return !!find((user) => {
-                                        const valueString =  user.activated ? `${user.firstname} ${user.lastname}` : user.email;
-                                        return includes(query)(valueString);
-                                    })(values)
-                                },
-                            },
-
-                        },
-                        'Stav projektu',
-                        {
-                            name: 'Region',
-                            options: {
-                                sort: false,
-                                customBodyRender: (value) => (
-                                    <div>
-                                        {map((region) => (
-                                            <React.Fragment>
-                                                {region}<br />
-                                            </React.Fragment>
-                                        ))(value)}
-                                    </div>
-                                ),
-                            }
-                        },
-                        'Pobočka',
-                        'Škola',
-                        'Termín návštěvy školy',
-                        'Pololetí',
-                        'Toolbox',
-                        'Termín exkurze ',
-                        'Název firmy',
-                        'V čem děti podnikají',
-                        'Termín jarmarku',
-                        'Výdělek použití',
-                        'Výdělek (Kč)',
-                    ]}
+                    columns={columns}
                     options={options}
                     data={map((classroom) => {
                         return [
