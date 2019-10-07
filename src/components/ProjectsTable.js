@@ -3,6 +3,7 @@ import MUIDataTable from 'mui-datatables';
 import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
+import toLower from 'ramda/src/toLower';
 import path from 'ramda/src/path';
 import prop from 'ramda/src/prop';
 import sort from 'ramda/src/sort';
@@ -13,15 +14,20 @@ import includes from 'ramda/src/includes';
 import indexOf from 'ramda/src/indexOf';
 import reject from 'ramda/src/reject';
 import isNil from 'ramda/src/isNil';
+import addIndex from 'ramda/src/addIndex';
 import compose from 'ramda/src/compose';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import Button from '@material-ui/core/Button';
+import Edit from '@material-ui/icons/Edit';
 import ProjectModal from './ProjectModal';
 import TeamModal from './TeamModal';
 import ToolboxModal from './ToolboxModal';
+
+const mapIndexed = addIndex(map);
 
 const styles = theme => ({
     table: {
@@ -38,15 +44,29 @@ const styles = theme => ({
 
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
-const ProjectsTable = ({ classes, classroomsQuery }) => {
+const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
+    const [defaultTab, setDefaultTab] = useState(0);
     const [projectDetail, setProjectDetail] = useState(null);
     const [teamDetail, setTeamDetail] = useState(null);
     const [columns, setColumns] = useState([
-        'Projekt',
+        {
+            name: 'Projekt',
+            options: {
+                filter: false,
+            }
+        },
+        {
+            name: '',
+            options: {
+                filter: false,
+                sort: false,
+            },
+        },
         {
             name: 'Tým',
             options: {
                 sort: false,
+                filter: false,
                 customBodyRender: (value) => (
                     <div>
                         {map((user) => (
@@ -59,16 +79,22 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                 search: (query, values) => {
                     return !!find((user) => {
                         const valueString =  user.activated ? `${user.firstname} ${user.lastname}` : user.email;
-                        return includes(query)(valueString);
+                        return includes(query.toLowerCase())(valueString ? valueString.toLowerCase() : '');
                     })(values)
                 },
             },
 
         },
-        'Stav projektu',
+        {
+            name: 'Stav projektu',
+            options: {
+                filter: false,
+            },
+        },
         {
             name: 'Region',
             options: {
+                filter: true,
                 sort: false,
                 customBodyRender: (value) => (
                     <div>
@@ -81,22 +107,82 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                 ),
             }
         },
-        'Pobočka',
-        'Škola',
-        'Termín návštěvy školy',
-        'Pololetí',
-        'Toolbox',
-        'Termín exkurze ',
-        'Název firmy',
-        'V čem děti podnikají',
-        'Termín jarmarku',
-        'Výdělek použití',
-        'Výdělek (Kč)',
+        {
+            name: 'Pobočka',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Škola',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Termín návštěvy školy',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Pololetí',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Toolbox',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Termín exkurze',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Název firmy',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'V čem děti podnikají',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Termín jarmarku',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Výdělek použití',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Výdělek (Kč)',
+            options: {
+                filter: false,
+            },
+        },
     ]);
-    console.log('Default Columns', columns);
     const [toolboxDetail, setToolboxDetail] = useState(null);
-    if (classroomsQuery.loading) return <CircularProgress />;
-    if (classroomsQuery.error) return (
+    if (!archive && classroomsQuery.error) return (
+        <SnackbarContent
+            className={classes.errorMessage}
+            message="Načtení se nezdařilo"
+        />
+    );
+
+    if (archive && archiveQuery.error) return (
         <SnackbarContent
             className={classes.errorMessage}
             message="Načtení se nezdařilo"
@@ -110,26 +196,33 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
         // search: false,
         download: false,
         print: false,
-        filter: false,
+        // filter: false,
         responsive: 'scroll',
         rowsPerPage: 1000,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
-        onColumnSortChange: (...args) => {
-            // console.log('Sort change', args);
+        onFilterChange: (column, filterLists) => {
+            setColumns(mapIndexed((column, index) => ({
+                ...column,
+                options: {
+                    ...column.options,
+                    filterList: filterLists[index],
+                }
+            }))(columns));
         },
         onTableChange: (actionName, tableData) => {
-            const newCols = map((column) => ({
+            const newCols = mapIndexed((column, index) => ({
                 name: column.name,
                 options: {
                     ...reject(isNil)(column),
+                    filteredList: columns[index].filteredList,
                 }
             }))(tableData.columns);
             const sortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(newCols);
             const oldSortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(columns);
-            if (prop('name')(oldSortColumn) !== prop('name')(sortColumn)) {
+
+            if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);
             }
-            console.log('Table columns', newCols);
         },
         customSearch: (searchQuery, row, columns) => {
             const found = !!find((column) => {
@@ -138,21 +231,21 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                     return columns[columnIndex].search(searchQuery, column);
                 }
                 if (type(column) === 'String') {
-                    return !!includes(searchQuery)(column);
+                    return !!includes(searchQuery.toLowerCase())(column.toLowerCase());
                 }
                 if (type(column) === 'Array') {
-                    return !!find(includes(searchQuery))(column);
+                    return !!find(includes(searchQuery.toLowerCase()))(map(toLower)(column));
                 }
                 return false;
             })(row);
             return !!found;
         },
         onCellClick: (colData, colMetadata) => {
-            const classroom = classroomsQuery.classrooms[colMetadata.dataIndex];
+            setDefaultTab(colMetadata.colIndex === 1 ? 7 : 0);
+            const classroom = archive ? archiveQuery.archive[colMetadata.dataIndex] : classroomsQuery.classrooms[colMetadata.dataIndex];
             setProjectDetail(classroom);
         },
         customSort: (data, colIndex, order) => {
-            // console.log('Sort');
             switch(colIndex) {
                 case 0:
                 case 2:
@@ -192,7 +285,17 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
     return (
         <React.Fragment>
             {projectDetail ? (
-                <ProjectModal classroom={projectDetail} onClose={() => setProjectDetail(null)} />
+                <ProjectModal
+                    classroom={projectDetail}
+                    defaultTab={defaultTab}
+                    onClose={(refetch = false) => {
+                        if (refetch) {
+                            archiveQuery.refetch();
+                            classroomsQuery.refetch();
+                        }
+                        setProjectDetail(null);
+                    }}
+                />
             ) : null}
             {teamDetail ? (
                 <TeamModal team={teamDetail} onClose={() => setTeamDetail(null)} />
@@ -201,12 +304,16 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                 <ToolboxModal toolbox={toolboxDetail} onClose={() => setToolboxDetail(null)} />
             ) : null}
             <div style={{ width: '100%', height: '100%' }}>
+                {((archive && archiveQuery.loading) || classroomsQuery.loading) ? <CircularProgress /> : null}
                 <MUIDataTable
                     columns={columns}
                     options={options}
                     data={map((classroom) => {
                         return [
                             path(['classroomName'])(classroom) || '-',
+                            <Button>
+                                <Edit />
+                            </Button>,
                             compose(
                                 defaultTo([]),
                                 path(['team', 'users']),
@@ -227,23 +334,14 @@ const ProjectsTable = ({ classes, classroomsQuery }) => {
                             path(['businessPurpose'])(classroom) || '-',
                             path(['moneyGoalAmount'])(classroom) || '-',
                         ]
-                    })(classroomsQuery.classrooms || [])}
+                    })(archive ? (archiveQuery.archive || []) : (classroomsQuery.classrooms || []))}
                 />
             </div>
-            {/*
-                <TableRow
-                    key={classroom.id}
-                    className={validateProject(classroom) ? classes.errorProjectRow : null}
-                >
-                </TableRow>>
-            */}
         </React.Fragment>
     );
 };
 
-const classroomsQuery = graphql(gql`
-    {
-        classrooms {
+const classroomAttributes = `
             id
             excursionDate
             classroomName
@@ -271,6 +369,7 @@ const classroomsQuery = graphql(gql`
             fairEnd
             kioskReadyTime
             kioskPlace
+            archived
             toolboxOrder {
                 id
                 state
@@ -284,6 +383,11 @@ const classroomsQuery = graphql(gql`
                 finished
                 finishDate
                 number
+                checklist {
+                    id
+                    name
+                    checked
+                }
             }
             companyName
             businessPurpose
@@ -299,17 +403,36 @@ const classroomsQuery = graphql(gql`
                     email
                     region
                 }
-            }
+            }`;
+
+const classroomsQuery = graphql(gql`
+    {
+        classrooms {
+            ${classroomAttributes}
         }
     }
 `, {
     name: 'classroomsQuery',
     options: {
-        fetchPolicy: 'network-only',
+        fetchPolicy: 'cache-and-network',
+    }
+});
+
+const archiveQuery = graphql(gql`
+    {
+        archive {
+            ${classroomAttributes}
+        }
+    }
+`, {
+    name: 'archiveQuery',
+    options: {
+        fetchPolicy: 'cache-and-network',
     }
 });
 
 export default compose(
     withStyles(styles),
     classroomsQuery,
+    archiveQuery,
 )(ProjectsTable);

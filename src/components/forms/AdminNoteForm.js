@@ -47,6 +47,9 @@ const TeamModal = ({
                         autoFocus
                         autoComplete="off"
                         value={adminNote}
+                        multiline
+                        rowsMax="8"
+                        rows="4"
                         onChange={(e) => setAdminNote(e.target.value)}
                     />
                 </FormControl>

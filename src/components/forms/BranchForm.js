@@ -20,10 +20,10 @@ const BranchModal = ({
     updateClassroomMutation,
     classroom,
 }) => {
-    const [branchRepresentativeName, setBranchRepresentativeName] = useState(classroom.branchRepresentativeName);
-    const [branchRepresentativeEmail, setBranchRepresentativeEmail] = useState(classroom.branchRepresentativeEmail);
-    const [branchRepresentativePhone, setBranchRepresentativePhone] = useState(classroom.branchRepresentativePhone);
-    const [branchAddress, setBranchAddress] = useState(classroom.branchAddress);
+    const [branchRepresentativeName, setBranchRepresentativeName] = useState(classroom.branchRepresentativeName || '');
+    const [branchRepresentativeEmail, setBranchRepresentativeEmail] = useState(classroom.branchRepresentativeEmail || '');
+    const [branchRepresentativePhone, setBranchRepresentativePhone] = useState(classroom.branchRepresentativePhone || '');
+    const [branchAddress, setBranchAddress] = useState(classroom.branchAddress || '');
 
     return (
         <form

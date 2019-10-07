@@ -13,6 +13,7 @@ import SchoolForm from './forms/SchoolForm';
 import TeamUsersForm from './forms/TeamUsersForm';
 import MessagesForm from './forms/MessagesForm';
 import AdminNoteForm from './forms/AdminNoteForm';
+import ProjectState from './ProjectState';
 import FairForm from './forms/FairForm';
 
 const styles =  {
@@ -31,11 +32,11 @@ const ProjectModal = ({
     return (
         <Dialog
             open
-            onClose={onClose}
+            onClose={() => onClose(false)}
             fullWidth
-            maxWidth="md"
+            maxWidth="xl"
             classes={{
-                paperWidthMd: classes.paper,
+                paperWidthXl: classes.paper,
             }}
         >
             <DialogTitle>Detail projektu</DialogTitle>
@@ -47,6 +48,7 @@ const ProjectModal = ({
                     scrollButtons="auto"
                 >
                     <Tab label="Detail projektu"></Tab>
+                    <Tab label="Stav projektu"></Tab>
                     <Tab label="Pobočka"></Tab>
                     <Tab label="Škola"></Tab>
                     <Tab label="Jarmark"></Tab>
@@ -61,30 +63,33 @@ const ProjectModal = ({
                     />
                 </TabPanel>
                 <TabPanel value={activeTab} index={1}>
+                    <ProjectState classroom={classroom} />
+                </TabPanel>
+                <TabPanel value={activeTab} index={2}>
                     <BranchForm
                         classroom={classroom}
                         onClose={onClose}
                     />
                 </TabPanel>
-                <TabPanel value={activeTab} index={2}>
+                <TabPanel value={activeTab} index={3}>
                     <SchoolForm
                         classroom={classroom}
                         onClose={onClose}
                     />
                 </TabPanel>
-                <TabPanel value={activeTab} index={3}>
+                <TabPanel value={activeTab} index={4}>
                     <FairForm
                         classroom={classroom}
                         onClose={onClose}
                     />
                 </TabPanel>
-                <TabPanel value={activeTab} index={4}>
+                <TabPanel value={activeTab} index={5}>
                     <TeamUsersForm team={propOr({}, 'team')(classroom)} />
                 </TabPanel>
-                <TabPanel value={activeTab} index={5}>
+                <TabPanel value={activeTab} index={6}>
                     <MessagesForm team={propOr({}, 'team')(classroom)} />
                 </TabPanel>
-                <TabPanel value={activeTab} index={6}>
+                <TabPanel value={activeTab} index={7}>
                     <AdminNoteForm team={propOr({}, 'team')(classroom)} />
                 </TabPanel>
             </DialogContent>

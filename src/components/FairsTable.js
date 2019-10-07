@@ -177,6 +177,9 @@ const fairsQuery = graphql(gql`
     }
 `, {
     name: 'fairsQuery',
+    options: {
+        fetchPolicy: 'cache-and-network',
+    }
 });
 
 

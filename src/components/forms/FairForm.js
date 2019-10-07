@@ -10,7 +10,9 @@ import TimePicker from 'material-ui-pickers/TimePicker';
 import updateClassroomMutation from '../../utils/updateClassroomMutation';
 import { graphql } from 'react-apollo';
 import Select from '@material-ui/core/Select';
+import replace from 'ramda/src/replace';
 import MenuItem from '@material-ui/core/MenuItem';
+import { useSnackbar } from 'notistack';
 
 const styles =  {
     paper: {
@@ -24,16 +26,17 @@ const FairModal = ({
     updateClassroomMutation,
     classroom,
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const [fairDate, setFairDate] = useState(classroom.fairDate);
-    const [childrenCount, setChildrenCount] = useState(classroom.childrenCount);
+    const [childrenCount, setChildrenCount] = useState(classroom.childrenCount || '');
     const [kioskReadyTime, setKioskReadyTime] = useState(classroom.kioskReadyTime);
     const [fairTime, setFairTime] = useState(classroom.fairTime);
     const [fairEnd, setFairEnd] = useState(classroom.fairEnd);
-    const [fairNote, setFairNote] = useState(classroom.fairNote);
-    const [fairElectricity, setFairElectricity] = useState(classroom.fairElectricity);
-    const [fairAnnexationState, setFairAnnexationState] = useState(classroom.fairAnnexationState);
-    const [fairAnnexationNote, setFairAnnexationNote] = useState(classroom.fairAnnexationNote);
-    const [kioskPlace, setKioskPlace] = useState(classroom.kioskPlace);
+    const [fairNote, setFairNote] = useState(classroom.fairNote || '');
+    const [fairElectricity, setFairElectricity] = useState(classroom.fairElectricity || '');
+    const [fairAnnexationState, setFairAnnexationState] = useState(classroom.fairAnnexationState || '');
+    const [fairAnnexationNote, setFairAnnexationNote] = useState(classroom.fairAnnexationNote || '');
+    const [kioskPlace, setKioskPlace] = useState(classroom.kioskPlace || '');
     return (
         <form
             className={classes.form}
@@ -56,6 +59,7 @@ const FairModal = ({
                 }).then(() => {
                     onClose();
                 }).catch((e) => {
+                    enqueueSnackbar(replace('GraphQL error: ', '')(e.message), { variant: 'error' });
                     console.error('ERROR', e);
                 })
             }}

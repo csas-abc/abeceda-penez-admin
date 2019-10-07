@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -25,15 +28,18 @@ const ProjectForm = ({
     updateClassroomMutation,
     classroom,
     exportMutation,
+    archiveMutation,
+    recoverMutation,
 }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const [classroomName, setClassroomName] = useState(classroom.classroomName);
+    const [confirmModal, setConfirmModal] = useState(false);
+    const [classroomName, setClassroomName] = useState(classroom.classroomName || '');
     const [schoolMeeting, setSchoolMeeting] = useState(classroom.schoolMeeting);
     const [semester, setSemester] = useState(classroom.semester);
-    const [moneyGoalAmount, setMoneyGoalAmount] = useState(classroom.moneyGoalAmount);
-    const [companyName, setCompanyName] = useState(classroom.companyName);
-    const [businessPurpose, setBusinessPurpose] = useState(classroom.businessPurpose);
-    const [businessDescription, setBusinessDescription] = useState(classroom.businessDescription);
+    const [moneyGoalAmount, setMoneyGoalAmount] = useState(classroom.moneyGoalAmount || '');
+    const [companyName, setCompanyName] = useState(classroom.companyName || '');
+    const [businessPurpose, setBusinessPurpose] = useState(classroom.businessPurpose || '');
+    const [businessDescription, setBusinessDescription] = useState(classroom.businessDescription || '');
     const [excursionDate, setExcursionDate] = useState(classroom.excursionDate);
 
     return (
@@ -60,6 +66,46 @@ const ProjectForm = ({
                 })
             }}
         >
+            {confirmModal ? (
+                <Dialog
+                    open
+                    onClose={onClose}
+                    fullWidth
+                    maxWidth="xs"
+                >
+                    <DialogTitle>Skutečně chcete projekt {classroom.archived ? 'obnovit' : 'archivovat'}?</DialogTitle>
+                    <DialogContent>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Button onClick={() => setConfirmModal(false)}>NE</Button>
+                            <Button
+                                onClick={() => {
+                                    if (classroom.archived) {
+                                        recoverMutation({
+                                            variables: {
+                                                id: classroom.id,
+                                            },
+                                        }).then(() => {
+                                            onClose(true);
+                                            setConfirmModal(false);
+                                        });
+                                    } else {
+                                        archiveMutation({
+                                            variables: {
+                                                id: classroom.id,
+                                            },
+                                        }).then(() => {
+                                            onClose(true);
+                                            setConfirmModal(false);
+                                        });
+                                    }
+                                }}
+                            >
+                                ANO
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            ) : null}
             <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="classroomName">Jméno třídy</InputLabel>
                 <Input
@@ -141,21 +187,32 @@ const ProjectForm = ({
                 />
             </FormControl>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    onClick={() => {
-                        exportMutation({
-                            variables: {
-                                id: classroom.id,
-                            }
-                        });
-                        enqueueSnackbar('Projekt byl odeslaný na e-mail');
-                    }}
-                >
-                    Export
-                </Button>
+                <div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        onClick={() => {
+                            exportMutation({
+                                variables: {
+                                    id: classroom.id,
+                                }
+                            });
+                            enqueueSnackbar('Projekt byl odeslaný na e-mail');
+                        }}
+                    >
+                        Export
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        style={{ marginLeft: '16px' }}
+                        onClick={() => setConfirmModal(true)}
+                    >
+                        {classroom.archived ? 'Obnovit' : 'Archivovat'}
+                    </Button>
+                </div>
                 <Button
                     variant="contained"
                     color="primary"
@@ -177,6 +234,28 @@ const exportMutation = graphql(gql`
     name: 'exportMutation'
 });
 
+const archiveMutation = graphql(gql`
+    mutation Archive($id: ID!) {
+        archive(id: $id) {
+            id
+            archived
+        }
+    }
+`, {
+    name: 'archiveMutation'
+});
+
+const recoverMutation = graphql(gql`
+    mutation Recovery($id: ID!) {
+        recover(id: $id) {
+            id
+            archived
+        }
+    }
+`, {
+    name: 'recoverMutation'
+});
+
 export default compose(
     graphql(
         updateClassroomMutation,
@@ -185,5 +264,7 @@ export default compose(
         },
     ),
     exportMutation,
+    archiveMutation,
+    recoverMutation,
     withStyles(styles)
 )(ProjectForm);

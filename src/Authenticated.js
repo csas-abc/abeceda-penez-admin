@@ -47,6 +47,7 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />
             <Route path="/fairs" exact component={Fairs} />
+            <Route path="/archive" exact render={(props) => <Projects {...props} archive />} />
         </Fragment>
     )
 };

@@ -11,6 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Person from '@material-ui/icons/Person';
 import People from '@material-ui/icons/People';
 import Mood from '@material-ui/icons/Mood';
+import Archive from '@material-ui/icons/Archive';
 import ListItemText from '@material-ui/core/ListItemText';
 import Subject from '@material-ui/icons/Subject';
 import Work from '@material-ui/icons/Work';
@@ -73,6 +74,10 @@ const Menu = ({ classes, meQuery }) => (
                         <ListItem button component={Link} to="/users">
                             <ListItemIcon><Person /></ListItemIcon>
                             <ListItemText primary="Uživatelé" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/archive">
+                            <ListItemIcon><Archive /></ListItemIcon>
+                            <ListItemText primary="Archiv" />
                         </ListItem>
                     </React.Fragment>
                     ) : null}
