@@ -89,6 +89,23 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
             name: 'Stav projektu',
             options: {
                 filter: false,
+                customBodyRender: (phase) => {
+                    const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
+                    return (
+                        <div>
+                            {cellString}
+                            <div>
+                                {map((task) => (
+                                    <span style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
+                                ))(phase.checklist || [])}
+                            </div>
+                        </div>
+                    );
+                },
+                search: (query, phase) => {
+                    const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
+                    return includes(query ? query.toLowerCase() : '')(cellString ? cellString.toLowerCase() : '');
+                },
             },
         },
         {
@@ -123,6 +140,16 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
             name: 'Termín návštěvy školy',
             options: {
                 filter: false,
+                customBodyRender: (value) => (
+                    <div
+                        style={{
+                            padding: '24px',
+                            backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
+                        }}
+                    >
+                        {value}
+                    </div>
+                ),
             },
         },
         {
@@ -141,6 +168,16 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
             name: 'Termín exkurze',
             options: {
                 filter: false,
+                customBodyRender: (value) => (
+                    <div
+                        style={{
+                            padding: '24px',
+                            backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
+                        }}
+                    >
+                        {value}
+                    </div>
+                ),
             },
         },
         {
@@ -159,6 +196,16 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
             name: 'Termín jarmarku',
             options: {
                 filter: false,
+                customBodyRender: (value) => (
+                    <div
+                        style={{
+                            padding: '24px',
+                            backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
+                        }}
+                    >
+                        {value}
+                    </div>
+                ),
             },
         },
         {
@@ -318,9 +365,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                                 defaultTo([]),
                                 path(['team', 'users']),
                             )(classroom),
-                            getActivePhase(classroom) ? (
-                                `${getActivePhase(classroom) ? getActivePhase(classroom).number : 1}/${classroom.phases.length}: ${getActivePhase(classroom) ? getActivePhase(classroom).name : '-'}`
-                            ) : 'Dokončeno',
+                            getActivePhase(classroom),
                             classroom.team.users.map((user) => user.region),
                             path(['branchAddress'])(classroom) || '-',
                             path(['schoolAddress'])(classroom) || '-',
