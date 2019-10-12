@@ -7,10 +7,10 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider';
 import MomentUtils from '@date-io/moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Login from './Login';
+import Login from './screens/Login';
 import Authenticated from './Authenticated';
 import initApolloClient from './initApolloClient';
-import ForgotPassword from './ForgotPassword';
+import ForgotPassword from './screens/ForgotPassword';
 
 import 'moment/locale/cs';
 

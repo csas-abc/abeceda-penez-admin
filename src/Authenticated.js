@@ -3,16 +3,18 @@ import { withRouter, Route } from 'react-router-dom';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Dashboard from './Dashboard';
-import Users from './Users';
-import Toolboxes from './Toolboxes';
-import Projects from './Projects';
+import Teams from './screens/Teams';
+import Users from './screens/Users';
+import Toolboxes from './screens/Toolboxes';
+import Projects from './screens/Projects';
+import ClassroomsManagement from './screens/ClassroomsManagement';
+import Forum from './screens/Forum';
 import compose from 'ramda/src/compose';
 import contains from 'ramda/src/contains';
 import pluck from 'ramda/src/pluck';
 import defaultTo from 'ramda/src/defaultTo';
 import path from 'ramda/src/path';
-import Fairs from './Fairs';
+import Fairs from './screens/Fairs';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -30,6 +32,14 @@ const Authenticated = ({ client, history: { push } }) => {
             )(res)) {
                 push('/toolboxes');
             }
+            if (compose(
+                contains('CORE'),
+                pluck('name'),
+                defaultTo([]),
+                path(['data', 'me', 'roles']),
+            )(res)) {
+                push('/classrooms-management');
+            }
         }).catch((e) => {
             setLoading(false);
             push('/login');
@@ -43,11 +53,13 @@ const Authenticated = ({ client, history: { push } }) => {
     return (
         <Fragment>
             <Route path="/" exact component={Projects} />
-            <Route path="/teams" exact component={Dashboard} />
+            <Route path="/teams" exact component={Teams} />
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />
             <Route path="/fairs" exact component={Fairs} />
             <Route path="/archive" exact render={(props) => <Projects {...props} archive />} />
+            <Route path="/classrooms-management" exact component={ClassroomsManagement} />
+            <Route path="/forum" exact component={Forum} />
         </Fragment>
     )
 };
