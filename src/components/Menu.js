@@ -15,6 +15,7 @@ import Archive from '@material-ui/icons/Archive';
 import ListItemText from '@material-ui/core/ListItemText';
 import Subject from '@material-ui/icons/Subject';
 import Work from '@material-ui/icons/Work';
+import Message from '@material-ui/icons/Message';
 import { withStyles } from '@material-ui/core';
 import logo from '../assets/cs-logo.svg';
 import { Link } from 'react-router-dom';
@@ -81,6 +82,23 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                     </React.Fragment>
                     ) : null}
+                {compose(
+                    contains('CORE'),
+                    pluck('name'),
+                    defaultTo([]),
+                    path(['me', 'roles']),
+                )(meQuery) ? (
+                    <React.Fragment>
+                        <ListItem button component={Link} to="/classrooms-management">
+                            <ListItemIcon><Subject /></ListItemIcon>
+                            <ListItemText primary="Správa tříd" />
+                        </ListItem>
+                    </React.Fragment>
+                ) : null}
+                <ListItem button component={Link} to="/forum">
+                    <ListItemIcon><Message /></ListItemIcon>
+                    <ListItemText primary="Forum" />
+                </ListItem>
             </List>
         )}
     </div>
