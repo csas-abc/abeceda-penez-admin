@@ -49,7 +49,7 @@ const UploadPhotoDialog = ({
                     dropzoneText="Obrázky přetáhněte sem nebo kliknutím vyberte"
                     onChange={setFiles}
                     dropzoneParagraphClass={classes.dropzoneParagraph}
-                    filesLimit={50}
+                    filesLimit={300}
                     maxFileSize={10000000}
                 />
                 <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '20px' }}>
