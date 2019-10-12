@@ -96,7 +96,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                             {cellString}
                             <div>
                                 {map((task) => (
-                                    <span style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
+                                    <span key={task.id} style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
                                 ))(phase.checklist || [])}
                             </div>
                         </div>

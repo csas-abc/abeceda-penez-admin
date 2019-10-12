@@ -6,6 +6,10 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import propOr from 'ramda/src/propOr';
+import pathOr from 'ramda/src/pathOr';
+import pluck from 'ramda/src/pluck';
+import compose from 'ramda/src/compose';
+import includes from 'ramda/src/includes';
 import TabPanel from './TabPanel';
 import ProjectForm from './forms/ProjectForm';
 import BranchForm from './forms/BranchForm';
@@ -15,6 +19,9 @@ import MessagesForm from './forms/MessagesForm';
 import AdminNoteForm from './forms/AdminNoteForm';
 import ProjectState from './ProjectState';
 import FairForm from './forms/FairForm';
+import ProjectFiles from './ProjectFiles';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 const styles =  {
     paper: {
@@ -27,8 +34,14 @@ const ProjectModal = ({
     classes,
     classroom,
     defaultTab = 0,
+    meQuery,
 }) => {
     const [activeTab, setActiveTab] = useState(defaultTab);
+    const isSuperAdmin = compose(
+        includes('SUPER_ADMIN'),
+        pluck('name'),
+        pathOr([], ['me', 'roles']),
+    )(meQuery);
     return (
         <Dialog
             open
@@ -55,6 +68,7 @@ const ProjectModal = ({
                     <Tab label="Uživatelé"></Tab>
                     <Tab label="Zprávy"></Tab>
                     <Tab label="Poznámka"></Tab>
+                    {isSuperAdmin ? <Tab label="Fotografie"></Tab> : null}
                 </Tabs>
                 <TabPanel value={activeTab} index={0}>
                     <ProjectForm
@@ -92,9 +106,34 @@ const ProjectModal = ({
                 <TabPanel value={activeTab} index={7}>
                     <AdminNoteForm team={propOr({}, 'team')(classroom)} />
                 </TabPanel>
+                {isSuperAdmin ? (
+                    <TabPanel value={activeTab} index={8}>
+                        <ProjectFiles classroom={classroom} />
+                    </TabPanel>
+                ) : null}
             </DialogContent>
         </Dialog>
     );
 };
 
-export default withStyles(styles)(ProjectModal);
+const meQuery = graphql(gql`
+    {
+        me {
+            id
+            email
+            roles {
+                name
+            }
+        }
+    }
+`, {
+    name: 'meQuery',
+    options: {
+        fetchPolicy: 'cache-only',
+    },
+});
+
+export default compose(
+    withStyles(styles),
+    meQuery,
+)(ProjectModal);
