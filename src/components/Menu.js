@@ -57,14 +57,28 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                     </React.Fragment>
                 ) : null}
-                <ListItem button component={Link} to="/toolboxes">
-                    <ListItemIcon><Work /></ListItemIcon>
-                    <ListItemText primary="Toolboxy" />
-                </ListItem>
-                <ListItem button component={Link} to="/fairs">
-                    <ListItemIcon><Mood /></ListItemIcon>
-                    <ListItemText primary="Jarmarky" />
-                </ListItem>
+                {compose(
+                    contains('ADMIN'),
+                    pluck('name'),
+                    defaultTo([]),
+                    path(['me', 'roles']),
+                )(meQuery) || compose(
+                    contains('AGENCY'),
+                    pluck('name'),
+                    defaultTo([]),
+                    path(['me', 'roles']),
+                )(meQuery) ? (
+                    <React.Fragment>
+                        <ListItem button component={Link} to="/toolboxes">
+                            <ListItemIcon><Work /></ListItemIcon>
+                            <ListItemText primary="Toolboxy" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/fairs">
+                            <ListItemIcon><Mood /></ListItemIcon>
+                            <ListItemText primary="Jarmarky" />
+                        </ListItem>
+                    </React.Fragment>
+                ) : null}
                 {compose(
                     contains('ADMIN'),
                     pluck('name'),

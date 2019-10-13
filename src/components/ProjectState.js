@@ -66,7 +66,7 @@ const ProjectState = ({
                         <ListItem
                             key={task.id}
                             onClick={() => {
-                                if (!task.checked && !loadingTaskCheck) {
+                                if (!task.checked && !loadingTaskCheck && editable) {
                                     setLoadingTaskCheck(task.id);
                                     switchCheckItemMutation({
                                         variables: {

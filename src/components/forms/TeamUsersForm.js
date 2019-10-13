@@ -12,6 +12,7 @@ import { graphql } from 'react-apollo';
 import { CircularProgress } from '@material-ui/core';
 import CreateMessageModal from '../CreateMessageModal';
 import SelectUnassignedUserModal from '../SelectUnassignedUserModal';
+import includes from 'ramda/src/includes';
 
 const styles =  {
     paper: {
@@ -20,6 +21,7 @@ const styles =  {
 };
 
 const TeamModal = ({
+    userRoles,
     teamQuery: {
         team,
         ...teamQuery,
@@ -30,6 +32,7 @@ const TeamModal = ({
     const [messageTeamId, setMessageTeamId] = useState(null);
     const [unassignLoading, setUnassignLoading] = useState(null);
     const [selectUnassignedUserVisible, setSelectUnassignedUserVisible] = useState(false);
+    const isAdmin = includes('SUPER_ADMIN')(userRoles) || includes('ADMIN')(userRoles);
     if (teamQuery.loading) return <CircularProgress />;
     return (
         <React.Fragment>
@@ -83,7 +86,7 @@ const TeamModal = ({
                         value={path(['users', 0, 'region'])(team) || ''}
                     />
                 </FormControl>
-                {path(['users', 0, 'email'])(team) ? (
+                {isAdmin ? (path(['users', 0, 'email'])(team) ? (
                     <Button
                         variant="outlined"
                         disabled={unassignLoading === 1}
@@ -110,7 +113,7 @@ const TeamModal = ({
                     >
                         Vybrat uživatele
                     </Button>
-                )}
+                )) : null}
                 <FormControl style={{ marginTop: '50px' }} margin="normal" fullWidth>
                     <InputLabel htmlFor="name2">Jméno</InputLabel>
                     <Input
@@ -143,7 +146,7 @@ const TeamModal = ({
                         value={path(['users', 1, 'region'])(team) || ''}
                     />
                 </FormControl>
-                {path(['users', 1, 'email'])(team) ? (
+                {isAdmin ? (path(['users', 1, 'email'])(team) ? (
                     <Button
                         variant="outlined"
                         disabled={unassignLoading === 2}
@@ -170,7 +173,7 @@ const TeamModal = ({
                     >
                         Vybrat uživatele
                     </Button>
-                )}
+                )) : null}
         </React.Fragment>
     );
 };

@@ -9,6 +9,12 @@ import TabPanel from './TabPanel';
 import TeamUsersForm from './forms/TeamUsersForm';
 import MessagesForm from './forms/MessagesForm';
 import AdminNoteForm from './forms/AdminNoteForm';
+import compose from 'ramda/src/compose';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import pluck from 'ramda/src/pluck';
+import pathOr from 'ramda/src/pathOr';
+import includes from 'ramda/src/includes';
 
 
 const styles =  {
@@ -21,8 +27,13 @@ const TeamModal = ({
     onClose,
     classes,
     team,
+    meQuery
 }) => {
     const [activeTab, setActiveTab] = useState(0);
+    const userRoles = compose(
+        pluck('name'),
+        pathOr([], ['me', 'roles']),
+    )(meQuery);
     return (
         <Dialog
             open
@@ -41,10 +52,10 @@ const TeamModal = ({
                     <Tab label="Poznámka"></Tab>
                 </Tabs>
                 <TabPanel value={activeTab} index={0}>
-                    <TeamUsersForm team={team} />
+                    <TeamUsersForm userRoles={userRoles} team={team} />
                 </TabPanel>
                 <TabPanel value={activeTab} index={1}>
-                    <MessagesForm team={team} />
+                    <MessagesForm userRoles={userRoles} team={team} />
                 </TabPanel>
                 <TabPanel value={activeTab} index={2}>
                     <AdminNoteForm team={team} />
@@ -54,4 +65,24 @@ const TeamModal = ({
     );
 };
 
-export default withStyles(styles)(TeamModal);
+const meQuery = graphql(gql`
+    {
+        me {
+            id
+            email
+            roles {
+                name
+            }
+        }
+    }
+`, {
+    name: 'meQuery',
+    options: {
+        fetchPolicy: 'cache-only',
+    },
+});
+
+export default compose(
+    meQuery,
+    (withStyles(styles)),
+)(TeamModal);

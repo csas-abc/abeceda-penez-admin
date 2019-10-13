@@ -15,6 +15,7 @@ import { graphql } from 'react-apollo';
 import DatePicker from 'material-ui-pickers/DatePicker/DatePickerModal';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import includes from 'ramda/src/includes';
 
 const styles =  {
     paper: {
@@ -30,8 +31,9 @@ const ProjectForm = ({
     exportMutation,
     archiveMutation,
     recoverMutation,
+    userRoles = [],
 }) => {
-
+    const isAdmin = includes('SUPER_ADMIN')(userRoles) || includes('ADMIN')(userRoles);
     const { enqueueSnackbar } = useSnackbar();
     const [confirmModal, setConfirmModal] = useState(false);
     const [classroomName, setClassroomName] = useState(classroom.classroomName || '');
@@ -202,15 +204,17 @@ const ProjectForm = ({
                     >
                         Export
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        style={{ marginLeft: '16px' }}
-                        onClick={() => setConfirmModal(true)}
-                    >
-                        {classroom.archived ? 'Obnovit' : 'Archivovat'}
-                    </Button>
+                    {isAdmin ? (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            style={{ marginLeft: '16px' }}
+                            onClick={() => setConfirmModal(true)}
+                        >
+                            {classroom.archived ? 'Obnovit' : 'Archivovat'}
+                        </Button>
+                    ) : null}
                 </div>
                 <Button
                     variant="contained"

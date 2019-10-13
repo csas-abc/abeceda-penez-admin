@@ -281,7 +281,7 @@ const ProjectsTable = ({ classes, query, dataSelector }) => {
             return !!found;
         },
         onCellClick: (colData, colMetadata) => {
-            setDefaultTab(colMetadata.colIndex === 1 ? 7 : 0);
+            setDefaultTab(colMetadata.colIndex === 1 ? 8 : 0);
             const classroom = dataSelector(query)[colMetadata.dataIndex];
             setProjectDetail(classroom);
         },
