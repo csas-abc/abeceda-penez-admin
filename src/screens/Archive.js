@@ -6,23 +6,23 @@ import Layout from '../components/Layout';
 import ProjectsTable from '../components/ProjectsTable';
 import classroomAttributes from '../constants/classroomAttributes';
 
-const Projects = ({ classroomsQuery }) => (
-    <Layout title="Přehled">
-        <ProjectsTable query={classroomsQuery} dataSelector={prop('classrooms')} />
+const Archive = ({ archiveQuery }) => (
+    <Layout title="Archiv">
+        <ProjectsTable query={archiveQuery} dataSelector={prop('archive')} />
     </Layout>
 );
 
-const classroomsQuery = graphql(gql`
+const archiveQuery = graphql(gql`
     {
-        classrooms {
+        archive {
             ${classroomAttributes}
         }
     }
 `, {
-    name: 'classroomsQuery',
+    name: 'archiveQuery',
     options: {
         fetchPolicy: 'cache-and-network',
     }
 });
 
-export default classroomsQuery(Projects);
+export default archiveQuery(Archive);
