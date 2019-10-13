@@ -15,6 +15,7 @@ import indexOf from 'ramda/src/indexOf';
 import reject from 'ramda/src/reject';
 import isNil from 'ramda/src/isNil';
 import addIndex from 'ramda/src/addIndex';
+import propOr from 'ramda/src/propOr';
 import compose from 'ramda/src/compose';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -25,7 +26,8 @@ import Button from '@material-ui/core/Button';
 import Edit from '@material-ui/icons/Edit';
 import ProjectModal from './ProjectModal';
 import TeamModal from './TeamModal';
-import ToolboxModal from './ToolboxModal';
+import ToolboxModal from './forms/ToolboxForm';
+import classroomAttributes from '../constants/classroomAttributes';
 
 const mapIndexed = addIndex(map);
 
@@ -97,7 +99,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                             <div>
                                 {map((task) => (
                                     <span key={task.id} style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
-                                ))(phase.checklist || [])}
+                                ))(propOr([], 'checklist')(phase))}
                             </div>
                         </div>
                     );
@@ -385,70 +387,6 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
         </React.Fragment>
     );
 };
-
-const classroomAttributes = `
-            id
-            excursionDate
-            classroomName
-            schoolAddress
-            directorName
-            directorEmail
-            directorPhone
-            teacherName
-            teacherPhone
-            teacherEmail
-            schoolMeeting
-            semester
-            branchAddress
-            branchRepresentativeEmail
-            branchRepresentativePhone
-            branchRepresentativeName
-            fairDate
-            childrenCount
-            fairNote
-            fairElectricity
-            fairAnnexationState
-            fairAnnexationNote
-            fairDate
-            fairTime
-            fairEnd
-            kioskReadyTime
-            kioskPlace
-            archived
-            toolboxOrder {
-                id
-                state
-                recipient
-                address
-                childrenCount
-            }
-            phases {
-                id
-                name
-                finished
-                finishDate
-                number
-                checklist {
-                    id
-                    name
-                    checked
-                }
-            }
-            companyName
-            businessPurpose
-            businessDescription
-            moneyGoalAmount
-            team {
-                id
-                users {
-                    id
-                    firstname
-                    lastname
-                    activated
-                    email
-                    region
-                }
-            }`;
 
 const classroomsQuery = graphql(gql`
     {

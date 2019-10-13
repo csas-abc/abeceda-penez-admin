@@ -95,10 +95,17 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                     </React.Fragment>
                 ) : null}
-                <ListItem button component={Link} to="/forum">
-                    <ListItemIcon><Message /></ListItemIcon>
-                    <ListItemText primary="Forum" />
-                </ListItem>
+                {!compose(
+                    contains('AGENCY'),
+                    pluck('name'),
+                    defaultTo([]),
+                    path(['me', 'roles']),
+                )(meQuery) ? (
+                    <ListItem button component={Link} to="/forum">
+                        <ListItemIcon><Message /></ListItemIcon>
+                        <ListItemText primary="Forum" />
+                    </ListItem>
+                ) : null}
             </List>
         )}
     </div>

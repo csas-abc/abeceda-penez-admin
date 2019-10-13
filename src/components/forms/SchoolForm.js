@@ -44,8 +44,6 @@ const BranchModal = ({
                         teacherEmail,
                         teacherPhone
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     console.error('ERROR', e);
                 })

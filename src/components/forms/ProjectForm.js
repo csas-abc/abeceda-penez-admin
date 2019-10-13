@@ -31,6 +31,7 @@ const ProjectForm = ({
     archiveMutation,
     recoverMutation,
 }) => {
+
     const { enqueueSnackbar } = useSnackbar();
     const [confirmModal, setConfirmModal] = useState(false);
     const [classroomName, setClassroomName] = useState(classroom.classroomName || '');
@@ -59,8 +60,6 @@ const ProjectForm = ({
                         businessDescription,
                         excursionDate,
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     console.error('ERROR', e);
                 })
