@@ -15,6 +15,7 @@ import prop from 'ramda/src/prop';
 import { graphql } from 'react-apollo';
 import CreateMessageModal from '../CreateMessageModal';
 import { CircularProgress } from '@material-ui/core';
+import includes from 'ramda/src/includes';
 
 const styles =  {
     paper: {
@@ -23,12 +24,14 @@ const styles =  {
 };
 
 const TeamModal = ({
+    userRoles,
     teamQuery: {
         team,
         ...teamQuery,
     },
 }) => {
     const [messageTeamId, setMessageTeamId] = useState(null);
+    const isAdmin = includes('SUPER_ADMIN')(userRoles) || includes('ADMIN')(userRoles);
     if (teamQuery.loading) return <CircularProgress />;
     return (
         <React.Fragment>
@@ -41,16 +44,18 @@ const TeamModal = ({
                     }}
                 />
             ): null}
-            <Button
-                variant="contained"
-                color="primary"
-                style={{ marginTop: '20px' }}
-                onClick={() => {
-                    setMessageTeamId(team.id);
-                }}
-            >
-                Odeslat novou zprávu
-            </Button>
+            {isAdmin ? (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginTop: '20px' }}
+                    onClick={() => {
+                        setMessageTeamId(team.id);
+                    }}
+                >
+                    Odeslat novou zprávu
+                </Button>
+            ) : null}
             <List>
                 {compose(
                     map((message) => (

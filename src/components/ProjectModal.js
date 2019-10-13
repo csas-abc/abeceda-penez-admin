@@ -46,6 +46,7 @@ const ProjectModal = ({
         pathOr([], ['me', 'roles']),
     )(meQuery);
     const isSuperAdmin = includes('SUPER_ADMIN')(userRoles);
+    const isAdmin = includes('ADMIN')(userRoles);
     return (
         <Dialog
             open
@@ -75,14 +76,15 @@ const ProjectModal = ({
                             <Tab label="Jarmark"></Tab>
                             <Tab label="Uživatelé"></Tab>
                             <Tab label="Zprávy"></Tab>
-                            <Tab label="Poznámka"></Tab>
                             <Tab label="Toolbox"></Tab>
+                            {isAdmin ? <Tab label="Poznámka"></Tab> : null}
                             {isSuperAdmin ? <Tab label="Fotografie"></Tab> : null}
                         </Tabs>
                         <TabPanel value={activeTab} index={0}>
                             <ProjectForm
                                 classroom={classroom}
                                 onClose={onClose}
+                                userRoles={userRoles}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} index={1}>
@@ -110,21 +112,23 @@ const ProjectModal = ({
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} index={5}>
-                            <TeamUsersForm team={propOr({}, 'team')(classroom)} />
+                            <TeamUsersForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
                         </TabPanel>
                         <TabPanel value={activeTab} index={6}>
-                            <MessagesForm team={propOr({}, 'team')(classroom)} />
+                            <MessagesForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
                         </TabPanel>
                         <TabPanel value={activeTab} index={7}>
-                            <AdminNoteForm team={propOr({}, 'team')(classroom)} />
-                        </TabPanel>
-                        <TabPanel value={activeTab} index={8}>
                             <ToolboxForm
                                 toolbox={prop('toolboxOrder')(classroom)}
                                 classroomId={prop('id')(classroom)}
                                 classroomQuery={classroomQuery}
                             />
                         </TabPanel>
+                        {isAdmin ? (
+                            <TabPanel value={activeTab} index={8}>
+                                <AdminNoteForm team={propOr({}, 'team')(classroom)} />
+                            </TabPanel>
+                        ) : null}
                         {isSuperAdmin ? (
                             <TabPanel value={activeTab} index={9}>
                                 <ProjectFiles classroom={classroom} />
