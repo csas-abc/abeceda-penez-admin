@@ -19,15 +19,12 @@ import propOr from 'ramda/src/propOr';
 import compose from 'ramda/src/compose';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from '@material-ui/core/Button';
 import Edit from '@material-ui/icons/Edit';
 import ProjectModal from './ProjectModal';
 import TeamModal from './TeamModal';
 import ToolboxModal from './forms/ToolboxForm';
-import classroomAttributes from '../constants/classroomAttributes';
 
 const mapIndexed = addIndex(map);
 
@@ -46,7 +43,7 @@ const styles = theme => ({
 
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
-const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
+const ProjectsTable = ({ classes, query, dataSelector }) => {
     const [defaultTab, setDefaultTab] = useState(0);
     const [projectDetail, setProjectDetail] = useState(null);
     const [teamDetail, setTeamDetail] = useState(null);
@@ -224,14 +221,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
         },
     ]);
     const [toolboxDetail, setToolboxDetail] = useState(null);
-    if (!archive && classroomsQuery.error) return (
-        <SnackbarContent
-            className={classes.errorMessage}
-            message="Načtení se nezdařilo"
-        />
-    );
-
-    if (archive && archiveQuery.error) return (
+    if (query.error) return (
         <SnackbarContent
             className={classes.errorMessage}
             message="Načtení se nezdařilo"
@@ -291,7 +281,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
         },
         onCellClick: (colData, colMetadata) => {
             setDefaultTab(colMetadata.colIndex === 1 ? 7 : 0);
-            const classroom = archive ? archiveQuery.archive[colMetadata.dataIndex] : classroomsQuery.classrooms[colMetadata.dataIndex];
+            const classroom = dataSelector(query)[colMetadata.dataIndex];
             setProjectDetail(classroom);
         },
         customSort: (data, colIndex, order) => {
@@ -339,8 +329,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                     defaultTab={defaultTab}
                     onClose={(refetch = false) => {
                         if (refetch) {
-                            archiveQuery.refetch();
-                            classroomsQuery.refetch();
+                            query.refetch();
                         }
                         setProjectDetail(null);
                     }}
@@ -353,7 +342,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                 <ToolboxModal toolbox={toolboxDetail} onClose={() => setToolboxDetail(null)} />
             ) : null}
             <div style={{ width: '100%', height: '100%' }}>
-                {((archive && archiveQuery.loading) || classroomsQuery.loading) ? <CircularProgress /> : null}
+                {query.loading ? <CircularProgress /> : null}
                 <MUIDataTable
                     columns={columns}
                     options={options}
@@ -381,41 +370,13 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                             path(['businessPurpose'])(classroom) || '-',
                             path(['moneyGoalAmount'])(classroom) || '-',
                         ]
-                    })(archive ? (archiveQuery.archive || []) : (classroomsQuery.classrooms || []))}
+                    })(dataSelector(query) || [])}
                 />
             </div>
         </React.Fragment>
     );
 };
 
-const classroomsQuery = graphql(gql`
-    {
-        classrooms {
-            ${classroomAttributes}
-        }
-    }
-`, {
-    name: 'classroomsQuery',
-    options: {
-        fetchPolicy: 'cache-and-network',
-    }
-});
-
-const archiveQuery = graphql(gql`
-    {
-        archive {
-            ${classroomAttributes}
-        }
-    }
-`, {
-    name: 'archiveQuery',
-    options: {
-        fetchPolicy: 'cache-and-network',
-    }
-});
-
 export default compose(
     withStyles(styles),
-    classroomsQuery,
-    archiveQuery,
 )(ProjectsTable);

@@ -7,6 +7,7 @@ import Teams from './screens/Teams';
 import Users from './screens/Users';
 import Toolboxes from './screens/Toolboxes';
 import Projects from './screens/Projects';
+import Archive from './screens/Archive';
 import ClassroomsManagement from './screens/ClassroomsManagement';
 import Forum from './screens/Forum';
 import compose from 'ramda/src/compose';
@@ -67,7 +68,7 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />
             <Route path="/fairs" exact component={Fairs} />
-            <Route path="/archive" exact render={(props) => <Projects {...props} archive />} />
+            <Route path="/archive" exact component={Archive} />
             <Route path="/classrooms-management" exact component={ClassroomsManagement} />
             <Route path="/forum" exact component={Forum} />
         </Fragment>
