@@ -73,7 +73,7 @@ ProjectFiles.propTypes = {
     classroom: PropTypes.object,
 };
 
-const classroomsQuery = graphql(gql`
+const classroomQuery = graphql(gql`
     query Classroom($id: ID!) {
         classroom(id: $id) {
             id
@@ -104,6 +104,6 @@ const classroomsQuery = graphql(gql`
 });
 
 export default compose(
-    classroomsQuery,
+    classroomQuery,
     withStyles(styles),
 )(ProjectFiles);

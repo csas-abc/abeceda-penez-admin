@@ -38,8 +38,6 @@ const BranchModal = ({
                         branchRepresentativePhone,
                         branchAddress,
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     console.error('ERROR', e);
                 })

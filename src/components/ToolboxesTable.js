@@ -22,7 +22,7 @@ import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { Button } from '@material-ui/core';
 import pluck from 'ramda/src/pluck';
-import ToolboxModal from './ToolboxModal';
+import ToolboxModal from './forms/ToolboxForm';
 
 const toolboxState = {
     'Objednaný přes aplikaci': 1,

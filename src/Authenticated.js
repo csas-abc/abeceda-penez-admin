@@ -25,12 +25,21 @@ const Authenticated = ({ client, history: { push } }) => {
         }).then((res) => {
             setLoading(false);
             if (compose(
+                contains('ADMIN'),
+                pluck('name'),
+                defaultTo([]),
+                path(['data', 'me', 'roles']),
+            )(res)) {
+                return;
+            }
+            if (compose(
                 contains('AGENCY'),
                 pluck('name'),
                 defaultTo([]),
                 path(['data', 'me', 'roles']),
             )(res)) {
                 push('/toolboxes');
+                return;
             }
             if (compose(
                 contains('CORE'),
@@ -39,6 +48,7 @@ const Authenticated = ({ client, history: { push } }) => {
                 path(['data', 'me', 'roles']),
             )(res)) {
                 push('/classrooms-management');
+                return;
             }
         }).catch((e) => {
             setLoading(false);

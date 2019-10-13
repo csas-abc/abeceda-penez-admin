@@ -56,8 +56,6 @@ const FairModal = ({
                         fairAnnexationNote,
                         kioskPlace
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     enqueueSnackbar(replace('GraphQL error: ', '')(e.message), { variant: 'error' });
                     console.error('ERROR', e);
