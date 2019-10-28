@@ -12,7 +12,7 @@ import Close from '@material-ui/icons/Close';
 import { Typography } from '@material-ui/core';
 
 const ProjectState = ({ classroom }) => {
-    const activePhase = find((phase) => !phase.finished)(classroom.phases);
+    const activePhase = find((phase) => !phase.finished)(classroom.phases) || {};
     return (
         <div style={{ padding: '16px' }}>
             <Typography variant="headline">
