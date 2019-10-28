@@ -55,6 +55,8 @@ export default async() => {
     await persistCache({
         cache,
         storage: localStorage,
+        debug: true,
+        maxSize: false,
     });
 
     // apollo client setup

@@ -6,6 +6,7 @@ import map from 'ramda/src/map';
 import toLower from 'ramda/src/toLower';
 import path from 'ramda/src/path';
 import prop from 'ramda/src/prop';
+import propOr from 'ramda/src/propOr';
 import sort from 'ramda/src/sort';
 import find from 'ramda/src/find';
 import reverse from 'ramda/src/reverse';
@@ -97,7 +98,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                             <div>
                                 {map((task) => (
                                     <span key={task.id} style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
-                                ))(phase.checklist || [])}
+                                ))(propOr([], 'checklist')(phase))}
                             </div>
                         </div>
                     );
