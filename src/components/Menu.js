@@ -1,9 +1,5 @@
 import React from 'react';
 import compose from 'ramda/src/compose';
-import contains from 'ramda/src/contains';
-import pluck from 'ramda/src/pluck';
-import defaultTo from 'ramda/src/defaultTo';
-import path from 'ramda/src/path';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -21,6 +17,7 @@ import logo from '../assets/cs-logo.svg';
 import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { all, any, none } from '../utils/permissions';
 
 const styles = theme => ({
     toolbar: {
@@ -40,12 +37,7 @@ const Menu = ({ classes, meQuery }) => (
         <Divider />
         {meQuery.loading ? null : (
             <List>
-                {compose(
-                    contains('ADMIN'),
-                    pluck('name'),
-                    defaultTo([]),
-                    path(['me', 'roles']),
-                )(meQuery) ? (
+                {all(['ADMIN'])(meQuery) ? (
                     <React.Fragment>
                         <ListItem button component={Link} to="/">
                             <ListItemIcon><Subject /></ListItemIcon>
@@ -57,17 +49,7 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                     </React.Fragment>
                 ) : null}
-                {compose(
-                    contains('ADMIN'),
-                    pluck('name'),
-                    defaultTo([]),
-                    path(['me', 'roles']),
-                )(meQuery) || compose(
-                    contains('AGENCY'),
-                    pluck('name'),
-                    defaultTo([]),
-                    path(['me', 'roles']),
-                )(meQuery) ? (
+                {any(['ADMIN', 'AGENCY'])(meQuery) ? (
                     <React.Fragment>
                         <ListItem button component={Link} to="/toolboxes">
                             <ListItemIcon><Work /></ListItemIcon>
@@ -79,12 +61,7 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                     </React.Fragment>
                 ) : null}
-                {compose(
-                    contains('ADMIN'),
-                    pluck('name'),
-                    defaultTo([]),
-                    path(['me', 'roles']),
-                )(meQuery) ? (
+                {all(['ADMIN'])(meQuery) ? (
                     <React.Fragment>
                         <ListItem button component={Link} to="/users">
                             <ListItemIcon><Person /></ListItemIcon>
@@ -94,14 +71,13 @@ const Menu = ({ classes, meQuery }) => (
                             <ListItemIcon><Archive /></ListItemIcon>
                             <ListItemText primary="Archiv" />
                         </ListItem>
+                        <ListItem button component={Link} to="/statistics">
+                            <ListItemIcon><Archive /></ListItemIcon>
+                            <ListItemText primary="Statistika" />
+                        </ListItem>
                     </React.Fragment>
                     ) : null}
-                {compose(
-                    contains('CORE'),
-                    pluck('name'),
-                    defaultTo([]),
-                    path(['me', 'roles']),
-                )(meQuery) ? (
+                {all(['CORE'])(meQuery) ? (
                     <React.Fragment>
                         <ListItem button component={Link} to="/classrooms-management">
                             <ListItemIcon><Subject /></ListItemIcon>
@@ -109,12 +85,7 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                     </React.Fragment>
                 ) : null}
-                {!compose(
-                    contains('AGENCY'),
-                    pluck('name'),
-                    defaultTo([]),
-                    path(['me', 'roles']),
-                )(meQuery) ? (
+                {none(['AGENCY'])(meQuery) ? (
                     <ListItem button component={Link} to="/forum">
                         <ListItemIcon><Message /></ListItemIcon>
                         <ListItemText primary="Forum" />

@@ -6,7 +6,6 @@ import map from 'ramda/src/map';
 import toLower from 'ramda/src/toLower';
 import path from 'ramda/src/path';
 import prop from 'ramda/src/prop';
-import propOr from 'ramda/src/propOr';
 import sort from 'ramda/src/sort';
 import find from 'ramda/src/find';
 import reverse from 'ramda/src/reverse';
