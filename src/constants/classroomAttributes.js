@@ -60,4 +60,12 @@ export default `
                     email
                     region
                 }
-            }`;
+            }
+            type
+            visitInProduction
+            coffeeWithTeacher
+            fairAgency {
+                id
+                name
+            }
+`;

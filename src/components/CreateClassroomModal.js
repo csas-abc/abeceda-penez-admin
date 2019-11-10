@@ -11,6 +11,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import path from 'ramda/src/path';
 
 const styles =  {
     paper: {
@@ -42,9 +43,9 @@ const CreateClassroomModal = ({ onClose, classes, createClassroomMutation }) => 
                             variables: {
                                 semester
                             }
-                        }).then(() => {
+                        }).then((res) => {
                             setLoading(false);
-                            onClose();
+                            onClose(path(['data', 'createClassroom', 'id'])(res));
                         }).catch((e) => {
                             setLoading(false);
                             console.error('ERROR', e);

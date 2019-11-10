@@ -10,7 +10,6 @@ import prop from 'ramda/src/prop';
 import pathOr from 'ramda/src/pathOr';
 import pluck from 'ramda/src/pluck';
 import compose from 'ramda/src/compose';
-import includes from 'ramda/src/includes';
 import TabPanel from './TabPanel';
 import ProjectForm from './forms/ProjectForm';
 import BranchForm from './forms/BranchForm';
@@ -26,6 +25,8 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import classroomAttributes from '../constants/classroomAttributes';
 import { CircularProgress } from '@material-ui/core';
+import ProjectModalTabs from '../constants/ProjectModalTabs';
+import { any } from '../utils/permissions';
 
 const styles =  {
     paper: {
@@ -37,7 +38,7 @@ const ProjectModal = ({
     onClose,
     classes,
     classroomQuery: { classroom = {}, ...classroomQuery },
-    defaultTab = 0,
+    defaultTab = ProjectModalTabs.PROJECT_STATE,
     meQuery,
 }) => {
     const [activeTab, setActiveTab] = useState(defaultTab);
@@ -45,8 +46,6 @@ const ProjectModal = ({
         pluck('name'),
         pathOr([], ['me', 'roles']),
     )(meQuery);
-    const isSuperAdmin = includes('SUPER_ADMIN')(userRoles);
-    const isAdmin = includes('ADMIN')(userRoles);
     return (
         <Dialog
             open
@@ -69,71 +68,103 @@ const ProjectModal = ({
                             variant="scrollable"
                             scrollButtons="auto"
                         >
-                            <Tab label="Detail projektu"></Tab>
-                            <Tab label="Stav projektu"></Tab>
-                            <Tab label="Pobočka"></Tab>
-                            <Tab label="Škola"></Tab>
-                            <Tab label="Jarmark"></Tab>
-                            <Tab label="Uživatelé"></Tab>
-                            <Tab label="Zprávy"></Tab>
-                            <Tab label="Toolbox"></Tab>
-                            {isAdmin ? <Tab label="Poznámka"></Tab> : null}
-                            {isSuperAdmin ? <Tab label="Fotografie"></Tab> : null}
+                            <Tab
+                                label="Detail projektu"
+                                value={ProjectModalTabs.PROJECT_DETAIL}
+                            />
+                            {any(['ADMIN', 'SUPER_ADMIN'])(meQuery) ? (
+                                <Tab
+                                    label="Stav projektu"
+                                    value={ProjectModalTabs.PROJECT_STATE}
+                                />
+                            ) : null}
+                            <Tab
+                                label="Pobočka"
+                                value={ProjectModalTabs.BRANCH}
+                            />
+                            <Tab
+                                label="Škola"
+                                value={ProjectModalTabs.SCHOOL}
+                            />
+                            <Tab
+                                label="Jarmark"
+                                value={ProjectModalTabs.FAIR}
+                            />
+                            {any(['ADMIN', 'SUPER_ADMIN'])(meQuery) ? (
+                                <Tab
+                                    label="Uživatelé"
+                                    value={ProjectModalTabs.USERS}
+                                />
+                            ) : null}
+                            {any(['ADMIN', 'SUPER_ADMIN'])(meQuery) && classroom.type !== 'CORE' ? (
+                                <Tab
+                                    label="Zprávy"
+                                    value={ProjectModalTabs.MESSAGES}
+                                />
+                            ) : null}
+                            <Tab
+                                label="Toolbox"
+                                value={ProjectModalTabs.TOOLBOX}
+                            />
+                            <Tab
+                                label="Poznámka"
+                                value={ProjectModalTabs.NOTE}
+                            />
+                            <Tab
+                                label="Fotografie"
+                                value={ProjectModalTabs.PHOTOS}
+                            />
                         </Tabs>
-                        <TabPanel value={activeTab} index={0}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.PROJECT_DETAIL}>
                             <ProjectForm
                                 classroom={classroom}
                                 onClose={onClose}
                                 userRoles={userRoles}
                             />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={1}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.PROJECT_STATE}>
                             <ProjectState
                                 classroom={classroom}
                                 userRoles={userRoles}
                             />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={2}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.BRANCH}>
                             <BranchForm
                                 classroom={classroom}
                                 onClose={onClose}
                             />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={3}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.SCHOOL}>
                             <SchoolForm
                                 classroom={classroom}
                                 onClose={onClose}
                             />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={4}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.FAIR}>
                             <FairForm
                                 classroom={classroom}
                                 onClose={onClose}
                             />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={5}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.USERS}>
                             <TeamUsersForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={6}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.MESSAGES}>
                             <MessagesForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
                         </TabPanel>
-                        <TabPanel value={activeTab} index={7}>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.TOOLBOX}>
                             <ToolboxForm
                                 toolbox={prop('toolboxOrder')(classroom)}
                                 classroomId={prop('id')(classroom)}
                                 classroomQuery={classroomQuery}
                             />
                         </TabPanel>
-                        {isAdmin ? (
-                            <TabPanel value={activeTab} index={8}>
-                                <AdminNoteForm team={propOr({}, 'team')(classroom)} />
-                            </TabPanel>
-                        ) : null}
-                        {isSuperAdmin ? (
-                            <TabPanel value={activeTab} index={9}>
-                                <ProjectFiles classroom={classroom} />
-                            </TabPanel>
-                        ) : null}
+                        <TabPanel value={activeTab} id={ProjectModalTabs.NOTE}>
+                            <AdminNoteForm team={propOr({}, 'team')(classroom)} />
+                        </TabPanel>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.PHOTOS}>
+                            <ProjectFiles classroom={classroom} />
+                        </TabPanel>
                     </React.Fragment>
                 )}
             </DialogContent>

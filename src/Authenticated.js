@@ -17,6 +17,7 @@ import pluck from 'ramda/src/pluck';
 import defaultTo from 'ramda/src/defaultTo';
 import path from 'ramda/src/path';
 import Fairs from './screens/Fairs';
+import CoreRegionProjects from './screens/CoeRegionProjects';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -73,6 +74,7 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/classrooms-management" exact component={ClassroomsManagement} />
             <Route path="/forum" exact component={Forum} />
             <Route path="/statistics" exact component={Statistics} />
+            <Route path="/core-region/:region" exact component={CoreRegionProjects} />
         </Fragment>
     )
 };

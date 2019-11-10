@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSnackbar } from 'notistack';
 import gql from 'graphql-tag';
-import { graphql, withApollo } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 import Button from '@material-ui/core/Button';
 import Layout from '../components/Layout';
 
@@ -84,7 +84,5 @@ const Statitics = ({ client }) => {
         </Layout>
     );
 };
-
-const exportSchools = graphql(gql`{ exportSchools }`);
 
 export default withApollo(Statitics);

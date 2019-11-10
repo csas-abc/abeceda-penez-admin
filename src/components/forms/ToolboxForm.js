@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { useSnackbar } from 'notistack';
 
 const styles =  {
     paper: {
@@ -28,6 +29,7 @@ const ToolboxForm = ({
     const [recipient, setRecipient] = useState(propOr('', 'recipient')(toolbox));
     const [address, setAddress] = useState(propOr('', 'address')(toolbox));
     const [creatingOrder, setCreatingOrder] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
     return (
         <form
             className={classes.form}
@@ -54,6 +56,17 @@ const ToolboxForm = ({
                             classroomId,
                         }
                     }).then(() => {
+                        enqueueSnackbar(
+                            'Toolbox úspěšně objednán',
+                            {
+                                variant: 'success',
+                                autoHideDuration: 4000,
+                                anchorOrigin: {
+                                    horizontal: 'center',
+                                    vertical: 'top',
+                                },
+                            },
+                        );
                         return classroomQuery.refetch();
                     }).then(() => {
                         setCreatingOrder(false);

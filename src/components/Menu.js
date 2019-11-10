@@ -1,15 +1,18 @@
 import React from 'react';
 import compose from 'ramda/src/compose';
+import map from 'ramda/src/map';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Collapse from '@material-ui/core/Collapse';
 import Person from '@material-ui/icons/Person';
 import People from '@material-ui/icons/People';
 import Mood from '@material-ui/icons/Mood';
 import Archive from '@material-ui/icons/Archive';
 import ListItemText from '@material-ui/core/ListItemText';
 import Subject from '@material-ui/icons/Subject';
+import Assessment from '@material-ui/icons/Assessment';
 import Work from '@material-ui/icons/Work';
 import Message from '@material-ui/icons/Message';
 import { withStyles } from '@material-ui/core';
@@ -18,6 +21,7 @@ import { Link } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { all, any, none } from '../utils/permissions';
+import Regions from '../constants/Regions';
 
 const styles = theme => ({
     toolbar: {
@@ -26,7 +30,10 @@ const styles = theme => ({
     },
     logo: {
         width: '100%',
-    }
+    },
+    nested: {
+        paddingLeft: '73px',
+    },
 });
 
 const Menu = ({ classes, meQuery }) => (
@@ -67,12 +74,8 @@ const Menu = ({ classes, meQuery }) => (
                             <ListItemIcon><Person /></ListItemIcon>
                             <ListItemText primary="Uživatelé" />
                         </ListItem>
-                        <ListItem button component={Link} to="/archive">
-                            <ListItemIcon><Archive /></ListItemIcon>
-                            <ListItemText primary="Archiv" />
-                        </ListItem>
                         <ListItem button component={Link} to="/statistics">
-                            <ListItemIcon><Archive /></ListItemIcon>
+                            <ListItemIcon><Assessment /></ListItemIcon>
                             <ListItemText primary="Statistika" />
                         </ListItem>
                     </React.Fragment>
@@ -81,14 +84,39 @@ const Menu = ({ classes, meQuery }) => (
                     <React.Fragment>
                         <ListItem button component={Link} to="/classrooms-management">
                             <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary="Správa tříd" />
+                            <ListItemText primary="Třídy" />
                         </ListItem>
+                        <ListItem component="span">
+                            <ListItemIcon><People /></ListItemIcon>
+                            <ListItemText primary="Regiony" />
+                        </ListItem>
+                        <Collapse in timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                {map((region) => (
+                                    <ListItem
+                                        key={region}
+                                        button
+                                        component={Link}
+                                        to={`/core-region/${region}`}
+                                        className={classes.nested}
+                                    >
+                                        <ListItemText primary={region} />
+                                    </ListItem>
+                                ))(Regions)}
+                            </List>
+                        </Collapse>
                     </React.Fragment>
                 ) : null}
                 {none(['AGENCY'])(meQuery) ? (
                     <ListItem button component={Link} to="/forum">
                         <ListItemIcon><Message /></ListItemIcon>
                         <ListItemText primary="Forum" />
+                    </ListItem>
+                ) : null}
+                {any(['ADMIN', 'SUPER_ADMIN', 'CORE'])(meQuery) ? (
+                    <ListItem button component={Link} to="/archive">
+                        <ListItemIcon><Archive /></ListItemIcon>
+                        <ListItemText primary="Archiv" />
                     </ListItem>
                 ) : null}
             </List>

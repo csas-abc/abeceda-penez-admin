@@ -14,7 +14,6 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import pluck from 'ramda/src/pluck';
 import pathOr from 'ramda/src/pathOr';
-import includes from 'ramda/src/includes';
 
 
 const styles =  {

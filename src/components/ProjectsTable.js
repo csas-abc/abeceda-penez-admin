@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
 import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
@@ -25,6 +25,7 @@ import Edit from '@material-ui/icons/Edit';
 import ProjectModal from './ProjectModal';
 import TeamModal from './TeamModal';
 import ToolboxModal from './forms/ToolboxForm';
+import ProjectModalTabs from '../constants/ProjectModalTabs';
 
 const mapIndexed = addIndex(map);
 
@@ -43,8 +44,8 @@ const styles = theme => ({
 
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
-const ProjectsTable = ({ classes, query, dataSelector }) => {
-    const [defaultTab, setDefaultTab] = useState(0);
+const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
+    const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
     const [projectDetail, setProjectDetail] = useState(null);
     const [teamDetail, setTeamDetail] = useState(null);
     const [columns, setColumns] = useState([
@@ -219,8 +220,18 @@ const ProjectsTable = ({ classes, query, dataSelector }) => {
                 filter: false,
             },
         },
+        {
+            name: 'Typ',
+            options: {
+                filter: true,
+                sort: false,
+            }
+        }
     ]);
     const [toolboxDetail, setToolboxDetail] = useState(null);
+    useEffect(() => {
+        setProjectDetail(defaultDetail);
+    }, [defaultDetail]);
     if (query.error) return (
         <SnackbarContent
             className={classes.errorMessage}
@@ -280,7 +291,7 @@ const ProjectsTable = ({ classes, query, dataSelector }) => {
             return !!found;
         },
         onCellClick: (colData, colMetadata) => {
-            setDefaultTab(colMetadata.colIndex === 1 ? 8 : 0);
+            setDefaultTab(colMetadata.colIndex === 1 ? ProjectModalTabs.NOTE : ProjectModalTabs.PROJECT_DETAIL);
             const classroom = dataSelector(query)[colMetadata.dataIndex];
             setProjectDetail(classroom);
         },
@@ -369,6 +380,7 @@ const ProjectsTable = ({ classes, query, dataSelector }) => {
                             path(['fairDate'])(classroom) ? moment(path(['fairDate'])(classroom)).format('L') : '-',
                             path(['businessPurpose'])(classroom) || '-',
                             path(['moneyGoalAmount'])(classroom) || '-',
+                            classroom.type ? (classroom.type === 'CORE' ? 'RMKT' : 'Dobrovolník') : '-',
                         ]
                     })(dataSelector(query) || [])}
                 />
