@@ -50,6 +50,10 @@ const Menu = ({ classes, meQuery }) => (
                             <ListItemIcon><Subject /></ListItemIcon>
                             <ListItemText primary="Přehled" />
                         </ListItem>
+                        <ListItem button component={Link} to="/core-projects">
+                            <ListItemIcon><Subject /></ListItemIcon>
+                            <ListItemText primary="Přehled RMKT" />
+                        </ListItem>
                         <ListItem button component={Link} to="/teams">
                             <ListItemIcon><People /></ListItemIcon>
                             <ListItemText primary="Správa týmů" />

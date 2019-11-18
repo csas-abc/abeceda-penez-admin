@@ -20,6 +20,7 @@ const updateClassroomMutation = gql`
         $fairDate: DateTime
         $fairTime: DateTime
         $semester: Int
+        $year: Int
         $moneyGoalAmount: String
         $companyName: String
         $businessPurpose: String
@@ -36,12 +37,13 @@ const updateClassroomMutation = gql`
     ) {
         updateClassroom(data: {
             id: $id,
-            schoolAddress: $schoolAddress,
-            classroomName: $classroomName,
-            teacherName: $teacherName,
-            teacherPhone: $teacherPhone,
-            branchAddress: $branchAddress,
-            semester: $semester,
+            schoolAddress: $schoolAddress
+            classroomName: $classroomName
+            teacherName: $teacherName
+            teacherPhone: $teacherPhone
+            branchAddress: $branchAddress
+            semester: $semester
+            year: $year
             moneyGoalAmount: $moneyGoalAmount
             schoolMeeting: $schoolMeeting
             excursionDate: $excursionDate
@@ -85,6 +87,7 @@ const updateClassroomMutation = gql`
             fairDate
             fairTime
             semester
+            year
             moneyGoalAmount
             companyName
             businessPurpose

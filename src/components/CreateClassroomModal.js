@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -20,6 +21,14 @@ const styles =  {
 };
 
 const CreateClassroomModal = ({ onClose, classes, createClassroomMutation }) => {
+    let initialYear;
+    const now = moment();
+    if (now.month() < 8) {
+        initialYear = now.year() - 1;
+    } else {
+        initialYear = now.year();
+    }
+
     const [semester, setSemester] = useState(1);
     const [loading, setLoading] = useState(false);
     return (
@@ -41,7 +50,8 @@ const CreateClassroomModal = ({ onClose, classes, createClassroomMutation }) => 
                         e.preventDefault();
                         createClassroomMutation({
                             variables: {
-                                semester
+                                semester: semester % 2 === 1 ? 1 : 2,
+                                year: semester > 2 ? initialYear + 1 : initialYear,
                             }
                         }).then((res) => {
                             setLoading(false);
@@ -62,8 +72,10 @@ const CreateClassroomModal = ({ onClose, classes, createClassroomMutation }) => 
                             value={semester}
                             onChange={(e) => setSemester(e.target.value)}
                         >
-                            <MenuItem value={1}>1. pololetí</MenuItem>
-                            <MenuItem value={2}>2. pololetí</MenuItem>
+                            <MenuItem value={1}>1. pol {initialYear}/{initialYear + 1}</MenuItem>
+                            <MenuItem value={2}>2. pol {initialYear}/{initialYear + 1}</MenuItem>
+                            <MenuItem value={3}>1. pol {initialYear + 1}/{initialYear + 2}</MenuItem>
+                            <MenuItem value={4}>2. pol {initialYear + 1}/{initialYear + 2}</MenuItem>
                         </Select>
                     </FormControl>
                     <Button
@@ -82,8 +94,8 @@ const CreateClassroomModal = ({ onClose, classes, createClassroomMutation }) => 
 };
 
 const createClassroomMutation = graphql(gql`
-    mutation CreateClassroom($semester: Int!) {
-        createClassroom(semester: $semester) {
+    mutation CreateClassroom($semester: Int!, $year: Int!) {
+        createClassroom(semester: $semester, year: $year) {
             id
         }
     }

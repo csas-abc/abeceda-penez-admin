@@ -306,6 +306,11 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
                 case 8:
                 case 9:
                 case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
                     const sorted = sort((a, b) => a.data[colIndex].localeCompare(b.data[colIndex]), data);
                     if (order === 'asc') return sorted;
                     return reverse(sorted);
@@ -372,7 +377,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
                             path(['branchAddress'])(classroom) || '-',
                             path(['schoolAddress'])(classroom) || '-',
                             path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
-                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}` : '-',
+                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}. pololetí ${path(['year'])(classroom)}/${path(['year'])(classroom) + 1}` : '-',
                             path(['toolboxOrder', 'state'])(classroom) || '-',
                             path(['excursionDate'])(classroom) ? moment(path(['excursionDate'])(classroom)).format('L') : '-',
                             path(['companyName'])(classroom) || '-',

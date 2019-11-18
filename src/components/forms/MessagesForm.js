@@ -72,7 +72,7 @@ const TeamModal = ({
                     sortWith([
                         descend(prop('createdAt')),
                     ])
-                )(team.messages || [])}
+                )(prop('messages')(team) || [])}
             </List>
         </React.Fragment>
     );

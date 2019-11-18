@@ -18,6 +18,7 @@ import defaultTo from 'ramda/src/defaultTo';
 import path from 'ramda/src/path';
 import Fairs from './screens/Fairs';
 import CoreRegionProjects from './screens/CoeRegionProjects';
+import CoreProjects from './screens/CoreProjects';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -66,6 +67,7 @@ const Authenticated = ({ client, history: { push } }) => {
     return (
         <Fragment>
             <Route path="/" exact component={Projects} />
+            <Route path="/core-projects" exact component={CoreProjects} />
             <Route path="/teams" exact component={Teams} />
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />

@@ -11,6 +11,7 @@ export default `
             teacherEmail
             schoolMeeting
             semester
+            year
             branchAddress
             branchRepresentativeEmail
             branchRepresentativePhone

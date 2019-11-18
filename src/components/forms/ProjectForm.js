@@ -14,6 +14,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import includes from 'ramda/src/includes';
 import find from 'ramda/src/find';
+import prop from 'ramda/src/prop';
 import ArchiveConfirmationModal from '../ArchiveConfirmationModal';
 import FinishConfirmationModal from '../FinishConfirmationModal';
 
@@ -61,7 +62,8 @@ const ProjectForm = ({
                         id: classroom.id,
                         classroomName,
                         schoolMeeting,
-                        semester,
+                        semester: semester % 2 === 1 ? 1 : 2,
+                        year: semester > 2 ? classroom.year + 1 : classroom.year,
                         moneyGoalAmount,
                         companyName,
                         businessPurpose,
@@ -167,8 +169,10 @@ const ProjectForm = ({
                     value={semester}
                     onChange={(e) => setSemester(e.target.value)}
                 >
-                    <MenuItem value={1}>1. pololetí</MenuItem>
-                    <MenuItem value={2}>2. pololetí</MenuItem>
+                    <MenuItem value={1}>1. pololetí {prop('year')(classroom)}/{prop('year')(classroom) + 1}</MenuItem>
+                    <MenuItem value={2}>2. pololetí {prop('year')(classroom)}/{prop('year')(classroom) + 1}</MenuItem>
+                    <MenuItem value={3}>1. pololetí {prop('year')(classroom) + 1}/{prop('year')(classroom) + 2}</MenuItem>
+                    <MenuItem value={4}>2. pololetí {prop('year')(classroom) + 1}/{prop('year')(classroom) + 2}</MenuItem>
                 </Select>
             </FormControl>
             <FormControl margin="normal" fullWidth>
