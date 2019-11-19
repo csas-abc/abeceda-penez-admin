@@ -50,13 +50,13 @@ const TeamModal = ({
                     <Tab label="Zprávy"></Tab>
                     <Tab label="Poznámka"></Tab>
                 </Tabs>
-                <TabPanel value={activeTab} index={0}>
+                <TabPanel value={activeTab} id={0}>
                     <TeamUsersForm userRoles={userRoles} team={team} />
                 </TabPanel>
-                <TabPanel value={activeTab} index={1}>
+                <TabPanel value={activeTab} iid={1}>
                     <MessagesForm userRoles={userRoles} team={team} />
                 </TabPanel>
-                <TabPanel value={activeTab} index={2}>
+                <TabPanel value={activeTab} id={2}>
                     <AdminNoteForm team={team} />
                 </TabPanel>
             </DialogContent>
