@@ -53,7 +53,7 @@ const TeamModal = ({
                 <TabPanel value={activeTab} id={0}>
                     <TeamUsersForm userRoles={userRoles} team={team} />
                 </TabPanel>
-                <TabPanel value={activeTab} iid={1}>
+                <TabPanel value={activeTab} id={1}>
                     <MessagesForm userRoles={userRoles} team={team} />
                 </TabPanel>
                 <TabPanel value={activeTab} id={2}>
