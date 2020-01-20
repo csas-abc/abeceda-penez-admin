@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
 import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
@@ -6,7 +6,6 @@ import map from 'ramda/src/map';
 import toLower from 'ramda/src/toLower';
 import path from 'ramda/src/path';
 import prop from 'ramda/src/prop';
-import propOr from 'ramda/src/propOr';
 import sort from 'ramda/src/sort';
 import find from 'ramda/src/find';
 import reverse from 'ramda/src/reverse';
@@ -16,17 +15,17 @@ import indexOf from 'ramda/src/indexOf';
 import reject from 'ramda/src/reject';
 import isNil from 'ramda/src/isNil';
 import addIndex from 'ramda/src/addIndex';
+import propOr from 'ramda/src/propOr';
 import compose from 'ramda/src/compose';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from '@material-ui/core/Button';
 import Edit from '@material-ui/icons/Edit';
 import ProjectModal from './ProjectModal';
 import TeamModal from './TeamModal';
-import ToolboxModal from './ToolboxModal';
+import ToolboxModal from './forms/ToolboxForm';
+import ProjectModalTabs from '../constants/ProjectModalTabs';
 
 const mapIndexed = addIndex(map);
 
@@ -45,8 +44,8 @@ const styles = theme => ({
 
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
-const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
-    const [defaultTab, setDefaultTab] = useState(0);
+const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
+    const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
     const [projectDetail, setProjectDetail] = useState(null);
     const [teamDetail, setTeamDetail] = useState(null);
     const [columns, setColumns] = useState([
@@ -221,16 +220,19 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                 filter: false,
             },
         },
+        {
+            name: 'Typ',
+            options: {
+                filter: true,
+                sort: false,
+            }
+        }
     ]);
     const [toolboxDetail, setToolboxDetail] = useState(null);
-    if (!archive && classroomsQuery.error) return (
-        <SnackbarContent
-            className={classes.errorMessage}
-            message="Načtení se nezdařilo"
-        />
-    );
-
-    if (archive && archiveQuery.error) return (
+    useEffect(() => {
+        setProjectDetail(defaultDetail);
+    }, [defaultDetail]);
+    if (query.error) return (
         <SnackbarContent
             className={classes.errorMessage}
             message="Načtení se nezdařilo"
@@ -289,8 +291,8 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
             return !!found;
         },
         onCellClick: (colData, colMetadata) => {
-            setDefaultTab(colMetadata.colIndex === 1 ? 7 : 0);
-            const classroom = archive ? archiveQuery.archive[colMetadata.dataIndex] : classroomsQuery.classrooms[colMetadata.dataIndex];
+            setDefaultTab(colMetadata.colIndex === 1 ? ProjectModalTabs.NOTE : ProjectModalTabs.PROJECT_DETAIL);
+            const classroom = dataSelector(query)[colMetadata.dataIndex];
             setProjectDetail(classroom);
         },
         customSort: (data, colIndex, order) => {
@@ -304,6 +306,11 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                 case 8:
                 case 9:
                 case 10:
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                case 15:
                     const sorted = sort((a, b) => a.data[colIndex].localeCompare(b.data[colIndex]), data);
                     if (order === 'asc') return sorted;
                     return reverse(sorted);
@@ -338,8 +345,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                     defaultTab={defaultTab}
                     onClose={(refetch = false) => {
                         if (refetch) {
-                            archiveQuery.refetch();
-                            classroomsQuery.refetch();
+                            query.refetch();
                         }
                         setProjectDetail(null);
                     }}
@@ -352,7 +358,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                 <ToolboxModal toolbox={toolboxDetail} onClose={() => setToolboxDetail(null)} />
             ) : null}
             <div style={{ width: '100%', height: '100%' }}>
-                {((archive && archiveQuery.loading) || classroomsQuery.loading) ? <CircularProgress /> : null}
+                {query.loading ? <CircularProgress /> : null}
                 <MUIDataTable
                     columns={columns}
                     options={options}
@@ -371,7 +377,7 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                             path(['branchAddress'])(classroom) || '-',
                             path(['schoolAddress'])(classroom) || '-',
                             path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
-                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}` : '-',
+                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}. pololetí ${path(['year'])(classroom)}/${path(['year'])(classroom) + 1}` : '-',
                             path(['toolboxOrder', 'state'])(classroom) || '-',
                             path(['excursionDate'])(classroom) ? moment(path(['excursionDate'])(classroom)).format('L') : '-',
                             path(['companyName'])(classroom) || '-',
@@ -379,106 +385,15 @@ const ProjectsTable = ({ classes, classroomsQuery, archive, archiveQuery }) => {
                             path(['fairDate'])(classroom) ? moment(path(['fairDate'])(classroom)).format('L') : '-',
                             path(['businessPurpose'])(classroom) || '-',
                             path(['moneyGoalAmount'])(classroom) || '-',
+                            classroom.type ? (classroom.type === 'CORE' ? 'RMKT' : 'Dobrovolník') : '-',
                         ]
-                    })(archive ? (archiveQuery.archive || []) : (classroomsQuery.classrooms || []))}
+                    })(dataSelector(query) || [])}
                 />
             </div>
         </React.Fragment>
     );
 };
 
-const classroomAttributes = `
-            id
-            excursionDate
-            classroomName
-            schoolAddress
-            directorName
-            directorEmail
-            directorPhone
-            teacherName
-            teacherPhone
-            teacherEmail
-            schoolMeeting
-            semester
-            branchAddress
-            branchRepresentativeEmail
-            branchRepresentativePhone
-            branchRepresentativeName
-            fairDate
-            childrenCount
-            fairNote
-            fairElectricity
-            fairAnnexationState
-            fairAnnexationNote
-            fairDate
-            fairTime
-            fairEnd
-            kioskReadyTime
-            kioskPlace
-            archived
-            toolboxOrder {
-                id
-                state
-                recipient
-                address
-                childrenCount
-            }
-            phases {
-                id
-                name
-                finished
-                finishDate
-                number
-                checklist {
-                    id
-                    name
-                    checked
-                }
-            }
-            companyName
-            businessPurpose
-            businessDescription
-            moneyGoalAmount
-            team {
-                id
-                users {
-                    id
-                    firstname
-                    lastname
-                    activated
-                    email
-                    region
-                }
-            }`;
-
-const classroomsQuery = graphql(gql`
-    {
-        classrooms {
-            ${classroomAttributes}
-        }
-    }
-`, {
-    name: 'classroomsQuery',
-    options: {
-        fetchPolicy: 'cache-and-network',
-    }
-});
-
-const archiveQuery = graphql(gql`
-    {
-        archive {
-            ${classroomAttributes}
-        }
-    }
-`, {
-    name: 'archiveQuery',
-    options: {
-        fetchPolicy: 'cache-and-network',
-    }
-});
-
 export default compose(
     withStyles(styles),
-    classroomsQuery,
-    archiveQuery,
 )(ProjectsTable);

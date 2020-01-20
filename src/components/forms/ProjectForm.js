@@ -2,9 +2,6 @@ import React, { useState } from 'react';
 import { useSnackbar } from 'notistack';
 import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -15,12 +12,19 @@ import { graphql } from 'react-apollo';
 import DatePicker from 'material-ui-pickers/DatePicker/DatePickerModal';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import includes from 'ramda/src/includes';
+import find from 'ramda/src/find';
+import prop from 'ramda/src/prop';
+import ArchiveConfirmationModal from '../ArchiveConfirmationModal';
+import FinishConfirmationModal from '../FinishConfirmationModal';
 
-const styles =  {
+const styles = {
     paper: {
         alignSelf: 'flex-start',
     },
 };
+
+const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const ProjectForm = ({
     onClose,
@@ -28,11 +32,14 @@ const ProjectForm = ({
     updateClassroomMutation,
     classroom,
     exportMutation,
-    archiveMutation,
-    recoverMutation,
+    userRoles = [],
+    editDisabled,
 }) => {
+    const isAdmin = includes('SUPER_ADMIN')(userRoles) || includes('ADMIN')(userRoles);
+    const isCore = includes('CORE')(userRoles);
     const { enqueueSnackbar } = useSnackbar();
-    const [confirmModal, setConfirmModal] = useState(false);
+    const [archiveConfirmModal, setArchiveConfirmModal] = useState(false);
+    const [finishConfirmModal, setFinishConfirmModal] = useState(false);
     const [classroomName, setClassroomName] = useState(classroom.classroomName || '');
     const [schoolMeeting, setSchoolMeeting] = useState(classroom.schoolMeeting);
     const [semester, setSemester] = useState(classroom.semester);
@@ -41,6 +48,10 @@ const ProjectForm = ({
     const [businessPurpose, setBusinessPurpose] = useState(classroom.businessPurpose || '');
     const [businessDescription, setBusinessDescription] = useState(classroom.businessDescription || '');
     const [excursionDate, setExcursionDate] = useState(classroom.excursionDate);
+    const [visitInProduction, setVisitInProduction] = useState(classroom.visitInProduction);
+    const [coffeeWithTeacher, setCoffeeWithTeacher] = useState(classroom.coffeeWithTeacher);
+
+    const isFinished = !getActivePhase(classroom);
 
     return (
         <form
@@ -52,59 +63,50 @@ const ProjectForm = ({
                         id: classroom.id,
                         classroomName,
                         schoolMeeting,
-                        semester,
+                        semester: semester % 2 === 1 ? 1 : 2,
+                        year: semester > 2 ? classroom.year + 1 : classroom.year,
                         moneyGoalAmount,
                         companyName,
                         businessPurpose,
                         businessDescription,
                         excursionDate,
+                        visitInProduction,
+                        coffeeWithTeacher,
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     console.error('ERROR', e);
-                })
+                });
             }}
         >
-            {confirmModal ? (
-                <Dialog
-                    open
-                    onClose={onClose}
-                    fullWidth
-                    maxWidth="xs"
-                >
-                    <DialogTitle>Skutečně chcete projekt {classroom.archived ? 'obnovit' : 'archivovat'}?</DialogTitle>
-                    <DialogContent>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <Button onClick={() => setConfirmModal(false)}>NE</Button>
-                            <Button
-                                onClick={() => {
-                                    if (classroom.archived) {
-                                        recoverMutation({
-                                            variables: {
-                                                id: classroom.id,
-                                            },
-                                        }).then(() => {
-                                            onClose(true);
-                                            setConfirmModal(false);
-                                        });
-                                    } else {
-                                        archiveMutation({
-                                            variables: {
-                                                id: classroom.id,
-                                            },
-                                        }).then(() => {
-                                            onClose(true);
-                                            setConfirmModal(false);
-                                        });
-                                    }
-                                }}
-                            >
-                                ANO
-                            </Button>
-                        </div>
-                    </DialogContent>
-                </Dialog>
+            {archiveConfirmModal ? (
+                <ArchiveConfirmationModal
+                    onClose={(refetch) => {
+                        onClose(refetch);
+                        setArchiveConfirmModal(false);
+                    }}
+                    classroom={classroom}
+                />
+            ) : null}
+            {finishConfirmModal ? (
+                <FinishConfirmationModal
+                    onClose={(success = false) => {
+                        setFinishConfirmModal(false);
+                        if (!success) return;
+                        onClose(false);
+                        enqueueSnackbar(
+                            'Projekt byl úspěšně ukončen',
+                            {
+                                variant: 'success',
+                                autoHideDuration: 4000,
+                                anchorOrigin: {
+                                    horizontal: 'center',
+                                    vertical: 'top',
+                                },
+                            }
+                        )
+                    }}
+                    classroom={classroom}
+                />
             ) : null}
             <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="classroomName">Jméno třídy</InputLabel>
@@ -126,6 +128,28 @@ const ProjectForm = ({
                     format="DD.MM.YYYY"
                 />
             </FormControl>
+            {classroom.type === 'CORE' ? [
+                <FormControl margin="normal" fullWidth key="visitInProduction">
+                    <DatePicker
+                        id="visitInProduction"
+                        name="visitInProduction"
+                        value={visitInProduction}
+                        onChange={setVisitInProduction}
+                        label="Návštěva při výrobě"
+                        format="DD.MM.YYYY"
+                    />
+                </FormControl>,
+                <FormControl margin="normal" fullWidth key="coffeeWithTeacher">
+                    <DatePicker
+                        id="coffeeWithTeacher"
+                        name="coffeeWithTeacher"
+                        value={coffeeWithTeacher}
+                        onChange={setCoffeeWithTeacher}
+                        label="Káva s učitelem"
+                        format="DD.MM.YYYY"
+                    />
+                </FormControl>,
+            ] : null}
             <FormControl margin="normal" fullWidth>
                 <DatePicker
                     id="excursionDate"
@@ -146,8 +170,10 @@ const ProjectForm = ({
                     value={semester}
                     onChange={(e) => setSemester(e.target.value)}
                 >
-                    <MenuItem value={1}>1. pololetí</MenuItem>
-                    <MenuItem value={2}>2. pololetí</MenuItem>
+                    <MenuItem value={1}>1. pololetí {prop('year')(classroom)}/{prop('year')(classroom) + 1}</MenuItem>
+                    <MenuItem value={2}>2. pololetí {prop('year')(classroom)}/{prop('year')(classroom) + 1}</MenuItem>
+                    <MenuItem value={3}>1. pololetí {prop('year')(classroom) + 1}/{prop('year')(classroom) + 2}</MenuItem>
+                    <MenuItem value={4}>2. pololetí {prop('year')(classroom) + 1}/{prop('year')(classroom) + 2}</MenuItem>
                 </Select>
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -200,24 +226,39 @@ const ProjectForm = ({
                             });
                             enqueueSnackbar('Projekt byl odeslaný na e-mail');
                         }}
+                        disabled={editDisabled}
                     >
                         Export
                     </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        style={{ marginLeft: '16px' }}
-                        onClick={() => setConfirmModal(true)}
-                    >
-                        {classroom.archived ? 'Obnovit' : 'Archivovat'}
-                    </Button>
+                    {isAdmin ? (
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            style={{ marginLeft: '16px' }}
+                            onClick={() => setArchiveConfirmModal(true)}
+                        >
+                            {classroom.archived ? 'Obnovit' : 'Archivovat'}
+                        </Button>
+                    ) : null}
+                    {isCore && !isFinished ? (
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            className={classes.submit}
+                            style={{ marginLeft: '16px' }}
+                            onClick={() => setFinishConfirmModal(true)}
+                        >
+                            Ukončit projekt
+                        </Button>
+                    ) : null}
                 </div>
                 <Button
                     variant="contained"
                     color="primary"
                     className={classes.submit}
                     type="submit"
+                    disabled={editDisabled}
                 >
                     Uložit
                 </Button>
@@ -234,28 +275,6 @@ const exportMutation = graphql(gql`
     name: 'exportMutation'
 });
 
-const archiveMutation = graphql(gql`
-    mutation Archive($id: ID!) {
-        archive(id: $id) {
-            id
-            archived
-        }
-    }
-`, {
-    name: 'archiveMutation'
-});
-
-const recoverMutation = graphql(gql`
-    mutation Recovery($id: ID!) {
-        recover(id: $id) {
-            id
-            archived
-        }
-    }
-`, {
-    name: 'recoverMutation'
-});
-
 export default compose(
     graphql(
         updateClassroomMutation,
@@ -264,7 +283,5 @@ export default compose(
         },
     ),
     exportMutation,
-    archiveMutation,
-    recoverMutation,
     withStyles(styles)
 )(ProjectForm);

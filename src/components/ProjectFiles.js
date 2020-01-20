@@ -25,7 +25,7 @@ const styles = (theme) => ({
     },
 });
 
-const ProjectFiles = ({ classroomQuery, classes }) => {
+const ProjectFiles = ({ classroomQuery, classes, editDisabled }) => {
     const classroom = classroomQuery.classroom || {};
     const [uploadPhoto, setUploadPhoto] = useState(false);
     return (
@@ -48,6 +48,7 @@ const ProjectFiles = ({ classroomQuery, classes }) => {
                 onClick={() => {
                     setUploadPhoto(true);
                 }}
+                disabled={editDisabled}
             >
                 Nahrát fotky
             </Button>
@@ -73,7 +74,7 @@ ProjectFiles.propTypes = {
     classroom: PropTypes.object,
 };
 
-const classroomsQuery = graphql(gql`
+const classroomQuery = graphql(gql`
     query Classroom($id: ID!) {
         classroom(id: $id) {
             id
@@ -104,6 +105,6 @@ const classroomsQuery = graphql(gql`
 });
 
 export default compose(
-    classroomsQuery,
+    classroomQuery,
     withStyles(styles),
 )(ProjectFiles);

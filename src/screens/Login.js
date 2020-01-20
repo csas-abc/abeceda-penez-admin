@@ -11,7 +11,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Paper from '@material-ui/core/Paper';
 import withStyles from '@material-ui/core/styles/withStyles';
-import logo from './assets/cs-logo.svg';
+import logo from '../assets/cs-logo.svg';
 import MLink from '@material-ui/core/Link';
 import { Typography } from '@material-ui/core';
 
@@ -55,8 +55,9 @@ const styles = theme => ({
     }
 });
 
-const Login = ({ classes, forgotPasswordMutation, history: { push } }) => {
+const Login = ({ classes, loginMutation, history: { push } }) => {
     const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     return (
         <main className={classes.main}>
@@ -66,19 +67,21 @@ const Login = ({ classes, forgotPasswordMutation, history: { push } }) => {
                 {error ? (
                     <SnackbarContent
                         className={classes.errorMessage}
-                        message="Obnovení hesla se nezdařilo"
+                        message="Přihlášení se nezdařilo"
                     />
                 ) : null}
                 <form
                     className={classes.form}
                     onSubmit={(e) => {
                         e.preventDefault();
-                        forgotPasswordMutation({
+                        loginMutation({
                             variables: {
                                 email,
+                                password,
                             }
-                        }).then(() => {
-                            push('/login');
+                        }).then((res) => {
+                            localStorage.setItem('token', res.data.login.token);
+                            push('/');
                         }).catch((e) => {
                             setError(e);
                         })
@@ -95,6 +98,17 @@ const Login = ({ classes, forgotPasswordMutation, history: { push } }) => {
                             onChange={(e) => setEmail(e.target.value)}
                         />
                     </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="password">Heslo</InputLabel>
+                        <Input
+                            name="password"
+                            type="password"
+                            id="password"
+                            autoComplete="current-password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </FormControl>
                     <Button
                         fullWidth
                         variant="contained"
@@ -102,7 +116,7 @@ const Login = ({ classes, forgotPasswordMutation, history: { push } }) => {
                         className={classes.submit}
                         type="submit"
                     >
-                        Poslat nové heslo
+                        Přihlásit
                     </Button>
                     <div
                         style={{
@@ -112,8 +126,8 @@ const Login = ({ classes, forgotPasswordMutation, history: { push } }) => {
                         }}
                     >
                         <Typography variant="body1">
-                            <MLink component={Link} to="/login">
-                                Přihlášení
+                            <MLink component={Link} to="/forgot-password">
+                                Zapomenuté heslo
                             </MLink>
                         </Typography>
                     </div>
@@ -123,16 +137,19 @@ const Login = ({ classes, forgotPasswordMutation, history: { push } }) => {
     );
 };
 
-const forgotPasswordMutation = gql`
-    mutation ForgotPasswordMutation($email: String!) {
-        forgotPassword(email: $email)
+const loginMutation = gql`
+    mutation LoginMutation($email: String!, $password: String!) {
+        login(data: { email: $email, password: $password }) {
+            token,
+            user { id, email }
+        }
     }
 `;
 
 export default compose(
     withRouter,
     withStyles(styles),
-    graphql(forgotPasswordMutation, {
-        name: 'forgotPasswordMutation'
+    graphql(loginMutation, {
+        name: 'loginMutation'
     })
 )(Login);

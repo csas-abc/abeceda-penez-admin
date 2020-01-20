@@ -11,6 +11,8 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import compose from 'ramda/src/compose';
+import map from 'ramda/src/map';
 
 const styles =  {
     paper: {
@@ -18,12 +20,13 @@ const styles =  {
     },
 };
 
-const CreateAdminUser = ({ onClose, classes, createUserMutation }) => {
+const CreateAdminUser = ({ onClose, classes, createUserMutation, fairAgenciesQuery }) => {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [role, setRole] = useState('ADMIN');
+    const [fairAgency, setFairAgency] = useState('');
     return (
         <Dialog
             open
@@ -48,6 +51,7 @@ const CreateAdminUser = ({ onClose, classes, createUserMutation }) => {
                                 phone,
                                 securityCode: `${Math.floor((Math.random() * 999999) + 100000)}`,
                                 role,
+                                ...role === 'CORE_AGENCY' ? { fairAgencyId: fairAgency } : {},
                             }
                         }).then(() => {
                             onClose();
@@ -106,8 +110,28 @@ const CreateAdminUser = ({ onClose, classes, createUserMutation }) => {
                         >
                             <MenuItem value="ADMIN">Administrátor</MenuItem>
                             <MenuItem value="AGENCY">Agentura</MenuItem>
+                            <MenuItem value="CORE_AGENCY">Regionální agentura (RMKT)</MenuItem>
                         </Select>
                     </FormControl>
+                    {role === 'CORE_AGENCY' ? (
+                        <FormControl margin="normal" required fullWidth>
+                            <InputLabel htmlFor="fairAgency">Agentura</InputLabel>
+                            <Select
+                                inputProps={{
+                                    id: 'fairAgency',
+                                    name: 'fairAgency'
+                                }}
+                                value={fairAgency}
+                                onChange={(e) => setFairAgency(e.target.value)}
+                            >
+                                {compose(
+                                    map((fairAgency) => (
+                                        <MenuItem key={fairAgency.id} value={fairAgency.id}>{`${fairAgency.name} (${fairAgency.regions.join(', ')})`}</MenuItem>
+                                    )),
+                                )(fairAgenciesQuery.fairAgencies || [])}
+                            </Select>
+                        </FormControl>
+                    ) : null}
                     <Button
                         fullWidth
                         variant="contained"
@@ -124,11 +148,31 @@ const CreateAdminUser = ({ onClose, classes, createUserMutation }) => {
 };
 
 const createUserMutation = graphql(gql`
-    mutation CreateUserMutation($email: String!, $firstname: String!, $lastname: String!, $phone: String!, $securityCode: String!, $role: String!) {
-        createUser(data: { email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, securityCode: $securityCode, role: $role })
+    mutation CreateUserMutation($email: String!, $firstname: String!, $lastname: String!, $phone: String!, $securityCode: String!, $role: String!, $fairAgencyId: ID) {
+        createUser(data: { email: $email, firstname: $firstname, lastname: $lastname, phone: $phone, securityCode: $securityCode, role: $role, fairAgencyId: $fairAgencyId })
     }
 `, {
     name: 'createUserMutation',
 });
 
-export default createUserMutation(withStyles(styles)(CreateAdminUser));
+const fairAgenciesQuery = graphql(gql`
+            {
+                fairAgencies {
+                    id
+                    name
+                    regions
+                }
+            }
+    `,
+    {
+        name: 'fairAgenciesQuery',
+        options: {
+            fetchPolicy: 'cache-and-network',
+        }
+    });
+
+export default compose(
+    createUserMutation,
+    fairAgenciesQuery,
+    withStyles(styles),
+)(CreateAdminUser);

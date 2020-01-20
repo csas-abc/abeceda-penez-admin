@@ -11,6 +11,9 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import Regions from '../constants/Regions';
+import map from 'ramda/src/map';
+import compose from 'ramda/src/compose';
 
 const styles =  {
     paper: {
@@ -23,7 +26,8 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
     const [phone, setPhone] = useState('');
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
-    const [region, setRegion] = useState(null);
+    const [region, setRegion] = useState('');
+    const [role, setRole] = useState('VOLUNTEER');
     return (
         <Dialog
             open
@@ -49,7 +53,7 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                                 phone,
                                 securityCode: `${Math.floor((Math.random() * 999999) + 100000)}`,
                                 teamId,
-                                role: 'VOLUNTEER',
+                                role,
                             }
                         }).then(() => {
                             onClose();
@@ -106,12 +110,23 @@ const CreateUser = ({ onClose, classes, teamId, createUserMutation }) => {
                             value={region}
                             onChange={(e) => setRegion(e.target.value)}
                         >
-                            <MenuItem value="PHA">PHA</MenuItem>
-                            <MenuItem value="JZČ">JZČ</MenuItem>
-                            <MenuItem value="JM">JM</MenuItem>
-                            <MenuItem value="SM">SM</MenuItem>
-                            <MenuItem value="SZČ">SZČ</MenuItem>
-                            <MenuItem value="VČ">VČ</MenuItem>
+                            {map((region) => (
+                                <MenuItem value={region}>{region}</MenuItem>
+                            ))(Regions)}
+                        </Select>
+                    </FormControl>
+                    <FormControl margin="normal" required fullWidth>
+                        <InputLabel htmlFor="role">Role</InputLabel>
+                        <Select
+                            inputProps={{
+                                id: 'role',
+                                name: 'role'
+                            }}
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                        >
+                            <MenuItem value="VOLUNTEER">Dobrovolník</MenuItem>
+                            <MenuItem value="CORE">RMKT</MenuItem>
                         </Select>
                     </FormControl>
                     <Button
@@ -137,4 +152,7 @@ const createUserMutation = graphql(gql`
     name: 'createUserMutation',
 });
 
-export default createUserMutation(withStyles(styles)(CreateUser));
+export default compose(
+    createUserMutation,
+    withStyles(styles),
+)(CreateUser);

@@ -15,10 +15,10 @@ const styles =  {
 };
 
 const BranchModal = ({
-    onClose,
     classes,
     updateClassroomMutation,
     classroom,
+    editDisabled,
 }) => {
     const [schoolAddress, setSchoolAddress] = useState(classroom.schoolAddress || '');
     const [directorName, setDirectorName] = useState(classroom.directorName || '');
@@ -44,8 +44,6 @@ const BranchModal = ({
                         teacherEmail,
                         teacherPhone
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     console.error('ERROR', e);
                 })
@@ -121,6 +119,7 @@ const BranchModal = ({
                 color="primary"
                 className={classes.submit}
                 type="submit"
+                disabled={editDisabled}
             >
                 Uložit
             </Button>

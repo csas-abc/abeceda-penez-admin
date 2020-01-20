@@ -1,0 +1,12 @@
+export default {
+    PROJECT_DETAIL: 'PROJECT_DETAIL',
+    PROJECT_STATE: 'PROJECT_STATE',
+    BRANCH: 'BRANCH',
+    SCHOOL: 'SCHOOL',
+    FAIR: 'FAIR',
+    USERS: 'USERS',
+    MESSAGES: 'MESSAGES',
+    TOOLBOX: 'TOOLBOX',
+    NOTE: 'NOTE',
+    PHOTOS: 'PHOTOS',
+};

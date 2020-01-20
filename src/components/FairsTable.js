@@ -68,6 +68,7 @@ const FairsTable = ({
                         <TableCell>Poznámka k záboru</TableCell>
                         <TableCell>Prostor ČS?</TableCell>
                         <TableCell>Počet žáků</TableCell>
+                        <TableCell>Agentura</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -122,6 +123,9 @@ const FairsTable = ({
                             <TableCell>
                                 {path(['childrenCount'])(fair) || '-'}
                             </TableCell>
+                            <TableCell>
+                                {path(['fairAgency', 'name'])(fair) || '-'}
+                            </TableCell>
                         </TableRow>
                     ))(fairsQuery.fairs)}
                 </TableBody>
@@ -173,6 +177,10 @@ const fairsQuery = graphql(gql`
             fairAnnexationState
             fairAnnexationNote
             kioskPlace
+            fairAgency {
+                id
+                name
+            }
         }
     }
 `, {

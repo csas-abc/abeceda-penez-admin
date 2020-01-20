@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
@@ -11,6 +13,11 @@ import updateClassroomMutation from '../../utils/updateClassroomMutation';
 import { graphql } from 'react-apollo';
 import Select from '@material-ui/core/Select';
 import replace from 'ramda/src/replace';
+import pathOr from 'ramda/src/pathOr';
+import map from 'ramda/src/map';
+import filter from 'ramda/src/filter';
+import includes from 'ramda/src/includes';
+import path from 'ramda/src/path';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useSnackbar } from 'notistack';
 
@@ -21,10 +28,11 @@ const styles =  {
 };
 
 const FairModal = ({
-    onClose,
     classes,
     updateClassroomMutation,
     classroom,
+    fairAgenciesQuery,
+    editDisabled,
 }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [fairDate, setFairDate] = useState(classroom.fairDate);
@@ -37,6 +45,7 @@ const FairModal = ({
     const [fairAnnexationState, setFairAnnexationState] = useState(classroom.fairAnnexationState || '');
     const [fairAnnexationNote, setFairAnnexationNote] = useState(classroom.fairAnnexationNote || '');
     const [kioskPlace, setKioskPlace] = useState(classroom.kioskPlace || '');
+    const [fairAgency, setFairAgency] = useState(pathOr('', ['fairAgency', 'id'])(classroom));
     return (
         <form
             className={classes.form}
@@ -54,16 +63,42 @@ const FairModal = ({
                         fairElectricity,
                         fairAnnexationState,
                         fairAnnexationNote,
-                        kioskPlace
+                        kioskPlace,
+                        ...fairAgency ? {
+                            fairAgency: {
+                                connect: {
+                                    id: fairAgency,
+                                }
+                            }
+                        } : {}
                     }
-                }).then(() => {
-                    onClose();
                 }).catch((e) => {
                     enqueueSnackbar(replace('GraphQL error: ', '')(e.message), { variant: 'error' });
                     console.error('ERROR', e);
                 })
             }}
         >
+            {classroom.type === 'CORE' ? (
+                fairAgenciesQuery.loading ? <CircularProgress /> : (
+                <FormControl margin="normal" fullWidth>
+                    <InputLabel htmlFor="fairAgency">Regionální agentura</InputLabel>
+                    <Select
+                        inputProps={{
+                            id: 'fairAgency',
+                            name: 'fairAgency'
+                        }}
+                        value={fairAgency}
+                        onChange={(e) => setFairAgency(e.target.value)}
+                    >
+                        {compose(
+                            map((fairAgency) => (
+                                <MenuItem key={fairAgency.id} value={fairAgency.id}>{fairAgency.name}</MenuItem>
+                            )),
+                            filter((agency) => includes(path(['team', 'users', 0, 'region'])(classroom))(agency.regions))
+                        )(fairAgenciesQuery.fairAgencies || [])}
+                    </Select>
+                </FormControl>)
+            ) : null}
             <FormControl margin="normal" fullWidth>
                 <DatePicker
                     id="fairDate"
@@ -184,6 +219,7 @@ const FairModal = ({
                 color="primary"
                 className={classes.submit}
                 type="submit"
+                disabled={editDisabled}
             >
                 Uložit
             </Button>
@@ -198,5 +234,20 @@ export default compose(
             name: 'updateClassroomMutation',
         },
     ),
+    graphql(gql`
+        {
+            fairAgencies {
+                id
+                name
+                regions
+            }
+        }
+    `,
+    {
+        name: 'fairAgenciesQuery',
+        options: {
+            fetchPolicy: 'cache-and-network',
+        }
+    }),
     withStyles(styles)
 )(FairModal);
