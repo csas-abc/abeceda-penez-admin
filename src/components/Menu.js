@@ -61,16 +61,16 @@ const Menu = ({ classes, meQuery }) => (
                     </React.Fragment>
                 ) : null}
                 {any(['ADMIN', 'AGENCY'])(meQuery) ? (
-                    <React.Fragment>
-                        <ListItem button component={Link} to="/toolboxes">
-                            <ListItemIcon><Work /></ListItemIcon>
-                            <ListItemText primary="Toolboxy" />
-                        </ListItem>
-                        <ListItem button component={Link} to="/fairs">
-                            <ListItemIcon><Mood /></ListItemIcon>
-                            <ListItemText primary="Jarmarky" />
-                        </ListItem>
-                    </React.Fragment>
+                    <ListItem button component={Link} to="/toolboxes">
+                        <ListItemIcon><Work /></ListItemIcon>
+                        <ListItemText primary="Toolboxy" />
+                    </ListItem>
+                ) : null}
+                {any(['ADMIN', 'AGENCY', 'CORE_AGENCY'])(meQuery) ? (
+                    <ListItem button component={Link} to="/fairs">
+                        <ListItemIcon><Mood /></ListItemIcon>
+                        <ListItemText primary="Jarmarky" />
+                    </ListItem>
                 ) : null}
                 {all(['ADMIN'])(meQuery) ? (
                     <React.Fragment>
@@ -111,7 +111,7 @@ const Menu = ({ classes, meQuery }) => (
                         </Collapse>
                     </React.Fragment>
                 ) : null}
-                {none(['AGENCY'])(meQuery) ? (
+                {none(['AGENCY', 'CORE_AGENCY'])(meQuery) ? (
                     <ListItem button component={Link} to="/forum">
                         <ListItemIcon><Message /></ListItemIcon>
                         <ListItemText primary="Forum" />

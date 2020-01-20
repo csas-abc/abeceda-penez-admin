@@ -18,6 +18,7 @@ const styles =  {
 
 const TeamModal = ({
     updateTeamMutation,
+    editDisabled,
     teamQuery: {
         team,
         ...teamQuery,
@@ -65,6 +66,7 @@ const TeamModal = ({
                             }
                         });
                     }}
+                    disabled={editDisabled}
                 >
                     Uložit
                 </Button>

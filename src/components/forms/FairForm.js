@@ -32,6 +32,7 @@ const FairModal = ({
     updateClassroomMutation,
     classroom,
     fairAgenciesQuery,
+    editDisabled,
 }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [fairDate, setFairDate] = useState(classroom.fairDate);
@@ -218,6 +219,7 @@ const FairModal = ({
                 color="primary"
                 className={classes.submit}
                 type="submit"
+                disabled={editDisabled}
             >
                 Uložit
             </Button>

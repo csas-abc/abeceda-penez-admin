@@ -15,10 +15,10 @@ const styles =  {
 };
 
 const BranchModal = ({
-    onClose,
     classes,
     updateClassroomMutation,
     classroom,
+    editDisabled,
 }) => {
     const [branchRepresentativeName, setBranchRepresentativeName] = useState(classroom.branchRepresentativeName || '');
     const [branchRepresentativeEmail, setBranchRepresentativeEmail] = useState(classroom.branchRepresentativeEmail || '');
@@ -86,6 +86,7 @@ const BranchModal = ({
                 color="primary"
                 className={classes.submit}
                 type="submit"
+                disabled={editDisabled}
             >
                 Uložit
             </Button>

@@ -24,6 +24,7 @@ const ToolboxForm = ({
     createToolboxOrder,
     classroomId,
     classroomQuery,
+    editDisabled,
 }) => {
     const [childrenCount, setChildrenCount] = useState(propOr('', 'childrenCount')(toolbox));
     const [recipient, setRecipient] = useState(propOr('', 'recipient')(toolbox));
@@ -108,7 +109,7 @@ const ToolboxForm = ({
                 color="primary"
                 className={classes.submit}
                 type="submit"
-                disabled={creatingOrder}
+                disabled={creatingOrder || editDisabled}
             >
                 {creatingOrder ? <CircularProgress /> : null} {toolbox ? 'Uložit' : 'Vytvořit'}
             </Button>

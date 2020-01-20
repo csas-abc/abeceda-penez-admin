@@ -37,6 +37,15 @@ const Authenticated = ({ client, history: { push } }) => {
                 return;
             }
             if (compose(
+                contains('CORE_AGENCY'),
+                pluck('name'),
+                defaultTo([]),
+                path(['data', 'me', 'roles']),
+            )(res)) {
+                push('/fairs');
+                return;
+            }
+            if (compose(
                 contains('AGENCY'),
                 pluck('name'),
                 defaultTo([]),

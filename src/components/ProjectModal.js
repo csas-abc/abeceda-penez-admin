@@ -10,6 +10,7 @@ import prop from 'ramda/src/prop';
 import pathOr from 'ramda/src/pathOr';
 import pluck from 'ramda/src/pluck';
 import compose from 'ramda/src/compose';
+import contains from 'ramda/src/contains';
 import TabPanel from './TabPanel';
 import ProjectForm from './forms/ProjectForm';
 import BranchForm from './forms/BranchForm';
@@ -42,10 +43,21 @@ const ProjectModal = ({
     meQuery,
 }) => {
     const [activeTab, setActiveTab] = useState(defaultTab);
+    const userRegion = pathOr('', ['me', 'region'])(meQuery);
     const userRoles = compose(
         pluck('name'),
         pathOr([], ['me', 'roles']),
     )(meQuery);
+    const classroomRegion = pathOr('', ['team', 'users', 0, 'region'])(classroom);
+    const editDisabled = () => {
+        if (contains('ADMIN')(userRoles)) {
+            return false;
+        }
+        if (contains('CORE')(userRoles)) {
+            return userRegion !== classroomRegion;
+        }
+    };
+
     return (
         <Dialog
             open
@@ -120,6 +132,7 @@ const ProjectModal = ({
                                 classroom={classroom}
                                 onClose={onClose}
                                 userRoles={userRoles}
+                                editDisabled={editDisabled()}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.PROJECT_STATE}>
@@ -132,22 +145,27 @@ const ProjectModal = ({
                             <BranchForm
                                 classroom={classroom}
                                 onClose={onClose}
+                                editDisabled={editDisabled()}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.SCHOOL}>
                             <SchoolForm
                                 classroom={classroom}
                                 onClose={onClose}
+                                editDisabled={editDisabled()}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.FAIR}>
                             <FairForm
                                 classroom={classroom}
                                 onClose={onClose}
+                                editDisabled={editDisabled()}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.USERS}>
-                            <TeamUsersForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
+                            <TeamUsersForm
+                                userRoles={userRoles}
+                                team={propOr({}, 'team')(classroom)} />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.MESSAGES}>
                             <MessagesForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
@@ -157,13 +175,20 @@ const ProjectModal = ({
                                 toolbox={prop('toolboxOrder')(classroom)}
                                 classroomId={prop('id')(classroom)}
                                 classroomQuery={classroomQuery}
+                                editDisabled={editDisabled()}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.NOTE}>
-                            <AdminNoteForm team={propOr({}, 'team')(classroom)} />
+                            <AdminNoteForm
+                                team={propOr({}, 'team')(classroom)}
+                                editDisabled={editDisabled()}
+                            />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.PHOTOS}>
-                            <ProjectFiles classroom={classroom} />
+                            <ProjectFiles
+                                classroom={classroom}
+                                editDisabled={editDisabled()}
+                            />
                         </TabPanel>
                     </React.Fragment>
                 )}
@@ -177,6 +202,7 @@ const meQuery = graphql(gql`
         me {
             id
             email
+            region
             roles {
                 name
             }

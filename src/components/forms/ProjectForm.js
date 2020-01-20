@@ -33,6 +33,7 @@ const ProjectForm = ({
     classroom,
     exportMutation,
     userRoles = [],
+    editDisabled,
 }) => {
     const isAdmin = includes('SUPER_ADMIN')(userRoles) || includes('ADMIN')(userRoles);
     const isCore = includes('CORE')(userRoles);
@@ -225,6 +226,7 @@ const ProjectForm = ({
                             });
                             enqueueSnackbar('Projekt byl odeslaný na e-mail');
                         }}
+                        disabled={editDisabled}
                     >
                         Export
                     </Button>
@@ -256,6 +258,7 @@ const ProjectForm = ({
                     color="primary"
                     className={classes.submit}
                     type="submit"
+                    disabled={editDisabled}
                 >
                     Uložit
                 </Button>

@@ -25,7 +25,7 @@ const styles = (theme) => ({
     },
 });
 
-const ProjectFiles = ({ classroomQuery, classes }) => {
+const ProjectFiles = ({ classroomQuery, classes, editDisabled }) => {
     const classroom = classroomQuery.classroom || {};
     const [uploadPhoto, setUploadPhoto] = useState(false);
     return (
@@ -48,6 +48,7 @@ const ProjectFiles = ({ classroomQuery, classes }) => {
                 onClick={() => {
                     setUploadPhoto(true);
                 }}
+                disabled={editDisabled}
             >
                 Nahrát fotky
             </Button>
