@@ -5,7 +5,7 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { persistCache } from 'apollo-cache-persist';
 
-const ENDPOINT = 'localhost:4000';
+const ENDPOINT = 'abeceda.adane.cz';
 
 export default async() => {
     /** INIT HTTPS & WS CONNECTION TO GRAPH-QL SERVER **/
@@ -23,12 +23,12 @@ export default async() => {
 
     // init HTTP connection
     // const httpLink = new HttpLink({ uri: `https://${ENDPOINT}` });
-    const httpLink = createUploadLink({ uri: `http://${ENDPOINT}` });
+    const httpLink = createUploadLink({ uri: `https://${ENDPOINT}` });
     const httpLinkAuth = middlewareLink.concat(httpLink);
 
     // init WebSocket connection
     const wsLink = new WebSocketLink({
-        uri: `ws://${ENDPOINT}`,
+        uri: `wss://${ENDPOINT}`,
         options: {
             reconnect: true,
             connectionParams: {
