@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
@@ -34,15 +34,13 @@ const styles = theme => ({
 const FairsTable = ({
     classes,
     fairsQuery,
-    meQuery,
 }) => {
     const [fairDetail, setFairDetail] = useState(null);
-    const isAdmin = compose(
-        contains('ADMIN'),
-        pluck('name'),
-        defaultTo([]),
-        path(['me', 'roles']),
-    )(meQuery);
+    useEffect(() => {
+        return () => {
+            localStorage.setItem('fairsCache', pluck('id')(fairsQuery.fairs || []));
+        }
+    }, []);
     if (fairsQuery.loading) return <CircularProgress />;
     if (fairsQuery.error) return (
         <SnackbarContent
@@ -50,6 +48,8 @@ const FairsTable = ({
             message="Načtení se nezdařilo"
         />
     );
+    const fairsCache = localStorage.getItem('fairsCache');
+    const isNew = (fair) => !contains(fair.id)(fairsCache || []);
     const isHighlighted = (fair) => {
         const fairDate = prop('fairDate')(fair || {});
         if (fairDate) {
@@ -92,6 +92,7 @@ const FairsTable = ({
                                         style={{
                                             padding: '24px',
                                             backgroundColor: isHighlighted(fair) ? 'lightgreen' : 'transparent',
+                                            border: isNew(fair) ? '1px solid red' : 'none',
                                         }}
                                     >
                                         {path(['fairDate'])(fair) ? moment(fair.fairDate).format('L') : '-' }
@@ -148,27 +149,18 @@ const FairsTable = ({
                                 </TableCell>
                             </TableRow>
                         )),
-                        sort((a, b) => moment(prop('fairCreateDate')(a)).isAfter(moment(prop('fairCreateDate')(b)))),
+                        sort((a, b) => {
+                            if (!prop('fairCreateDate')(a) && prop('fairCreateDate')(b)) return 1;
+                            if (prop('fairCreateDate')(a) && !prop('fairCreateDate')(b)) return -1;
+                            if (moment(prop('fairCreateDate')(a)).isSame(moment(prop('fairCreateDate')(b), 'day'))) return 0;
+                            return moment(prop('fairCreateDate')(a)).isAfter(moment(prop('fairCreateDate')(b))) ? -1 : 1;
+                        }),
                     )(fairsQuery.fairs || [])}
                 </TableBody>
             </Table>
         </React.Fragment>
     );
 };
-
-const meQuery = graphql(gql`
-    {
-        me {
-            id
-            email
-            roles {
-                name
-            }
-        }
-    }
-`, {
-    name: 'meQuery'
-});
 
 const fairsQuery = graphql(gql`
     {
@@ -219,5 +211,4 @@ const fairsQuery = graphql(gql`
 export default compose(
     withStyles(styles),
     fairsQuery,
-    meQuery,
 )(FairsTable);
