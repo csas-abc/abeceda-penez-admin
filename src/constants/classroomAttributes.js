@@ -34,6 +34,9 @@ export default `
                 recipient
                 address
                 childrenCount
+                classroom {
+                    id
+                }
             }
             phases {
                 id
@@ -69,4 +72,8 @@ export default `
                 id
                 name
             }
+            forgiveLoan
+            forgiveLoanCause
+            nps
+            area
 `;

@@ -7,12 +7,12 @@ import includes from 'ramda/src/includes';
 import pluck from 'ramda/src/pluck';
 import pathOr from 'ramda/src/pathOr';
 
-const genericHandler = curry((conditionHandler, roles, mewQuery) =>
+const genericHandler = curry((conditionHandler, roles, meQuery) =>
     conditionHandler((role) => compose(
         includes(role),
         pluck('name'),
         pathOr([], ['me', 'roles']),
-    )(mewQuery))(roles)
+    )(meQuery))(roles)
 );
 
 export const all = genericHandler(allR);

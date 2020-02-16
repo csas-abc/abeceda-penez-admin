@@ -8,25 +8,25 @@ import Layout from '../components/Layout';
 import classroomAttributes from '../constants/classroomAttributes';
 import ProjectsTable from '../components/ProjectsTable';
 
-const CoreRegionProjects = ({ match, coreClassroomsQuery }) => {
+const CoreRegionProjects = ({ match, regionClassroomsQuery }) => {
     return (
         <Layout title={`Třídy z regionu ${path(['params', 'region'])(match)}`}>
             <ProjectsTable
-                query={coreClassroomsQuery}
-                dataSelector={prop('coreClassrooms')}
+                query={regionClassroomsQuery}
+                dataSelector={prop('regionClassrooms')}
             />
         </Layout>
     );
 };
 
 const coreRegionClassrooms = graphql(gql`
-    query CoreClassrooms($region: String!){
-        coreClassrooms(region: $region) {
+    query RegionClassrooms($region: String!){
+        regionClassrooms(region: $region) {
             ${classroomAttributes}
         }
     }
 `, {
-    name: 'coreClassroomsQuery',
+    name: 'regionClassroomsQuery',
     options: (props) => ({
         fetchPolicy: 'cache-and-network',
         variables: {
