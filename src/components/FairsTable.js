@@ -4,7 +4,10 @@ import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
 import path from 'ramda/src/path';
 import contains from 'ramda/src/contains';
+import propEq from 'ramda/src/propEq';
+import prop from 'ramda/src/prop';
 import compose from 'ramda/src/compose';
+import sort from 'ramda/src/sort';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -47,6 +50,15 @@ const FairsTable = ({
             message="Načtení se nezdařilo"
         />
     );
+    const isHighlighted = (fair) => {
+        const fairDate = prop('fairDate')(fair || {});
+        if (fairDate) {
+            if (propEq('fairAnnexationState', 'V jednání')(fair || {})) {
+                return moment().isAfter(moment(fairDate).subtract(7, 'days'));
+            }
+        }
+        return false;
+    };
     return (
         <React.Fragment>
             {fairDetail ? (
@@ -72,62 +84,72 @@ const FairsTable = ({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {map((fair) => (
-                        <TableRow key={fair.id} onClick={() => isAdmin ? setFairDetail(fair) : null}>
-                            <TableCell>
-                                {path(['fairDate'])(fair) ? moment(fair.fairDate).format('L') : '-' }
-                            </TableCell>
-                            <TableCell>
-                                {path(['branchAddress'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['kioskReadyTime'])(fair) ? moment(fair.kioskReadyTime).format('LT') : '-' }
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairTime'])(fair) ? moment(fair.fairTime).format('LT') : '-' }
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairEnd'])(fair) ? moment(fair.fairEnd).format('LT') : '-' }
-                            </TableCell>
-                            <TableCell>
-                                {path(['branchRepresentativeName'])(fair) || '-'} <br/>
-                                <span style={{ color: '#9d9d9d' }}>{path(['branchRepresentativePhone'])(fair) || '-'}</span>
-                            </TableCell>
-                            <TableCell>
-                                {compose(
-                                    map((user) => (
-                                        <React.Fragment key={user.id}>
-                                            {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
-                                            <span style={{ color: '#9d9d9d' }}>{user.phone}, {user.email}</span><br/>
-                                        </React.Fragment>
-                                    )),
-                                    defaultTo([]),
-                                    path(['team', 'users']),
-                                )(fair)}
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairNote'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairElectricity'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairAnnexationState'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairAnnexationNote'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['kioskPlace'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['childrenCount'])(fair) || '-'}
-                            </TableCell>
-                            <TableCell>
-                                {path(['fairAgency', 'name'])(fair) || '-'}
-                            </TableCell>
-                        </TableRow>
-                    ))(fairsQuery.fairs)}
+                    {compose(
+                        map((fair) => (
+                            <TableRow key={fair.id} onClick={() => setFairDetail(fair)}>
+                                <TableCell>
+                                    <div
+                                        style={{
+                                            padding: '24px',
+                                            backgroundColor: isHighlighted(fair) ? 'lightgreen' : 'transparent',
+                                        }}
+                                    >
+                                        {path(['fairDate'])(fair) ? moment(fair.fairDate).format('L') : '-' }
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    {path(['branchAddress'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['kioskReadyTime'])(fair) ? moment(fair.kioskReadyTime).format('LT') : '-' }
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairTime'])(fair) ? moment(fair.fairTime).format('LT') : '-' }
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairEnd'])(fair) ? moment(fair.fairEnd).format('LT') : '-' }
+                                </TableCell>
+                                <TableCell>
+                                    {path(['branchRepresentativeName'])(fair) || '-'} <br/>
+                                    <span style={{ color: '#9d9d9d' }}>{path(['branchRepresentativePhone'])(fair) || '-'}</span>
+                                </TableCell>
+                                <TableCell>
+                                    {compose(
+                                        map((user) => (
+                                            <React.Fragment key={user.id}>
+                                                {user.activated ? `${user.firstname} ${user.lastname}` : user.email}<br />
+                                                <span style={{ color: '#9d9d9d' }}>{user.phone}, {user.email}</span><br/>
+                                            </React.Fragment>
+                                        )),
+                                        defaultTo([]),
+                                        path(['team', 'users']),
+                                    )(fair)}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairNote'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairElectricity'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairAnnexationState'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairAnnexationNote'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['kioskPlace'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['childrenCount'])(fair) || '-'}
+                                </TableCell>
+                                <TableCell>
+                                    {path(['fairAgency', 'name'])(fair) || '-'}
+                                </TableCell>
+                            </TableRow>
+                        )),
+                        sort((a, b) => moment(prop('fairCreateDate')(a)).isAfter(moment(prop('fairCreateDate')(b)))),
+                    )(fairsQuery.fairs || [])}
                 </TableBody>
             </Table>
         </React.Fragment>
@@ -181,6 +203,8 @@ const fairsQuery = graphql(gql`
                 id
                 name
             }
+            fairAnnexationState
+            fairCreateDate
         }
     }
 `, {

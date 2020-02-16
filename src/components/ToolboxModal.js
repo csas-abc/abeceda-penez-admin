@@ -4,6 +4,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import withStyles from '@material-ui/core/styles/withStyles';
 import ToolboxForm from './forms/ToolboxForm';
+import prop from 'ramda/src/prop';
 
 const styles =  {
     paper: {
@@ -28,7 +29,11 @@ const ToolboxModal = ({
         >
             <DialogTitle>Detail toolboxu</DialogTitle>
             <DialogContent>
-                <ToolboxForm toolbox={toolbox} onClose={onClose} />
+                <ToolboxForm
+                    toolbox={toolbox}
+                    onClose={onClose}
+                    classroom={prop('classroom')(toolbox)}
+                />
             </DialogContent>
         </Dialog>
     );

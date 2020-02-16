@@ -49,11 +49,13 @@ const ProjectModal = ({
         pathOr([], ['me', 'roles']),
     )(meQuery);
     const classroomRegion = pathOr('', ['team', 'users', 0, 'region'])(classroom);
+    const classroomType = propOr('', 'type')(classroom);
     const editDisabled = () => {
         if (contains('ADMIN')(userRoles)) {
             return false;
         }
         if (contains('CORE')(userRoles)) {
+            if (classroomType !== 'CORE') return true;
             return userRegion !== classroomRegion;
         }
     };
@@ -176,6 +178,7 @@ const ProjectModal = ({
                                 classroomId={prop('id')(classroom)}
                                 classroomQuery={classroomQuery}
                                 editDisabled={editDisabled()}
+                                classroom={classroom}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.NOTE}>
