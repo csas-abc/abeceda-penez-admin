@@ -34,6 +34,10 @@ const updateClassroomMutation = gql`
         $fairAnnexationState: String
         $fairAnnexationNote: String
         $fairAgency: FairAgencyInput
+        $forgiveLoan: String
+        $forgiveLoanCause: String
+        $nps: String
+        $area: String
     ) {
         updateClassroom(data: {
             id: $id,
@@ -68,6 +72,10 @@ const updateClassroomMutation = gql`
             fairAnnexationState: $fairAnnexationState
             fairAnnexationNote: $fairAnnexationNote
             fairAgency: $fairAgency
+            forgiveLoanCause: $forgiveLoanCause
+            forgiveLoan: $forgiveLoan
+            nps: $nps
+            area: $area
         }) {
             id
             classroomName
@@ -104,6 +112,10 @@ const updateClassroomMutation = gql`
                 id
                 name
             }
+            forgiveLoanCause
+            forgiveLoan
+            nps
+            area
         }
     }
 `;

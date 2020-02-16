@@ -23,9 +23,10 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from '@material-ui/core/Button';
 import Edit from '@material-ui/icons/Edit';
 import ProjectModal from './ProjectModal';
-import TeamModal from './TeamModal';
-import ToolboxModal from './forms/ToolboxForm';
 import ProjectModalTabs from '../constants/ProjectModalTabs';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import { all } from '../utils/permissions';
 
 const mapIndexed = addIndex(map);
 
@@ -44,10 +45,10 @@ const styles = theme => ({
 
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
-const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
+const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery }) => {
+    const isCoreUser = all(['CORE'])(meQuery);
     const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
     const [projectDetail, setProjectDetail] = useState(null);
-    const [teamDetail, setTeamDetail] = useState(null);
     const [columns, setColumns] = useState([
         {
             name: 'Projekt',
@@ -85,43 +86,51 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
             },
 
         },
-        {
-            name: 'Stav projektu',
-            options: {
-                filter: false,
-                customBodyRender: (phase) => {
-                    const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
-                    return (
+        ...isCoreUser ? [] : [
+            {
+                name: 'Region',
+                options: {
+                    filter: true,
+                    sort: false,
+                    customBodyRender: (value) => (
                         <div>
-                            {cellString}
-                            <div>
-                                {map((task) => (
-                                    <span key={task.id} style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
-                                ))(propOr([], 'checklist')(phase))}
-                            </div>
+                            {(value || []).map((region, index) => (
+                                <React.Fragment key={index}>
+                                    {region}<br />
+                                </React.Fragment>
+                            ))}
                         </div>
-                    );
-                },
-                search: (query, phase) => {
-                    const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
-                    return includes(query ? query.toLowerCase() : '')(cellString ? cellString.toLowerCase() : '');
+                    ),
+                }
+            },
+            {
+                name: 'Stav projektu',
+                options: {
+                    filter: false,
+                    customBodyRender: (phase) => {
+                        const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
+                        return (
+                            <div>
+                                {cellString}
+                                <div>
+                                    {map((task) => (
+                                        <span key={task.id} style={{ color: task.checked ? 'green' : 'red', fontSize: '22px' }}>•</span>
+                                    ))(propOr([], 'checklist')(phase))}
+                                </div>
+                            </div>
+                        );
+                    },
+                    search: (query, phase) => {
+                        const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
+                        return includes(query ? query.toLowerCase() : '')(cellString ? cellString.toLowerCase() : '');
+                    },
                 },
             },
-        },
+        ],
         {
-            name: 'Region',
+            name: 'Oblast',
             options: {
-                filter: true,
-                sort: false,
-                customBodyRender: (value) => (
-                    <div>
-                        {(value || []).map((region, index) => (
-                            <React.Fragment key={index}>
-                                {region}<br />
-                            </React.Fragment>
-                        ))}
-                    </div>
-                ),
+                filter: false,
             }
         },
         {
@@ -152,6 +161,20 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
                 ),
             },
         },
+        ...isCoreUser ? [
+            {
+                name: 'Datum návštěvy při výrobě',
+                options: {
+                    filter: false,
+                }
+            },
+            {
+                name: 'Datum kávy s učitelem',
+                options: {
+                    filter: false,
+                }
+            },
+        ] : [],
         {
             name: 'Pololetí',
             options: {
@@ -228,7 +251,6 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
             }
         }
     ]);
-    const [toolboxDetail, setToolboxDetail] = useState(null);
     useEffect(() => {
         setProjectDetail(defaultDetail);
     }, [defaultDetail]);
@@ -311,6 +333,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
                 case 13:
                 case 14:
                 case 15:
+                case 16:
                     const sorted = sort((a, b) => a.data[colIndex].localeCompare(b.data[colIndex]), data);
                     if (order === 'asc') return sorted;
                     return reverse(sorted);
@@ -351,12 +374,6 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
                     }}
                 />
             ) : null}
-            {teamDetail ? (
-                <TeamModal team={teamDetail} onClose={() => setTeamDetail(null)} />
-            ) : null}
-            {toolboxDetail ? (
-                <ToolboxModal toolbox={toolboxDetail} onClose={() => setToolboxDetail(null)} />
-            ) : null}
             <div style={{ width: '100%', height: '100%' }}>
                 {query.loading ? <CircularProgress /> : null}
                 <MUIDataTable
@@ -372,11 +389,18 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
                                 defaultTo([]),
                                 path(['team', 'users']),
                             )(classroom),
-                            getActivePhase(classroom),
-                            classroom.team.users.map((user) => user.region),
+                            ...isCoreUser ? [] : [
+                                classroom.team.users.map((user) => user.region),
+                                getActivePhase(classroom),
+                            ],
+                            prop('area')(classroom) || '-',
                             path(['branchAddress'])(classroom) || '-',
                             path(['schoolAddress'])(classroom) || '-',
                             path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
+                            ...isCoreUser ? [
+                                path(['visitInProduction'])(classroom) ? moment(path(['visitInProduction'])(classroom)).format('L') : '-',
+                                path(['coffeeWithTeacher'])(classroom) ? moment(path(['coffeeWithTeacher'])(classroom)).format('L') : '-',
+                            ] : [],
                             path(['semester'])(classroom) ? `${path(['semester'])(classroom)}. pololetí ${path(['year'])(classroom)}/${path(['year'])(classroom) + 1}` : '-',
                             path(['toolboxOrder', 'state'])(classroom) || '-',
                             path(['excursionDate'])(classroom) ? moment(path(['excursionDate'])(classroom)).format('L') : '-',
@@ -394,6 +418,21 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail }) => {
     );
 };
 
+const meQuery = graphql(gql`
+    {
+        me {
+            id
+            email
+            roles {
+                name
+            }
+        }
+    }
+`, {
+    name: 'meQuery'
+});
+
 export default compose(
+    meQuery,
     withStyles(styles),
 )(ProjectsTable);

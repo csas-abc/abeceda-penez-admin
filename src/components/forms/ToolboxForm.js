@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import compose from 'ramda/src/compose';
 import propOr from 'ramda/src/propOr';
+import propEq from 'ramda/src/propEq';
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -10,6 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { useSnackbar } from 'notistack';
+import { all } from '../../utils/permissions';
 
 const styles =  {
     paper: {
@@ -25,10 +27,21 @@ const ToolboxForm = ({
     classroomId,
     classroomQuery,
     editDisabled,
+    classroom,
+    meQuery,
 }) => {
+    const isCoreProject = propEq('type', 'CORE')(classroom);
+    const isCoreUser = all(['CORE'])(meQuery);
+    const prefillData = isCoreProject && isCoreUser;
     const [childrenCount, setChildrenCount] = useState(propOr('', 'childrenCount')(toolbox));
-    const [recipient, setRecipient] = useState(propOr('', 'recipient')(toolbox));
-    const [address, setAddress] = useState(propOr('', 'address')(toolbox));
+    const [address, setAddress] = useState(propOr(
+        (prefillData ? propOr('', 'branchAddress')(classroom) : ''),
+        'address',
+    )(toolbox));
+    const [recipient, setRecipient] = useState(propOr(
+        (prefillData ? propOr('', 'branchRepresentativeEmail')(classroom) : ''),
+        'recipient',
+    )(toolbox));
     const [creatingOrder, setCreatingOrder] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     return (
@@ -117,7 +130,22 @@ const ToolboxForm = ({
     );
 };
 
+const meQuery = gql`
+    {
+        me {
+            id
+            email
+            roles {
+                name
+            }
+        }
+    }
+`;
+
 export default compose(
+    graphql(meQuery, {
+        name: 'meQuery',
+    }),
     graphql(gql`
         mutation UpdateToolboxOrder($id: ID!, $recipient: String!, $address: String!, $childrenCount: String!) {
             updateToolboxOrder(data: {

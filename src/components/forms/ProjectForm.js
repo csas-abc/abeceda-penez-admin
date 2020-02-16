@@ -15,6 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import includes from 'ramda/src/includes';
 import find from 'ramda/src/find';
 import prop from 'ramda/src/prop';
+import propEq from 'ramda/src/propEq';
 import ArchiveConfirmationModal from '../ArchiveConfirmationModal';
 import FinishConfirmationModal from '../FinishConfirmationModal';
 
@@ -37,6 +38,7 @@ const ProjectForm = ({
 }) => {
     const isAdmin = includes('SUPER_ADMIN')(userRoles) || includes('ADMIN')(userRoles);
     const isCore = includes('CORE')(userRoles);
+    const isCoreClassroom = propEq('type', 'CORE')(classroom);
     const { enqueueSnackbar } = useSnackbar();
     const [archiveConfirmModal, setArchiveConfirmModal] = useState(false);
     const [finishConfirmModal, setFinishConfirmModal] = useState(false);
@@ -50,6 +52,10 @@ const ProjectForm = ({
     const [excursionDate, setExcursionDate] = useState(classroom.excursionDate);
     const [visitInProduction, setVisitInProduction] = useState(classroom.visitInProduction);
     const [coffeeWithTeacher, setCoffeeWithTeacher] = useState(classroom.coffeeWithTeacher);
+    const [forgiveLoan, setForgiveLoan] = useState(classroom.forgiveLoan || '');
+    const [forgiveLoanCause, setForgiveLoanCause] = useState(classroom.forgiveLoanCause || '');
+    const [nps, setNps] = useState(classroom.nps || '');
+    const [area, setArea] = useState(classroom.area || '');
 
     const isFinished = !getActivePhase(classroom);
 
@@ -72,6 +78,10 @@ const ProjectForm = ({
                         excursionDate,
                         visitInProduction,
                         coffeeWithTeacher,
+                        forgiveLoan,
+                        forgiveLoanCause,
+                        nps,
+                        area,
                     }
                 }).catch((e) => {
                     console.error('ERROR', e);
@@ -212,6 +222,59 @@ const ProjectForm = ({
                     onChange={(e) => setBusinessPurpose(e.target.value)}
                 />
             </FormControl>
+            {isCore || isAdmin ? (
+                <React.Fragment>
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="semester">Odpuštění půjčky</InputLabel>
+                        <Select
+                            inputProps={{
+                                id: 'forgiveLoan',
+                                name: 'forgiveLoan'
+                            }}
+                            value={forgiveLoan}
+                            onChange={(e) => setForgiveLoan(e.target.value)}
+                        >
+                            <MenuItem value="ANO">ANO</MenuItem>
+                            <MenuItem value="NE">NE</MenuItem>
+                        </Select>
+                    </FormControl>
+                    {forgiveLoan === 'ANO' ? (
+                        <FormControl margin="normal" fullWidth>
+                            <InputLabel htmlFor="forgiveLoanCause">Důvod</InputLabel>
+                            <Input
+                                id="forgiveLoanCause"
+                                name="forgiveLoanCause"
+                                multiline
+                                rows={3}
+                                rowsMax={5}
+                                value={forgiveLoanCause}
+                                onChange={(e) => setForgiveLoanCause(e.target.value)}
+                            />
+                        </FormControl>
+                    ) : null}
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="nps">NPS</InputLabel>
+                        <Input
+                            id="nps"
+                            name="nps"
+                            multiline
+                            rows={3}
+                            rowsMax={5}
+                            value={nps}
+                            onChange={(e) => setNps(e.target.value)}
+                        />
+                    </FormControl>
+                    <FormControl margin="normal" fullWidth>
+                        <InputLabel htmlFor="area">Oblast</InputLabel>
+                        <Input
+                            id="area"
+                            name="area"
+                            value={area}
+                            onChange={(e) => setArea(e.target.value)}
+                        />
+                    </FormControl>
+                </React.Fragment>
+            ) : null}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <Button
@@ -241,7 +304,7 @@ const ProjectForm = ({
                             {classroom.archived ? 'Obnovit' : 'Archivovat'}
                         </Button>
                     ) : null}
-                    {isCore && !isFinished ? (
+                    {isCore && !isFinished && isCoreClassroom ? (
                         <Button
                             variant="contained"
                             color="secondary"

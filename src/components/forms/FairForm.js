@@ -20,6 +20,7 @@ import includes from 'ramda/src/includes';
 import path from 'ramda/src/path';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useSnackbar } from 'notistack';
+import { any } from '../../utils/permissions';
 
 const styles =  {
     paper: {
@@ -33,6 +34,7 @@ const FairModal = ({
     classroom,
     fairAgenciesQuery,
     editDisabled,
+    meQuery,
 }) => {
     const { enqueueSnackbar } = useSnackbar();
     const [fairDate, setFairDate] = useState(classroom.fairDate);
@@ -46,13 +48,17 @@ const FairModal = ({
     const [fairAnnexationNote, setFairAnnexationNote] = useState(classroom.fairAnnexationNote || '');
     const [kioskPlace, setKioskPlace] = useState(classroom.kioskPlace || '');
     const [fairAgency, setFairAgency] = useState(pathOr('', ['fairAgency', 'id'])(classroom));
+    const isAgency = any(['AGENCY', 'CORE_AGENCY'])(meQuery);
     return (
         <form
             className={classes.form}
             onSubmit={(e) => {
                 e.preventDefault();
                 updateClassroomMutation({
-                    variables: {
+                    variables: isAgency ? {
+                        id: classroom.id,
+                        fairAnnexationState,
+                    } : {
                         id: classroom.id,
                         fairDate,
                         childrenCount,
@@ -89,6 +95,7 @@ const FairModal = ({
                         }}
                         value={fairAgency}
                         onChange={(e) => setFairAgency(e.target.value)}
+                        disabled={isAgency}
                     >
                         {compose(
                             map((fairAgency) => (
@@ -107,6 +114,7 @@ const FairModal = ({
                     onChange={setFairDate}
                     label="Datum jarmarku"
                     format="DD.MM.YYYY"
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -116,6 +124,7 @@ const FairModal = ({
                     name="childrenCount"
                     value={childrenCount}
                     onChange={(e) => setChildrenCount(e.target.value)}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -126,6 +135,7 @@ const FairModal = ({
                     onChange={setKioskReadyTime}
                     label="Postavení stánků"
                     ampm={false}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -136,6 +146,7 @@ const FairModal = ({
                     onChange={setFairTime}
                     label="Začátek jarmarku"
                     ampm={false}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -146,6 +157,7 @@ const FairModal = ({
                     onChange={setFairEnd}
                     label="Konec jarmarku"
                     ampm={false}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -158,6 +170,7 @@ const FairModal = ({
                     rowsMax={5}
                     value={fairNote}
                     onChange={(e) => setFairNote(e.target.value)}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -170,6 +183,7 @@ const FairModal = ({
                     rowsMax={5}
                     value={fairElectricity}
                     onChange={(e) => setFairElectricity(e.target.value)}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -182,8 +196,9 @@ const FairModal = ({
                     value={fairAnnexationState}
                     onChange={(e) => setFairAnnexationState(e.target.value)}
                 >
-                    <MenuItem value="Začal">Začal</MenuItem>
-                    <MenuItem value="Nezačal">Nezačal</MenuItem>
+                    <MenuItem value="V jednání">V jednání</MenuItem>
+                    <MenuItem value="Dojednáno">Dojednáno</MenuItem>
+                    <MenuItem value="Zamítnuto">Zamítnuto</MenuItem>
                 </Select>
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -196,6 +211,7 @@ const FairModal = ({
                     rowsMax={5}
                     value={fairAnnexationNote}
                     onChange={(e) => setFairAnnexationNote(e.target.value)}
+                    disabled={isAgency}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -207,6 +223,7 @@ const FairModal = ({
                     }}
                     value={kioskPlace}
                     onChange={(e) => setKioskPlace(e.target.value)}
+                    disabled={isAgency}
                 >
                     <MenuItem value="ANO">ANO</MenuItem>
                     <MenuItem value="NE">NE</MenuItem>
@@ -219,7 +236,7 @@ const FairModal = ({
                 color="primary"
                 className={classes.submit}
                 type="submit"
-                disabled={editDisabled}
+                disabled={editDisabled && !isAgency}
             >
                 Uložit
             </Button>
@@ -227,7 +244,22 @@ const FairModal = ({
     );
 };
 
+const meQuery = graphql(gql`
+    {
+        me {
+            id
+            email
+            roles {
+                name
+            }
+        }
+    }
+`, {
+    name: 'meQuery'
+});
+
 export default compose(
+    meQuery,
     graphql(
         updateClassroomMutation,
         {
