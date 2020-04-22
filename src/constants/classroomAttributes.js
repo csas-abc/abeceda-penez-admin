@@ -28,6 +28,7 @@ export default `
             kioskReadyTime
             kioskPlace
             archived
+            deleted
             toolboxOrder {
                 id
                 state

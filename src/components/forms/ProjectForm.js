@@ -18,6 +18,7 @@ import prop from 'ramda/src/prop';
 import propEq from 'ramda/src/propEq';
 import ArchiveConfirmationModal from '../ArchiveConfirmationModal';
 import FinishConfirmationModal from '../FinishConfirmationModal';
+import DeleteConfirmationModal from '../DeleteConfirmationModal';
 
 const styles = {
     paper: {
@@ -41,6 +42,7 @@ const ProjectForm = ({
     const isCoreClassroom = propEq('type', 'CORE')(classroom);
     const { enqueueSnackbar } = useSnackbar();
     const [archiveConfirmModal, setArchiveConfirmModal] = useState(false);
+    const [deleteConfirmModal, setDeleteConfirmModal] = useState(false);
     const [finishConfirmModal, setFinishConfirmModal] = useState(false);
     const [classroomName, setClassroomName] = useState(classroom.classroomName || '');
     const [schoolMeeting, setSchoolMeeting] = useState(classroom.schoolMeeting);
@@ -93,6 +95,15 @@ const ProjectForm = ({
                     onClose={(refetch) => {
                         onClose(refetch);
                         setArchiveConfirmModal(false);
+                    }}
+                    classroom={classroom}
+                />
+            ) : null}
+            {deleteConfirmModal ? (
+                <DeleteConfirmationModal
+                    onClose={(refetch) => {
+                        onClose(refetch);
+                        setDeleteConfirmModal(false);
                     }}
                     classroom={classroom}
                 />
@@ -293,7 +304,7 @@ const ProjectForm = ({
                     >
                         Export
                     </Button>
-                    {isAdmin ? (
+                    {isAdmin ? ([
                         <Button
                             variant="contained"
                             color="primary"
@@ -302,8 +313,17 @@ const ProjectForm = ({
                             onClick={() => setArchiveConfirmModal(true)}
                         >
                             {classroom.archived ? 'Obnovit' : 'Archivovat'}
+                        </Button>,
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                            style={{ marginLeft: '16px' }}
+                            onClick={() => setDeleteConfirmModal(true)}
+                        >
+                            {classroom.deleted ? 'Obnovit' : 'Koš'}
                         </Button>
-                    ) : null}
+                    ]) : null}
                     {isCore && !isFinished && isCoreClassroom ? (
                         <Button
                             variant="contained"

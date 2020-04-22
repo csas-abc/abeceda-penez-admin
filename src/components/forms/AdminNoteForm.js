@@ -21,7 +21,7 @@ const TeamModal = ({
     editDisabled,
     teamQuery: {
         team,
-        ...teamQuery,
+        ...teamQuery
     },
 }) => {
     const [messageTeamId, setMessageTeamId] = useState(null);

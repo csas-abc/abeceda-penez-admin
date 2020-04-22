@@ -10,11 +10,13 @@ import Person from '@material-ui/icons/Person';
 import People from '@material-ui/icons/People';
 import Mood from '@material-ui/icons/Mood';
 import Archive from '@material-ui/icons/Archive';
+import Delete from '@material-ui/icons/Delete';
 import ListItemText from '@material-ui/core/ListItemText';
 import Subject from '@material-ui/icons/Subject';
 import Assessment from '@material-ui/icons/Assessment';
 import Work from '@material-ui/icons/Work';
 import Message from '@material-ui/icons/Message';
+import Today from '@material-ui/icons/Today';
 import { withStyles } from '@material-ui/core';
 import logo from '../assets/cs-logo.svg';
 import { Link } from 'react-router-dom';
@@ -117,10 +119,22 @@ const Menu = ({ classes, meQuery }) => (
                         <ListItemText primary="Forum" />
                     </ListItem>
                 ) : null}
+                {any(['ADMIN', 'CORE']) ? (
+                    <ListItem button component={Link} to="/roadmap">
+                        <ListItemIcon><Today /></ListItemIcon>
+                        <ListItemText primary="Akce RMKT" />
+                    </ListItem>
+                ) : null}
                 {any(['ADMIN', 'SUPER_ADMIN', 'CORE'])(meQuery) ? (
                     <ListItem button component={Link} to="/archive">
                         <ListItemIcon><Archive /></ListItemIcon>
                         <ListItemText primary="Archiv" />
+                    </ListItem>
+                ) : null}
+                {any(['ADMIN'])(meQuery) ? (
+                    <ListItem button component={Link} to="/deleted">
+                        <ListItemIcon><Delete /></ListItemIcon>
+                        <ListItemText primary="Koš" />
                     </ListItem>
                 ) : null}
             </List>
