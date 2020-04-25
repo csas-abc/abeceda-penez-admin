@@ -1,30 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
-import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
-import path from 'ramda/src/path';
-import contains from 'ramda/src/contains';
-import propEq from 'ramda/src/propEq';
 import prop from 'ramda/src/prop';
 import pathOr from 'ramda/src/pathOr';
 import compose from 'ramda/src/compose';
-import sort from 'ramda/src/sort';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Edit from '@material-ui/icons/Edit';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import pluck from 'ramda/src/pluck';
-import FairModal from './FairModal';
 import roadmapEventAttributes from '../constants/roadmapEventAttributes';
 import Button from '@material-ui/core/Button';
-import Layout from './Layout';
 import CreateRoadmapEventModal from './CreateRoadmapEventModal';
+import EditRoadmapEventModal from './EditRoadmapEventModal';
 
 const styles = theme => ({
     table: {
@@ -41,6 +35,7 @@ const RoadmapEventsTable = ({
     roadmapEventsQuery,
 }) => {
     const [createEventModal, setCreateEventModal] = useState(false);
+    const [editEventModal, setEditEventModal] = useState(false);
     if (roadmapEventsQuery.loading) return <CircularProgress />;
     if (roadmapEventsQuery.error) return (
         <SnackbarContent
@@ -51,7 +46,25 @@ const RoadmapEventsTable = ({
     return (
         <React.Fragment>
             {createEventModal ? (
-                <CreateRoadmapEventModal onClose={() => setCreateEventModal(false)} />
+                <CreateRoadmapEventModal
+                    onClose={(refetch) => {
+                        if (refetch) {
+                            roadmapEventsQuery.refetch();
+                        }
+                        setCreateEventModal(false)
+                    }}
+                />
+            ) : null}
+            {editEventModal ? (
+                <EditRoadmapEventModal
+                    onClose={(refetch) => {
+                        if (refetch) {
+                            roadmapEventsQuery.refetch();
+                        }
+                        setEditEventModal(false)
+                    }}
+                    eventId={editEventModal}
+                />
             ) : null}
             <Button
                 variant="contained"
@@ -63,6 +76,7 @@ const RoadmapEventsTable = ({
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
+                        <TableCell />
                         <TableCell>Region</TableCell>
                         <TableCell>Segment</TableCell>
                         <TableCell>Název akce</TableCell>
@@ -85,6 +99,9 @@ const RoadmapEventsTable = ({
                         map((event) => (
                             <TableRow key={event.id}>
                                 <TableCell>
+                                    <Edit onClick={() => setEditEventModal(event.id)} />
+                                </TableCell>
+                                <TableCell>
                                     {pathOr('-', ['region'])(event)}
                                 </TableCell>
                                 <TableCell>
@@ -97,22 +114,22 @@ const RoadmapEventsTable = ({
                                     {`${moment(event.from).format('L LT')} - ${moment(event.to).format('L LT') }`}
                                 </TableCell>
                                 <TableCell>
-                                    TBD
+                                    TBD - photo
                                 </TableCell>
                                 <TableCell>
-                                    {pathOr('-', ['budget'])(event)}
+                                    {pathOr('-', ['budgetMMA'])(event)}
                                 </TableCell>
                                 <TableCell>
-                                    TBD
+                                    {pathOr('-', ['budgetMSE'])(event)}
                                 </TableCell>
                                 <TableCell>
-                                    TBD
+                                    {pathOr('-', ['budgetEXHYP'])(event)}
                                 </TableCell>
                                 <TableCell>
-                                    TBD
+                                    {pathOr('-', ['overBudget'])(event)}
                                 </TableCell>
                                 <TableCell>
-                                    TBD
+                                    {pathOr('-', ['nps'])(event)}
                                 </TableCell>
                                 <TableCell>
                                     {pathOr('-', ['evaluation'])(event)}
@@ -129,7 +146,7 @@ const RoadmapEventsTable = ({
                                     {pathOr('-', ['finMaterial'])(event)}
                                 </TableCell>
                                 <TableCell>
-                                    TBD
+                                    {pathOr('-', ['note'])(event)}
                                 </TableCell>
                             </TableRow>
                         )),

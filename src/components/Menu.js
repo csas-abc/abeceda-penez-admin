@@ -16,6 +16,7 @@ import Subject from '@material-ui/icons/Subject';
 import Assessment from '@material-ui/icons/Assessment';
 import Work from '@material-ui/icons/Work';
 import Message from '@material-ui/icons/Message';
+import Money from '@material-ui/icons/Money';
 import Today from '@material-ui/icons/Today';
 import { withStyles } from '@material-ui/core';
 import logo from '../assets/cs-logo.svg';
@@ -123,6 +124,12 @@ const Menu = ({ classes, meQuery }) => (
                     <ListItem button component={Link} to="/roadmap">
                         <ListItemIcon><Today /></ListItemIcon>
                         <ListItemText primary="Akce RMKT" />
+                    </ListItem>
+                ) : null}
+                {all(['CORE']) ? (
+                    <ListItem button component={Link} to="/budgets">
+                        <ListItemIcon><Money /></ListItemIcon>
+                        <ListItemText primary="Budgety" />
                     </ListItem>
                 ) : null}
                 {any(['ADMIN', 'SUPER_ADMIN', 'CORE'])(meQuery) ? (

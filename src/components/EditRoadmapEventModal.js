@@ -14,11 +14,14 @@ import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import map from 'ramda/src/map';
 import compose from 'ramda/src/compose';
-import path from 'ramda/src/path';
+import pathEq from 'ramda/src/pathEq';
+import propOr from 'ramda/src/propOr';
 import MenuItem from '@material-ui/core/MenuItem';
 import Regions from '../constants/Regions';
 import DatePicker from 'material-ui-pickers/DateTimePicker';
 import { all } from '../utils/permissions';
+import DeleteRoadmapEventConfirmationModal from './DeleteRoadmapEventConfirmationModal';
+import RoadmapEventPhotos from './RoamapEventPhotos';
 
 const styles =  {
     paper: {
@@ -26,24 +29,34 @@ const styles =  {
     },
 };
 
-const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation, meQuery }) => {
+const EditRoadmapEventModal = ({
+    onClose,
+    classes,
+    updateRoadmapEventMutation,
+    meQuery,
+    roadmapEventQuery,
+}) => {
+    const roadmapEvent = propOr({}, 'roadmapEvent')(roadmapEventQuery);
     const isCoreUser = all(['CORE'])(meQuery);
-    const [name, setName] = useState('');
-    const [region, setRegion] = useState(isCoreUser ? path(['me', 'region'])(meQuery) : '');
-    const [segment, setSegment] = useState('');
-    const [from, setFrom] = useState(null);
-    const [to, setTo] = useState(null);
-    const [description, setDescription] = useState('');
-    const [address, setAddress] = useState('');
-    const [budgetMMA, setBudgetMMA] = useState(0);
-    const [budgetMSE, setBudgetMSE] = useState(0);
-    const [budgetEXHYP, setBudgetEXHYP] = useState(0);
-    const [overBudget, setOverBudget] = useState(0);
-    const [nps, setNps] = useState('');
-    const [note, setNote] = useState('');
-    const [evaluation, setEvaluation] = useState('');
-    const [internalClient, setInternalClient] = useState('');
-    const [finMaterial, setFinMaterial] = useState('');
+    const isAdmin = all(['ADMIN'])(meQuery);
+    const isEditable = isAdmin || (pathEq(['me', 'region'], propOr('', 'region')(roadmapEvent))(meQuery))
+    const [deleteEvent, setDeleteEvent] = useState(null);
+    const [name, setName] = useState(propOr('', 'name')(roadmapEvent));
+    const [region, setRegion] = useState(propOr('', 'region')(roadmapEvent));
+    const [segment, setSegment] = useState(propOr('', 'segment')(roadmapEvent));
+    const [from, setFrom] = useState(new Date(propOr(null, 'from')(roadmapEvent)));
+    const [to, setTo] = useState(new Date(propOr(null, 'to')(roadmapEvent)));
+    const [description, setDescription] = useState(propOr('', 'description')(roadmapEvent));
+    const [address, setAddress] = useState(propOr('', 'address')(roadmapEvent));
+    const [budgetMMA, setBudgetMMA] = useState(propOr('', 'budgetMMA')(roadmapEvent));
+    const [budgetMSE, setBudgetMSE] = useState(propOr('', 'budgetMSE')(roadmapEvent));
+    const [budgetEXHYP, setBudgetEXHYP] = useState(propOr('', 'overBudget')(roadmapEvent));
+    const [overBudget, setOverBudget] = useState(propOr('', 'overBudget')(roadmapEvent));
+    const [nps, setNps] = useState(propOr('', 'nps')(roadmapEvent));
+    const [note, setNote] = useState(propOr('', 'note')(roadmapEvent));
+    const [evaluation, setEvaluation] = useState(propOr('', 'evaluation')(roadmapEvent));
+    const [internalClient, setInternalClient] = useState(propOr('', 'internalClient')(roadmapEvent));
+    const [finMaterial, setFinMaterial] = useState(propOr('', 'finMaterial')(roadmapEvent));
 
     const [loading, setLoading] = useState(false);
     return (
@@ -56,6 +69,17 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                 paperWidthMd: classes.paper,
             }}
         >
+            {deleteEvent ? (
+                <DeleteRoadmapEventConfirmationModal
+                    eventId={deleteEvent}
+                    onClose={(refetch) => {
+                        if (refetch) {
+                            onClose(true);
+                        }
+                        setDeleteEvent(null);
+                    }}
+                />
+            ) : null}
             <DialogTitle>Vytvořit akci</DialogTitle>
             <DialogContent>
                 <form
@@ -63,8 +87,9 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                     onSubmit={(e) => {
                         setLoading(true);
                         e.preventDefault();
-                        createRoadmapEventMutation({
+                        updateRoadmapEventMutation({
                             variables: {
+                                id: roadmapEvent.id,
                                 name,
                                 region,
                                 segment,
@@ -268,23 +293,38 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             onChange={(e) => setNote(e.target.value)}
                         />
                     </FormControl>
-                    <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading ? <CircularProgress /> : 'Vytvořit'}
-                    </Button>
+                    <RoadmapEventPhotos event={roadmapEvent} />
+                    {isEditable ? (
+                        <div style={{ display: 'flex' }}>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                disabled={loading}
+                            >
+                                {loading ? <CircularProgress /> : 'Uložit'}
+                            </Button>
+                            <Button
+                                fullWidth
+                                variant="contained"
+                                color="secondary"
+                                onClick={() => setDeleteEvent(roadmapEvent.id)}
+                                disabled={loading}
+                            >
+                                Smazat
+                            </Button>
+                        </div>
+                    ) : null}
                 </form>
             </DialogContent>
         </Dialog>
     );
 };
 
-const createRoadmapEventMutation = graphql(gql`
-    mutation CreateRoadmapEvent(
+const updateRoadmapEventMutation = graphql(gql`
+    mutation UpdateRoadmapEvent(
+        $id: ID!
         $segment: String
         $name: String
         $from: DateTime
@@ -302,7 +342,8 @@ const createRoadmapEventMutation = graphql(gql`
         $finMaterial: String
         $region: String
     ) {
-        createEvent(data: {
+        updateEvent(data: {
+            id: $id
             segment: $segment
             name: $name
             from: $from
@@ -324,7 +365,7 @@ const createRoadmapEventMutation = graphql(gql`
         }
     }
 `, {
-    name: 'createRoadmapEventMutation',
+    name: 'updateRoadmapEventMutation',
 });
 
 const meQuery = graphql(gql`
@@ -345,8 +386,25 @@ const meQuery = graphql(gql`
     },
 });
 
+const roadmapEventQuery = graphql(gql`
+    query RoadmapEvent($id: ID!){
+        roadmapEvent(id: $id) {
+            ${roadmapEventAttributes}
+        }
+    }
+`, {
+    name: 'roadmapEventQuery',
+    options: (props) => ({
+        fetchPolicy: 'cache-and-network',
+        variables: {
+            id: props.eventId,
+        },
+    }),
+});
+
 export default compose(
     meQuery,
-    createRoadmapEventMutation,
+    updateRoadmapEventMutation,
+    roadmapEventQuery,
     withStyles(styles),
-)(CreateRoadmapEventModal);
+)(EditRoadmapEventModal);

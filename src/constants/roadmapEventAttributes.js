@@ -15,7 +15,12 @@ export default `
     to
     description
     address
-    budget
+    budgetMMA
+    budgetMSE
+    budgetEXHYP
+    overBudget
+    nps
+    note
     evaluation
     internalClient
     finMaterial

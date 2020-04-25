@@ -27,7 +27,7 @@ const TeamModal = ({
     userRoles,
     teamQuery: {
         team,
-        ...teamQuery,
+        ...teamQuery
     },
 }) => {
     const [messageTeamId, setMessageTeamId] = useState(null);
