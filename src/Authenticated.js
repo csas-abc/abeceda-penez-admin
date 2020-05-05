@@ -19,6 +19,9 @@ import path from 'ramda/src/path';
 import Fairs from './screens/Fairs';
 import CoreRegionProjects from './screens/CoeRegionProjects';
 import CoreProjects from './screens/CoreProjects';
+import DeletedClassrooms from './screens/DeletedClassrooms';
+import Roadmap from './screens/Roadmap';
+import Budgets from './screens/Budgets';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -82,10 +85,13 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/toolboxes" exact component={Toolboxes} />
             <Route path="/fairs" exact component={Fairs} />
             <Route path="/archive" exact component={Archive} />
+            <Route path="/deleted" exact component={DeletedClassrooms} />
             <Route path="/classrooms-management" exact component={ClassroomsManagement} />
             <Route path="/forum" exact component={Forum} />
             <Route path="/statistics" exact component={Statistics} />
             <Route path="/core-region/:region" exact component={CoreRegionProjects} />
+            <Route path="/roadmap" exact component={Roadmap} />
+            <Route path="/budgets" exact component={Budgets} />
         </Fragment>
     )
 };
