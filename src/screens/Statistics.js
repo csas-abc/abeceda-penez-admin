@@ -81,6 +81,27 @@ const Statitics = ({ client }) => {
             >
                 E-maily účastníků
             </Button>
+            <Button
+                variant="raised"
+                color="primary"
+                style={{ margin: '0 10px' }}
+            >
+                TODO: Kontakty
+            </Button>
+            <Button
+                variant="raised"
+                color="primary"
+                style={{ margin: '0 10px' }}
+            >
+                TODO: Přehled škol/tříd
+            </Button>
+            <Button
+                variant="raised"
+                color="primary"
+                style={{ margin: '0 10px' }}
+            >
+                TODO: Pobočky
+            </Button>
         </Layout>
     );
 };
