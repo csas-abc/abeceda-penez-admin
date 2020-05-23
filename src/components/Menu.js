@@ -51,7 +51,7 @@ const Menu = ({ classes, meQuery }) => (
                     <React.Fragment>
                         <ListItem button component={Link} to="/">
                             <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary="Přehled" />
+                            <ListItemText primary="AP 4.třídy" />
                         </ListItem>
                         <ListItem button component={Link} to="/core-projects">
                             <ListItemIcon><Subject /></ListItemIcon>
@@ -83,7 +83,11 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                         <ListItem button component={Link} to="/statistics">
                             <ListItemIcon><Assessment /></ListItemIcon>
-                            <ListItemText primary="Statistika" />
+                            <ListItemText primary="Reporty" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/budgets">
+                            <ListItemIcon><Money /></ListItemIcon>
+                            <ListItemText primary="Budgety" />
                         </ListItem>
                     </React.Fragment>
                     ) : null}
@@ -91,7 +95,23 @@ const Menu = ({ classes, meQuery }) => (
                     <React.Fragment>
                         <ListItem button component={Link} to="/classrooms-management">
                             <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary="Třídy" />
+                            <ListItemText primary="AP 4.třídy" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/vap-management">
+                            <ListItemIcon><Subject /></ListItemIcon>
+                            <ListItemText primary=" TODO: VAP" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/map-management">
+                            <ListItemIcon><Subject /></ListItemIcon>
+                            <ListItemText primary="TODO: MAP" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/second-grades-management">
+                            <ListItemIcon><Subject /></ListItemIcon>
+                            <ListItemText primary="TODO: AP 2.třídy" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/senior-ap-management">
+                            <ListItemIcon><Subject /></ListItemIcon>
+                            <ListItemText primary="TODO: AP pro seniory" />
                         </ListItem>
                         <ListItem component="span">
                             <ListItemIcon><People /></ListItemIcon>
@@ -114,7 +134,7 @@ const Menu = ({ classes, meQuery }) => (
                         </Collapse>
                     </React.Fragment>
                 ) : null}
-                {none(['AGENCY', 'CORE_AGENCY'])(meQuery) ? (
+                {none(['AGENCY', 'CORE_AGENCY', 'CORE'])(meQuery) ? (
                     <ListItem button component={Link} to="/forum">
                         <ListItemIcon><Message /></ListItemIcon>
                         <ListItemText primary="Forum" />
@@ -126,11 +146,26 @@ const Menu = ({ classes, meQuery }) => (
                         <ListItemText primary="Akce RMKT" />
                     </ListItem>
                 ) : null}
-                {all(['CORE']) ? (
-                    <ListItem button component={Link} to="/budgets">
-                        <ListItemIcon><Money /></ListItemIcon>
-                        <ListItemText primary="Budgety" />
-                    </ListItem>
+                {any(['CORE'])(meQuery) ? (
+                    <React.Fragment>
+                        <ListItem button component={Link} to="/budgets">
+                            <ListItemIcon><Money /></ListItemIcon>
+                            <ListItemText primary="Budgety" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/statistics">
+                            <ListItemIcon><Assessment /></ListItemIcon>
+                            <ListItemText primary="Reporty" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/core-toolboxes">
+                            <ListItemIcon><Work /></ListItemIcon>
+                            <ListItemText primary="Toolboxy" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/core-fairs">
+                            <ListItemIcon><Mood /></ListItemIcon>
+                            <ListItemText primary="Jarmarky" />
+                        </ListItem>
+                    </React.Fragment>
+                    
                 ) : null}
                 {any(['ADMIN', 'SUPER_ADMIN', 'CORE'])(meQuery) ? (
                     <ListItem button component={Link} to="/archive">

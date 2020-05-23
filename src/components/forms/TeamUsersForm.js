@@ -24,7 +24,7 @@ const TeamModal = ({
     userRoles,
     teamQuery: {
         team,
-        ...teamQuery,
+        ...teamQuery
     },
     unassignUserMutation,
     assignUserMutation,

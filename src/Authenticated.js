@@ -6,10 +6,15 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Teams from './screens/Teams';
 import Users from './screens/Users';
 import Toolboxes from './screens/Toolboxes';
+import CoreToolboxes from './screens/CoreToolboxes';
 import Projects from './screens/Projects';
 import Archive from './screens/Archive';
 import Statistics from './screens/Statistics';
 import ClassroomsManagement from './screens/ClassroomsManagement';
+import SecondGradesManagement from './screens/SecondGradesManagement';
+import MAPManagement from './screens/MAPManagement';
+import VAPManagement from './screens/VAPManagement';
+import SeniorAPManagement from './screens/SeniorAPManagement';
 import Forum from './screens/Forum';
 import compose from 'ramda/src/compose';
 import contains from 'ramda/src/contains';
@@ -17,6 +22,7 @@ import pluck from 'ramda/src/pluck';
 import defaultTo from 'ramda/src/defaultTo';
 import path from 'ramda/src/path';
 import Fairs from './screens/Fairs';
+import CoreFairs from './screens/CoreFairs';
 import CoreRegionProjects from './screens/CoeRegionProjects';
 import CoreProjects from './screens/CoreProjects';
 import DeletedClassrooms from './screens/DeletedClassrooms';
@@ -83,10 +89,16 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/teams" exact component={Teams} />
             <Route path="/users" exact component={Users} />
             <Route path="/toolboxes" exact component={Toolboxes} />
+            <Route path="/core-toolboxes" exact component={CoreToolboxes} />
             <Route path="/fairs" exact component={Fairs} />
+            <Route path="/core-fairs" exact component={CoreFairs} />
             <Route path="/archive" exact component={Archive} />
             <Route path="/deleted" exact component={DeletedClassrooms} />
             <Route path="/classrooms-management" exact component={ClassroomsManagement} />
+            <Route path="/second-grades-management" exact component={SecondGradesManagement} />
+            <Route path="/map-management" exact component={MAPManagement} />
+            <Route path="/vap-management" exact component={VAPManagement} />
+            <Route path="/senior-ap-management" exact component={SeniorAPManagement} />
             <Route path="/forum" exact component={Forum} />
             <Route path="/statistics" exact component={Statistics} />
             <Route path="/core-region/:region" exact component={CoreRegionProjects} />
