@@ -74,7 +74,7 @@ const RoadmapEventsTable = ({
         {
             name: 'Datum od-do',
             options: {
-                filter: true,
+                filter: false,
                 customBodyRender: ([from, to]) => (
                     `${moment(from).format('L LT')} - ${moment(to).format('L LT') }`
                 ),
