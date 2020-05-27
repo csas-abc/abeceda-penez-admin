@@ -7,6 +7,7 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import updateClassroomMutation from '../../utils/updateClassroomMutation';
 import { graphql } from 'react-apollo';
+import { useSnackbar } from 'notistack';
 
 const styles =  {
     paper: {
@@ -20,6 +21,7 @@ const BranchModal = ({
     classroom,
     editDisabled,
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const [branchRepresentativeName, setBranchRepresentativeName] = useState(classroom.branchRepresentativeName || '');
     const [branchRepresentativeEmail, setBranchRepresentativeEmail] = useState(classroom.branchRepresentativeEmail || '');
     const [branchRepresentativePhone, setBranchRepresentativePhone] = useState(classroom.branchRepresentativePhone || '');
@@ -38,6 +40,18 @@ const BranchModal = ({
                         branchRepresentativePhone,
                         branchAddress,
                     }
+                }).then(() => {
+                    enqueueSnackbar(
+                        'Projekt byl úspěšně uložen',
+                        {
+                            variant: 'success',
+                            autoHideDuration: 4000,
+                            anchorOrigin: {
+                                horizontal: 'center',
+                                vertical: 'top',
+                            },
+                        }
+                    )
                 }).catch((e) => {
                     console.error('ERROR', e);
                 })

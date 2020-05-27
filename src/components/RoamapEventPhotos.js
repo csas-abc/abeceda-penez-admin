@@ -25,7 +25,7 @@ const styles = (theme) => ({
 const RoadmapEventPhotos = ({ event, classes, editDisabled }) => {
     const [uploadPhoto, setUploadPhoto] = useState(false);
     return (
-        <div>
+        <div style={{ marginTop: '24px', marginBottom: '24px' }}>
             {uploadPhoto ? (
                 <UploadRoadmapFileDialog
                     event={event}
@@ -51,7 +51,12 @@ const RoadmapEventPhotos = ({ event, classes, editDisabled }) => {
             <div className={classes.root}>
                 <GridList cellHeight={200} className={classes.gridList} cols={5}>
                     {map((file) => (
-                        <GridListTile key={file.id} cols={1}>
+                        <GridListTile
+                            key={file.id}
+                            cols={1}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => window.open(`https://abeceda.adane.cz${file.path}`, '_blank')}
+                        >
                             <img src={`https://abeceda.adane.cz${file.path}`} alt={file.name} />
                         </GridListTile>
                     ))(event.photos || [])}

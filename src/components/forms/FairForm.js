@@ -78,6 +78,18 @@ const FairModal = ({
                             }
                         } : {}
                     }
+                }).then(() => {
+                    enqueueSnackbar(
+                        'Projekt byl úspěšně uložen',
+                        {
+                            variant: 'success',
+                            autoHideDuration: 4000,
+                            anchorOrigin: {
+                                horizontal: 'center',
+                                vertical: 'top',
+                            },
+                        }
+                    )
                 }).catch((e) => {
                     enqueueSnackbar(replace('GraphQL error: ', '')(e.message), { variant: 'error' });
                     console.error('ERROR', e);

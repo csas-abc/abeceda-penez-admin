@@ -141,14 +141,23 @@ const EditRoadmapEventModal = ({
                             ))(Regions)}
                         </Select>
                     </FormControl>
-                    <FormControl margin="normal" fullWidth>
+                    <FormControl margin="normal" required fullWidth>
                         <InputLabel htmlFor="segment">Segment</InputLabel>
-                        <Input
-                            id="segment"
-                            name="segment"
+                        <Select
+                            disabled={isCoreUser}
+                            inputProps={{
+                                id: 'segment',
+                                name: 'segment'
+                            }}
                             value={segment}
                             onChange={(e) => setSegment(e.target.value)}
-                        />
+                        >
+                            <MenuItem key="MMA" value="MMA">MMA</MenuItem>
+                            <MenuItem key="MSE" value="MSE">MSE</MenuItem>
+                            <MenuItem key="EPAK" value="EPAK">EPAK</MenuItem>
+                            <MenuItem key="EXHYP" value="EXHYP">EXHYP</MenuItem>
+                            <MenuItem key="více segmentové" value="více segmentové">více segmentové</MenuItem>
+                        </Select>
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
                         <DatePicker

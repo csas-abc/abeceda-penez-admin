@@ -85,6 +85,18 @@ const ProjectForm = ({
                         nps,
                         area,
                     }
+                }).then(() => {
+                    enqueueSnackbar(
+                        'Projekt byl úspěšně uložen',
+                        {
+                            variant: 'success',
+                            autoHideDuration: 4000,
+                            anchorOrigin: {
+                                horizontal: 'center',
+                                vertical: 'top',
+                            },
+                        }
+                    )
                 }).catch((e) => {
                     console.error('ERROR', e);
                 });
@@ -312,7 +324,7 @@ const ProjectForm = ({
                             style={{ marginLeft: '16px' }}
                             onClick={() => setArchiveConfirmModal(true)}
                         >
-                            {classroom.archived ? 'Obnovit' : 'Archivovat'}
+                            {classroom.archived ? 'Obnovit' : 'Přesunout do Archivu'}
                         </Button>,
                         <Button
                             variant="contained"
@@ -321,7 +333,7 @@ const ProjectForm = ({
                             style={{ marginLeft: '16px' }}
                             onClick={() => setDeleteConfirmModal(true)}
                         >
-                            {classroom.deleted ? 'Obnovit' : 'Koš'}
+                            {classroom.deleted ? 'Obnovit' : 'Přesunout do koše'}
                         </Button>
                     ]) : null}
                     {isCore && !isFinished && isCoreClassroom ? (

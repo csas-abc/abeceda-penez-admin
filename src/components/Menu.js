@@ -115,7 +115,7 @@ const Menu = ({ classes, meQuery }) => (
                         </ListItem>
                         <ListItem component="span">
                             <ListItemIcon><People /></ListItemIcon>
-                            <ListItemText primary="Regiony" />
+                            <ListItemText primary="AP regiony" />
                         </ListItem>
                         <Collapse in timeout="auto" unmountOnExit>
                             <List component="div" disablePadding>
@@ -165,7 +165,7 @@ const Menu = ({ classes, meQuery }) => (
                             <ListItemText primary="Jarmarky" />
                         </ListItem>
                     </React.Fragment>
-                    
+
                 ) : null}
                 {any(['ADMIN', 'SUPER_ADMIN', 'CORE'])(meQuery) ? (
                     <ListItem button component={Link} to="/archive">

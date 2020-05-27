@@ -9,6 +9,7 @@ import prop from 'ramda/src/prop';
 import { graphql } from 'react-apollo';
 import CreateMessageModal from '../CreateMessageModal';
 import { CircularProgress } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
 
 const styles =  {
     paper: {
@@ -24,6 +25,7 @@ const TeamModal = ({
         ...teamQuery
     },
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const [messageTeamId, setMessageTeamId] = useState(null);
     const [adminNote, setAdminNote] = useState(prop('adminNote')(team) || '');
     useEffect(() => {
@@ -64,6 +66,18 @@ const TeamModal = ({
                                 id: team.id,
                                 adminNote,
                             }
+                        }).then(() => {
+                            enqueueSnackbar(
+                                'Projekt byl úspěšně uložen',
+                                {
+                                    variant: 'success',
+                                    autoHideDuration: 4000,
+                                    anchorOrigin: {
+                                        horizontal: 'center',
+                                        vertical: 'top',
+                                    },
+                                }
+                            )
                         });
                     }}
                     disabled={editDisabled}

@@ -178,7 +178,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         {
             name: 'Pololetí',
             options: {
-                filter: false,
+                filter: true,
             },
         },
         {

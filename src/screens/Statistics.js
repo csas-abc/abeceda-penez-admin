@@ -12,7 +12,7 @@ const Statitics = ({ client }) => {
             <Button
                 variant="raised"
                 color="primary"
-                style={{ margin: '0 10px' }}
+                style={{ margin: '10px' }}
                 onClick={() => {
                     enqueueSnackbar(
                         'Odkaz na soubor byl odeslán e-mailem',
@@ -36,7 +36,7 @@ const Statitics = ({ client }) => {
             <Button
                 variant="raised"
                 color="primary"
-                style={{ margin: '0 10px' }}
+                style={{ margin: '10px' }}
                 onClick={() => {
                     enqueueSnackbar(
                         'Odkaz na soubor byl odeslán e-mailem',
@@ -60,7 +60,7 @@ const Statitics = ({ client }) => {
             <Button
                 variant="raised"
                 color="primary"
-                style={{ margin: '0 10px' }}
+                style={{ margin: '10px' }}
                 onClick={() => {
                     enqueueSnackbar(
                         'Odkaz na soubor byl odeslán e-mailem',
@@ -84,21 +84,21 @@ const Statitics = ({ client }) => {
             <Button
                 variant="raised"
                 color="primary"
-                style={{ margin: '0 10px' }}
+                style={{ margin: '10px' }}
             >
                 TODO: Kontakty
             </Button>
             <Button
                 variant="raised"
                 color="primary"
-                style={{ margin: '0 10px' }}
+                style={{ margin: '10px' }}
             >
                 TODO: Přehled škol/tříd
             </Button>
             <Button
                 variant="raised"
                 color="primary"
-                style={{ margin: '0 10px' }}
+                style={{ margin: '10px' }}
             >
                 TODO: Pobočky
             </Button>
