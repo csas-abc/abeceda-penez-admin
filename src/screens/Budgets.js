@@ -14,6 +14,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableBody from '@material-ui/core/TableBody';
 import Select from '@material-ui/core/Select';
 import map from 'ramda/src/map';
+import isEmpty from 'ramda/src/isEmpty';
+import isNil from 'ramda/src/isNil';
 import MenuItem from '@material-ui/core/MenuItem';
 import Regions from '../constants/Regions';
 
@@ -27,6 +29,17 @@ const Budgets = ({ client }) => {
     const [toolboxes, setToolboxes] = useState(0);
     const [region, setRegion] = useState('');
     const [budgets, setBudgets] = useState(null);
+
+    const saveFilter = () => {
+        localStorage.setItem(`budgets-${region}`, JSON.stringify({
+            budgetMMA,
+            budgetMSE,
+            budgetEXHYP,
+            subscribed,
+            fairs,
+            toolboxes,
+        }));
+    }
 
     const fetchBudgets = () => {
         client.query({
@@ -48,6 +61,15 @@ const Budgets = ({ client }) => {
             }
         }).then((res) => {
             setBudgets(pathOr({}, ['data', 'budgets'])(res));
+            const savedFilter = JSON.parse(localStorage.getItem(`budgets-${region}`));
+            if (!isEmpty(savedFilter) && !isNil(savedFilter)) {
+                setBudgetMMA(savedFilter.budgetMMA);
+                setBudgetMSE(savedFilter.budgetMSE);
+                setBudgetEXHYP(savedFilter.budgetEXHYP);
+                setSubscribed(savedFilter.subscribed);
+                setFairs(savedFilter.fairs);
+                setToolboxes(savedFilter.toolboxes);
+            }
         })
     }
     return (
@@ -70,23 +92,39 @@ const Budgets = ({ client }) => {
                             id: 'region',
                             name: 'region'
                         }}
+                        style={{
+                            minWidth: '200px',
+                        }}
                         value={region}
                         onChange={(e) => setRegion(e.target.value)}
                     >
                         {map((region) => (
-                            <MenuItem value={region}>{region}</MenuItem>
+                            <MenuItem key={region} value={region}>{region}</MenuItem>
                         ))(Regions)}
                     </Select>
                 </FormControl>
                 <Button
                     variant="contained"
                     color="primary"
+                    style={{ margin: '12px' }}
                     onClick={() => {
                         fetchBudgets();
                     }}
                 >
                     Načíst budgety
                 </Button>
+                {!isEmpty(region) ? (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ margin: '12px' }}
+                        onClick={() => {
+                            saveFilter();
+                        }}
+                    >
+                        Uložit filtr
+                    </Button>
+                ) : null}
             </div>
             {budgets ? (
                 <React.Fragment>

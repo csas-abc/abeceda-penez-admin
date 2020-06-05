@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import map from 'ramda/src/map';
 import prop from 'ramda/src/prop';
 import pathOr from 'ramda/src/pathOr';
+import toString from 'ramda/src/toString';
+import o from 'ramda/src/o';
 import compose from 'ramda/src/compose';
 import Edit from '@material-ui/icons/Edit';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { graphql } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import roadmapEventAttributes from '../constants/roadmapEventAttributes';
@@ -26,6 +28,9 @@ import sort from 'ramda/src/sort';
 import reverse from 'ramda/src/reverse';
 import addIndex from 'ramda/src/addIndex';
 import MUIDataTable from 'mui-datatables';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import FormControl from '@material-ui/core/FormControl';
 
 const styles = theme => ({
     table: {
@@ -39,12 +44,39 @@ const styles = theme => ({
 
 const mapIndexed = addIndex(map);
 
+const roadmapEventsQueryDef = gql`
+    query RoadmapEvents($year: Int){
+        roadmapEvents(year: $year) {
+            ${roadmapEventAttributes}
+        }
+    }
+`;
+
 const RoadmapEventsTable = ({
     classes,
-    roadmapEventsQuery,
+    client,
 }) => {
     const [createEventModal, setCreateEventModal] = useState(false);
     const [editEventModal, setEditEventModal] = useState(false);
+    const [roadmapEventsQuery, setRoadmapsEventsQuery] = useState(null);
+    const [year, setYear] = useState(moment().year().toString());
+
+    const loadData = () => {
+        client.query({
+            query: roadmapEventsQueryDef,
+            fetchPolicy: 'network-only',
+            variables: {
+                year: Number(year),
+            },
+        }).then((res) => {
+            console.log('RES', res);
+            setRoadmapsEventsQuery(res.data);
+        });
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
 
     const [columns, setColumns] = useState([
         {
@@ -76,7 +108,7 @@ const RoadmapEventsTable = ({
             options: {
                 filter: false,
                 customBodyRender: ([from, to]) => (
-                    `${moment(from).format('L LT')} - ${moment(to).format('L LT') }`
+                    `${from !== '?' ? moment(from).format('L LT') : from} - ${to !== '?' ? moment(to).format('L LT') : to }`
                 ),
             }
         },
@@ -139,7 +171,7 @@ const RoadmapEventsTable = ({
                 filter: false,
                 customBodyRender: (link) => (
                     <a target="_blank" href={link}>
-                        {link.length > 30 ? `${link.substr(0, 30)}...` : link}
+                        ODKAZ
                     </a>
                 ),
             }
@@ -191,11 +223,11 @@ const RoadmapEventsTable = ({
                 if (columns[columnIndex].search) {
                     return columns[columnIndex].search(searchQuery, column);
                 }
-                if (type(column) === 'String') {
+                if (type(column) === 'String' && column.toLowerCase) {
                     return !!includes(searchQuery.toLowerCase())(column.toLowerCase());
                 }
                 if (type(column) === 'Array') {
-                    return !!find(includes(searchQuery.toLowerCase()))(map(toLower)(column));
+                    return !!find(includes(searchQuery.toLowerCase()))(map(o(toLower, toString))(column));
                 }
                 return false;
             })(row);
@@ -223,7 +255,10 @@ const RoadmapEventsTable = ({
                     return reverse(sorted);
                 case 4:
                     const sortedData = sort((a, b) => {
-                        moment(a.data[colIndex][0]).isBefore(b.data[colIndex][0])
+                        if (a.data[colIndex][0] !== '?' && b.data[colIndex][0] !== '?') {
+                            return moment(a.data[colIndex][0]).isBefore(b.data[colIndex][0]);
+                        }
+                        return 1;
                     }, data);
                     if (order === 'asc') return sortedData;
                     return reverse(sortedData);
@@ -250,13 +285,14 @@ const RoadmapEventsTable = ({
         },
         onCellClick: (colData, { colIndex, dataIndex }) => {
             if (colIndex === 12) return;
+            if (colIndex === 13) return;
             setEditEventModal(roadmapEventsQuery.roadmapEvents[dataIndex].id)
         }
     };
 
 
 
-    if (roadmapEventsQuery.loading) return <CircularProgress />;
+    if (!roadmapEventsQuery || roadmapEventsQuery.loading) return <CircularProgress />;
     if (roadmapEventsQuery.error) return (
         <SnackbarContent
             className={classes.errorMessage}
@@ -286,13 +322,35 @@ const RoadmapEventsTable = ({
                     eventId={editEventModal}
                 />
             ) : null}
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => setCreateEventModal(true)}
-            >
-                Vytvořit akci
-            </Button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px' }}>
+                <div style={{ display: 'flex' }}>
+                    <FormControl margin="none">
+                        <InputLabel htmlFor="year">Rok</InputLabel>
+                        <Input
+                            id="year"
+                            name="year"
+                            value={year}
+                            onChange={(e) => setYear(e.target.value)}
+                            type="number"
+                        />
+                    </FormControl>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => loadData()}
+                        style={{ marginLeft: '12px' }}
+                    >
+                        Načíst akce
+                    </Button>
+                </div>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setCreateEventModal(true)}
+                >
+                    Vytvořit akci
+                </Button>
+            </div>
             <MUIDataTable
                 columns={columns}
                 options={options}
@@ -303,8 +361,8 @@ const RoadmapEventsTable = ({
                         pathOr('-', ['segment'])(event),
                         pathOr('-', ['name'])(event),
                         [
-                            moment(event.from),
-                            moment(event.to)
+                            event.from ? moment(event.from) : '?',
+                            event.to ? moment(event.to) : '?'
                         ],
                         pathOr('-', ['budgetMMA'])(event),
                         pathOr('-', ['budgetMSE'])(event),
@@ -323,22 +381,7 @@ const RoadmapEventsTable = ({
     );
 };
 
-const roadmapEventsQuery = graphql(gql`
-    {
-        roadmapEvents {
-            ${roadmapEventAttributes}
-        }
-    }
-`, {
-    name: 'roadmapEventsQuery',
-    options: {
-        fetchPolicy: 'cache-and-network',
-    }
-});
-
-
-
 export default compose(
     withStyles(styles),
-    roadmapEventsQuery,
+    withApollo,
 )(RoadmapEventsTable);

@@ -119,7 +119,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                     <FormControl margin="normal" required fullWidth>
                         <InputLabel htmlFor="segment">Segment</InputLabel>
                         <Select
-                            disabled={isCoreUser}
+                            // disabled={isCoreUser}
                             inputProps={{
                                 id: 'segment',
                                 name: 'segment'
