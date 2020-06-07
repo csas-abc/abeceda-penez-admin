@@ -30,7 +30,7 @@ const TeamModal = ({
     const [adminNote, setAdminNote] = useState(prop('adminNote')(team) || '');
     useEffect(() => {
         setAdminNote(prop('adminNote')(team) || '');
-    }, [teamQuery.loading]);
+    }, [team, teamQuery.loading]);
     if (teamQuery.loading) return <CircularProgress />;
     return (
         <React.Fragment>

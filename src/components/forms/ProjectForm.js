@@ -323,6 +323,7 @@ const ProjectForm = ({
                             className={classes.submit}
                             style={{ marginLeft: '16px' }}
                             onClick={() => setArchiveConfirmModal(true)}
+                            key="archive"
                         >
                             {classroom.archived ? 'Obnovit' : 'Přesunout do Archivu'}
                         </Button>,
@@ -332,6 +333,7 @@ const ProjectForm = ({
                             className={classes.submit}
                             style={{ marginLeft: '16px' }}
                             onClick={() => setDeleteConfirmModal(true)}
+                            key="trash"
                         >
                             {classroom.deleted ? 'Obnovit' : 'Přesunout do koše'}
                         </Button>

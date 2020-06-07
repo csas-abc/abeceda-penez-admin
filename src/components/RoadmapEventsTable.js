@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
 import map from 'ramda/src/map';
 import prop from 'ramda/src/prop';
@@ -61,7 +61,7 @@ const RoadmapEventsTable = ({
     const [roadmapEventsQuery, setRoadmapsEventsQuery] = useState(null);
     const [year, setYear] = useState(moment().year().toString());
 
-    const loadData = () => {
+    const loadData = useCallback(() => {
         client.query({
             query: roadmapEventsQueryDef,
             fetchPolicy: 'network-only',
@@ -72,11 +72,11 @@ const RoadmapEventsTable = ({
             console.log('RES', res);
             setRoadmapsEventsQuery(res.data);
         });
-    }
+    }, [client, year]);
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [loadData]);
 
     const [columns, setColumns] = useState([
         {
@@ -159,7 +159,7 @@ const RoadmapEventsTable = ({
             options: {
                 filter: false,
                 customBodyRender: (address) => (
-                    <a target="_blank" href={`https://maps.google.com/?q=${address}`}>
+                    <a rel="noopener noreferrer" target="_blank" href={`https://maps.google.com/?q=${address}`}>
                         {address}
                     </a>
                 ),
@@ -170,7 +170,7 @@ const RoadmapEventsTable = ({
             options: {
                 filter: false,
                 customBodyRender: (link) => (
-                    <a target="_blank" href={link}>
+                    <a rel="noopener noreferrer"  target="_blank" href={link}>
                         ODKAZ
                     </a>
                 ),
@@ -238,10 +238,6 @@ const RoadmapEventsTable = ({
                 case 1:
                 case 2:
                 case 3:
-                // case 5:
-                // case 6:
-                // case 7:
-                // case 8:
                 case 9:
                 case 10:
                 case 11:
@@ -262,6 +258,8 @@ const RoadmapEventsTable = ({
                     }, data);
                     if (order === 'asc') return sortedData;
                     return reverse(sortedData);
+                default:
+                    break;
             }
             const sorted = sort((a, b) => {
                 let intA = 0;

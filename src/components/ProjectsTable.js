@@ -16,6 +16,7 @@ import reject from 'ramda/src/reject';
 import isNil from 'ramda/src/isNil';
 import addIndex from 'ramda/src/addIndex';
 import propOr from 'ramda/src/propOr';
+import join from 'ramda/src/join';
 import compose from 'ramda/src/compose';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -337,6 +338,8 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                     const sorted = sort((a, b) => a.data[colIndex].localeCompare(b.data[colIndex]), data);
                     if (order === 'asc') return sorted;
                     return reverse(sorted);
+                default:
+                    break;
             }
             const sorted = sort((a, b) => {
                 let intA = 0;
@@ -395,7 +398,10 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                             ],
                             prop('area')(classroom) || '-',
                             path(['branchAddress'])(classroom) || '-',
-                            path(['schoolAddress'])(classroom) || '-',
+                            join(', ')([
+                                path(['school', 'street'])(classroom) || '-',
+                                path(['school', 'city'])(classroom) || '-'
+                            ]),
                             path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
                             ...isCoreUser ? [
                                 path(['visitInProduction'])(classroom) ? moment(path(['visitInProduction'])(classroom)).format('L') : '-',

@@ -40,7 +40,7 @@ const FairsTable = ({
         return () => {
             localStorage.setItem('fairsCache', pluck('id')(fairsQuery.fairs || []));
         }
-    }, []);
+    }, [fairsQuery.fairs]);
     if (fairsQuery.loading) return <CircularProgress />;
     if (fairsQuery.error) return (
         <SnackbarContent

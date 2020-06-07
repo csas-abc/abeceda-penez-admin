@@ -1,3 +1,5 @@
+import schoolAttributes from './schoolAttributes';
+
 export default `
             id
             excursionDate
@@ -77,4 +79,7 @@ export default `
             forgiveLoanCause
             nps
             area
+            school {
+                ${schoolAttributes}
+            }
 `;

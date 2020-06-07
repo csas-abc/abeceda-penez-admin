@@ -28,6 +28,7 @@ import CoreProjects from './screens/CoreProjects';
 import DeletedClassrooms from './screens/DeletedClassrooms';
 import Roadmap from './screens/Roadmap';
 import Budgets from './screens/Budgets';
+import Schools from './screens/Schools';
 
 const Authenticated = ({ client, history: { push } }) => {
     const [loading, setLoading] = useState(true);
@@ -76,7 +77,7 @@ const Authenticated = ({ client, history: { push } }) => {
             setLoading(false);
             push('/login');
         });
-    }, []);
+    }, [client, push]);
     if (loading) return (
         <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <CircularProgress />
@@ -104,6 +105,7 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/core-region/:region" exact component={CoreRegionProjects} />
             <Route path="/roadmap" exact component={Roadmap} />
             <Route path="/budgets" exact component={Budgets} />
+            <Route path="/schools" exact component={Schools} />
         </Fragment>
     )
 };

@@ -18,6 +18,7 @@ import Work from '@material-ui/icons/Work';
 import Message from '@material-ui/icons/Message';
 import Money from '@material-ui/icons/Money';
 import Today from '@material-ui/icons/Today';
+import Domain from '@material-ui/icons/Domain';
 import { withStyles } from '@material-ui/core';
 import logo from '../assets/cs-logo.svg';
 import { Link } from 'react-router-dom';
@@ -88,6 +89,10 @@ const Menu = ({ classes, meQuery }) => (
                         <ListItem button component={Link} to="/budgets">
                             <ListItemIcon><Money /></ListItemIcon>
                             <ListItemText primary="Budgety" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/schools">
+                            <ListItemIcon><Domain /></ListItemIcon>
+                            <ListItemText primary="Školy" />
                         </ListItem>
                     </React.Fragment>
                     ) : null}
