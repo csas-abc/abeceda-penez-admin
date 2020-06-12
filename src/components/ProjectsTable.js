@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MUIDataTable from 'mui-datatables';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import moment from 'moment';
 import defaultTo from 'ramda/src/defaultTo';
 import map from 'ramda/src/map';
@@ -47,6 +48,22 @@ const styles = theme => ({
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery }) => {
+
+   const getMuiTheme = () => createMuiTheme({
+        overrides: {
+          MUIDataTableToolbar: {
+            root: {
+              float: "left",
+              zIndex: 1000
+            //   position: "fixed",
+            //   top: "70px",
+            //   left: "250px",
+            //   backgroundColor: "white"
+            }
+          }
+        }
+      });
+
     const isCoreUser = all(['CORE'])(meQuery);
     const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
     const [projectDetail, setProjectDetail] = useState(null);
@@ -377,9 +394,12 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                     }}
                 />
             ) : null}
+            <div>
             <div style={{ width: '100%', height: '100%' }}>
                 {query.loading ? <CircularProgress /> : null}
+                <MuiThemeProvider theme={() => getMuiTheme()}>
                 <MUIDataTable
+                    
                     columns={columns}
                     options={options}
                     data={map((classroom) => {
@@ -419,7 +439,9 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                         ]
                     })(dataSelector(query) || [])}
                 />
+                </MuiThemeProvider>
             </div>
+       </div>
         </React.Fragment>
     );
 };
