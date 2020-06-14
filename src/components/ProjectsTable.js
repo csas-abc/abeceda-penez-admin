@@ -53,13 +53,17 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         overrides: {
           MUIDataTableToolbar: {
             root: {
-              float: "left",
-              zIndex: 1000
-            //   position: "fixed",
-            //   top: "70px",
-            //   left: "250px",
-            //   backgroundColor: "white"
+              zIndex: 1000,
+              position: "fixed",
+              top: "90px",
+              float: "right",
+              right: "10px",
             }
+          },
+          MUIDataTableHeadCell: {
+              fixedHeaderCommon: {
+                  paddingTop: "60px" 
+              }
           }
         }
       });
