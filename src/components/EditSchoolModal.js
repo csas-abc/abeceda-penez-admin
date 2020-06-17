@@ -57,10 +57,6 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes }) => {
                                 label="Zástupce"
                                 value="ALTERNATE"
                             />
-                            <Tab
-                                label="Učitel"
-                                value="TEACHER"
-                            />
                         </Tabs>
                         <TabPanel value={activeTab} id="SCHOOL">
                             <EditSchoolForm
@@ -75,11 +71,6 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes }) => {
                         <TabPanel value={activeTab} id="ALTERNATE">
                             <EditContactForm
                                 contact={school.alternate || {}}
-                            />
-                        </TabPanel>
-                        <TabPanel value={activeTab} id="TEACHER">
-                            <EditContactForm
-                                contact={school.teachers[0] || {}}
                             />
                         </TabPanel>
                     </React.Fragment>

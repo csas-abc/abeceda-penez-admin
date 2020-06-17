@@ -17,6 +17,7 @@ import Edit from '@material-ui/icons/Edit';
 import pathOr from 'ramda/src/pathOr';
 import CreateSchoolModal from '../components/CreateSchoolModal';
 import EditSchoolModal from '../components/EditSchoolModal';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const mapIndexed = addIndex(map);
 
@@ -130,23 +131,25 @@ const Schools = ({ schoolsQuery }) => {
                     Vytvořit školu
                 </Button>
             </div>
-            <MUIDataTable
-                columns={columns}
-                options={options}
-                data={map((school) => {
-                    return [
-                        <Edit onClick={() => { setEditSchool(school.id) }} />,
-                        pathOr('-', ['name'])(school),
-                        pathOr('-', ['region'])(school),
-                        pathOr('-', ['note'])(school),
-                        join(', ')([
-                            prop('street')(school),
-                            prop('city')(school)
-                        ]),
-                        pathOr('-', ['status'])(school),
-                    ]
-                })(schoolsQuery.schools || [])}
-            />
+            {schoolsQuery.loading ? <CircularProgress /> : (
+                <MUIDataTable
+                    columns={columns}
+                    options={options}
+                    data={map((school) => {
+                        return [
+                            <Edit onClick={() => { setEditSchool(school.id) }} />,
+                            pathOr('-', ['name'])(school),
+                            pathOr('-', ['region'])(school),
+                            pathOr('-', ['note'])(school),
+                            join(', ')([
+                                prop('street')(school),
+                                prop('city')(school)
+                            ]),
+                            pathOr('-', ['status'])(school),
+                        ]
+                    })(schoolsQuery.schools || [])}
+                />
+            )}
         </Layout>
     );
 };

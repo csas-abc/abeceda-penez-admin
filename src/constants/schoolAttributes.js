@@ -18,10 +18,4 @@ export default `
         email
         phone
     }
-    teachers {
-        id
-        name
-        email
-        phone
-    }
 `;

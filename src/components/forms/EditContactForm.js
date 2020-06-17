@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { withApollo } from 'react-apollo';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
@@ -7,10 +8,26 @@ import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import { graphql } from 'react-apollo';
 import { useSnackbar } from 'notistack';
+import classroomAttributes from '../../constants/classroomAttributes';
 
-const EditContactForm = ({ contact, updateContactMutation }) => {
+
+const classroomQuery = gql`
+    query Classroom($id: ID!) {
+        classroom(id: $id) {
+            ${classroomAttributes}
+        }
+    }
+`;
+const EditContactForm = ({
+    contact,
+    updateContactMutation,
+    createContactMutation,
+    editDisabled,
+    classroomId,
+    client,
+}) => {
     const { enqueueSnackbar } = useSnackbar();
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
 
     const [name, setName] = useState(contact.name || '');
     const [email, setEmail] = useState(contact.email || '');
@@ -20,14 +37,26 @@ const EditContactForm = ({ contact, updateContactMutation }) => {
         <form
             onSubmit={(e) => {
                 e.preventDefault();
-                updateContactMutation({
-                    variables: {
-                        id: contact.id,
-                        name,
-                        email,
-                        phone,
-                    }
-                }).then(() => {
+                const isCreate = !contact.id && classroomId;
+                const saveAction = isCreate ?
+                    createContactMutation({
+                        variables: {
+                            name,
+                            email,
+                            phone,
+                            classroomId,
+                            contactType: 'TEACHER',
+                        }
+                    }) :
+                    updateContactMutation({
+                        variables: {
+                            id: contact.id,
+                            name,
+                            email,
+                            phone,
+                        }
+                });
+                saveAction.then(() => {
                     enqueueSnackbar(
                         'Kontakt byl úspěšně uložen',
                         {
@@ -39,6 +68,15 @@ const EditContactForm = ({ contact, updateContactMutation }) => {
                             },
                         }
                     )
+                    if (isCreate) {
+                        client.query({
+                            query: classroomQuery,
+                            fetchPolicy: 'network-only',
+                            variables: {
+                                id: classroomId,
+                            }
+                        })
+                    }
                 }).catch((e) => {
                     console.error('ERROR', e);
                 })
@@ -76,6 +114,7 @@ const EditContactForm = ({ contact, updateContactMutation }) => {
                 variant="contained"
                 color="primary"
                 type="submit"
+                disabled={editDisabled}
             >
                 Uložit
             </Button>
@@ -106,15 +145,47 @@ const updateContactMutation = gql`
     }
 `;
 
+const createContactMutation = gql`
+    mutation CreateContact(
+        $name: String
+        $email: String
+        $phone: String
+        $classroomId: ID!
+        $contactType: String!
+    ) {
+        createContact(
+            data: {
+                name: $name
+                phone: $phone
+                email: $email
+                classroomId: $classroomId
+                contactType: $contactType
+            }
+        ) {
+            id
+            name
+            phone
+            email
+        }
+    }
+`;
+
 EditContactForm.propTypes = {
 
 };
 
 export default compose(
+    withApollo,
     graphql(
         updateContactMutation,
         {
             name: 'updateContactMutation',
+        },
+    ),
+    graphql(
+        createContactMutation,
+        {
+            name: 'createContactMutation',
         },
     ),
 )(EditContactForm);
