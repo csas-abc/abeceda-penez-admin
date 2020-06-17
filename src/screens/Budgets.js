@@ -122,7 +122,7 @@ const Budgets = ({ client }) => {
                             saveFilter();
                         }}
                     >
-                        Uložit filtr
+                        Uložit Budget
                     </Button>
                 ) : null}
             </div>

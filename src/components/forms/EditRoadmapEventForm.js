@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { useSnackbar } from 'notistack';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import FormControl from '@material-ui/core/FormControl';
@@ -31,8 +32,9 @@ const EditRoadmapEventModal = ({
     updateRoadmapEventMutation,
     meQuery,
     roadmapEvent,
-    setDeleteEvent,
+    setDeleteItem
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const isCoreUser = all(['CORE'])(meQuery);
     const isAdmin = all(['ADMIN'])(meQuery);
     const isEditable = isAdmin || (pathEq(['me', 'region'], propOr('', 'region')(roadmapEvent))(meQuery));
@@ -116,7 +118,6 @@ const EditRoadmapEventModal = ({
             <FormControl margin="normal" required fullWidth>
                 <InputLabel htmlFor="segment">Segment</InputLabel>
                 <Select
-                    disabled={isCoreUser}
                     inputProps={{
                         id: 'segment',
                         name: 'segment'
@@ -283,6 +284,19 @@ const EditRoadmapEventModal = ({
                         color="primary"
                         type="submit"
                         disabled={loading}
+                        onClick={() => {
+                            enqueueSnackbar(
+                                'Akce byla uložena',
+                                {
+                                    variant: 'success',
+                                    autoHideDuration: 4000,
+                                    anchorOrigin: {
+                                        horizontal: 'center',
+                                        vertical: 'top',
+                                    },
+                                },
+                            );
+                        }}
                     >
                         {loading ? <CircularProgress /> : 'Uložit'}
                     </Button>
@@ -290,7 +304,7 @@ const EditRoadmapEventModal = ({
                         fullWidth
                         variant="contained"
                         color="secondary"
-                        onClick={() => setDeleteEvent(roadmapEvent.id)}
+                        onClick={() => setDeleteItem(roadmapEvent.id)}
                         disabled={loading}
                     >
 

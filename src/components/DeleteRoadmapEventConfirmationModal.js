@@ -6,8 +6,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Button from '@material-ui/core/Button';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+import { useSnackbar } from 'notistack';
 
-const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => (
+
+
+const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
+    const { enqueueSnackbar } = useSnackbar();
+
+    return (
     <Dialog
         open
         onClose={() => onClose(false)}
@@ -25,6 +31,18 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => (
                                 id: eventId,
                             },
                         }).then(() => {
+                            
+                            enqueueSnackbar(
+                                'Akce byla smazána',
+                                {
+                                    variant: 'success',
+                                    autoHideDuration: 4000,
+                                    anchorOrigin: {
+                                        horizontal: 'center',
+                                        vertical: 'top',
+                                    },
+                                },
+                            );
                             onClose(true);
                         });
                     }}
@@ -34,7 +52,7 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => (
             </div>
         </DialogContent>
     </Dialog>
-);
+)};
 
 const deleteMutation = graphql(gql`
     mutation DeleteEvent($id: ID!) {

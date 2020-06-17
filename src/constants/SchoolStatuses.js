@@ -1,6 +1,7 @@
 export default [
-    'Probíhající spolupráce',
-    'Ukončená spolupráce',
-    'Čekající škola',
+    'Aktivní',
+    'Pasivní',
+    'Čekající',
+    'Ukončena',
     'Odmítnutí AP'
 ];

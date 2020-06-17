@@ -102,22 +102,6 @@ const Menu = ({ classes, meQuery }) => (
                             <ListItemIcon><Subject /></ListItemIcon>
                             <ListItemText primary="AP 4.třídy" />
                         </ListItem>
-                        <ListItem button component={Link} to="/vap-management">
-                            <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary=" TODO: VAP" />
-                        </ListItem>
-                        <ListItem button component={Link} to="/map-management">
-                            <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary="TODO: MAP" />
-                        </ListItem>
-                        <ListItem button component={Link} to="/second-grades-management">
-                            <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary="TODO: AP 2.třídy" />
-                        </ListItem>
-                        <ListItem button component={Link} to="/senior-ap-management">
-                            <ListItemIcon><Subject /></ListItemIcon>
-                            <ListItemText primary="TODO: AP pro seniory" />
-                        </ListItem>
                         <ListItem component="span">
                             <ListItemIcon><People /></ListItemIcon>
                             <ListItemText primary="AP regiony" />
@@ -156,6 +140,10 @@ const Menu = ({ classes, meQuery }) => (
                         <ListItem button component={Link} to="/budgets">
                             <ListItemIcon><Money /></ListItemIcon>
                             <ListItemText primary="Budgety" />
+                        </ListItem>
+                        <ListItem button component={Link} to="/schools">
+                            <ListItemIcon><Domain /></ListItemIcon>
+                            <ListItemText primary="Školy" />
                         </ListItem>
                         <ListItem button component={Link} to="/statistics">
                             <ListItemIcon><Assessment /></ListItemIcon>

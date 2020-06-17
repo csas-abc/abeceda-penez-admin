@@ -21,7 +21,7 @@ const styles =  {
 const EditRoadmapEventModal = ({
     onClose,
     classes,
-    roadmapEventQuery,
+    roadmapEventQuery
 }) => {
     const roadmapEvent = propOr({}, 'roadmapEvent')(roadmapEventQuery);
     const [deleteEvent, setDeleteEvent] = useState(null);
@@ -54,6 +54,7 @@ const EditRoadmapEventModal = ({
                     <EditRoadmapEventForm
                         roadmapEvent={roadmapEvent}
                         onClose={onClose}
+                        setDeleteItem={() => setDeleteEvent(roadmapEvent.id)}
                     />
                 )}
             </DialogContent>

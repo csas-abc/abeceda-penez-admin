@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { useSnackbar } from 'notistack';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -27,6 +28,7 @@ const styles =  {
 };
 
 const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation, meQuery }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const isCoreUser = all(['CORE'])(meQuery);
     const [name, setName] = useState('');
     const [region, setRegion] = useState(isCoreUser ? path(['me', 'region'])(meQuery) : '');
@@ -84,6 +86,17 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             }
                         }).then((res) => {
                             setLoading(false);
+                            enqueueSnackbar(
+                                'Akce byla vytvořena',
+                                {
+                                    variant: 'success',
+                                    autoHideDuration: 4000,
+                                    anchorOrigin: {
+                                        horizontal: 'center',
+                                        vertical: 'top',
+                                    },
+                                },
+                            );
                             onClose(true);
                         }).catch((e) => {
                             setLoading(false);

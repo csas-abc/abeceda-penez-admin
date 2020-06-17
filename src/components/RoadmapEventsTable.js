@@ -177,6 +177,17 @@ const RoadmapEventsTable = ({
             }
         },
         {
+            name: 'Foto link',
+            options: {
+                filter: false,
+                customBodyRender: (link) => (
+                    <a rel="noopener noreferrer"  target="_blank" href={link}>
+                        ODKAZ
+                    </a>
+                ),
+            }
+        },
+        {
             name: 'poznámka',
             options: {
                 filter: false,
@@ -301,20 +312,15 @@ const RoadmapEventsTable = ({
         <React.Fragment>
             {createEventModal ? (
                 <CreateRoadmapEventModal
-                    onClose={(refetch) => {
-                        if (refetch) {
-                            roadmapEventsQuery.refetch();
-                        }
+                    onClose={() => {
+                        
                         setCreateEventModal(false)
                     }}
                 />
             ) : null}
             {editEventModal ? (
                 <EditRoadmapEventModal
-                    onClose={(refetch) => {
-                        if (refetch) {
-                            roadmapEventsQuery.refetch();
-                        }
+                    onClose={() => {
                         setEditEventModal(false)
                     }}
                     eventId={editEventModal}
