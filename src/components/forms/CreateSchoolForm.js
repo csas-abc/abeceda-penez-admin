@@ -49,10 +49,6 @@ const CreateSchoolForm = ({
     const [alternatePhone, setAlternatePhone] = useState('');
     const [alternateEmail, setAlternateEmail] = useState('');
 
-    const [teacherName, setTeacherName] = useState('');
-    const [teacherPhone, setTeacherPhone] = useState('');
-    const [teacherEmail, setTeacherEmail] = useState('');
-
     return (
         <form
             className={classes.form}
@@ -86,15 +82,6 @@ const CreateSchoolForm = ({
                                 email: alternateEmail,
                                 schoolId: red.data.createSchool.id,
                                 contactType: 'ALTERNATE',
-                            }
-                        }),
-                        createContactMutation({
-                            variables: {
-                                name: teacherName,
-                                phone: teacherPhone,
-                                email: teacherEmail,
-                                schoolId: red.data.createSchool.id,
-                                contactType: 'TEACHER',
                             }
                         }),
                     ];
@@ -257,39 +244,6 @@ const CreateSchoolForm = ({
                     onChange={(e) => setAlternateEmail(e.target.value)}
                 />
             </FormControl>
-
-            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
-                Učitel
-            </Typography>
-            <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="teacherName">Jméno a příjmené</InputLabel>
-                <Input
-                    id="teacherName"
-                    name="teacherName"
-                    value={teacherName}
-                    onChange={(e) => setTeacherName(e.target.value)}
-                />
-            </FormControl>
-            <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="teacherPhone">Telefon</InputLabel>
-                <Input
-                    id="teacherPhone"
-                    name="teacherPhone"
-                    value={teacherPhone}
-                    onChange={(e) => setTeacherPhone(e.target.value)}
-                />
-            </FormControl>
-            <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="teacherEmail">E-mail</InputLabel>
-                <Input
-                    id="teacherEmail"
-                    name="teacherEmail"
-                    value={teacherEmail}
-                    onChange={(e) => setTeacherEmail(e.target.value)}
-                />
-            </FormControl>
-
-
             <Button
                 fullWidth
                 variant="contained"

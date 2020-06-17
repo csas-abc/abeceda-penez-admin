@@ -28,6 +28,8 @@ import classroomAttributes from '../constants/classroomAttributes';
 import { CircularProgress } from '@material-ui/core';
 import ProjectModalTabs from '../constants/ProjectModalTabs';
 import { any } from '../utils/permissions';
+import EditContactForm from './forms/EditContactForm';
+import Typography from '@material-ui/core/Typography';
 
 const styles =  {
     paper: {
@@ -153,6 +155,14 @@ const ProjectModal = ({
                         <TabPanel value={activeTab} id={ProjectModalTabs.SCHOOL}>
                             <SchoolForm
                                 classroom={classroom}
+                                editDisabled={editDisabled()}
+                            />
+                            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
+                                Učitel
+                            </Typography>
+                            <EditContactForm
+                                contact={propOr({}, 'teacher')(classroom)}
+                                classroomId={prop('id')(classroom)}
                                 onClose={onClose}
                                 editDisabled={editDisabled()}
                             />

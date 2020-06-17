@@ -16,7 +16,7 @@ import SchoolStatuses from '../../constants/SchoolStatuses';
 
 const EditSchoolForm = ({ school, updateSchoolMutation }) => {
     const { enqueueSnackbar } = useSnackbar();
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
 
     const [name, setName] = useState(school.name || '');
     const [region, setRegion] = useState(school.region || '');

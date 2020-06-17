@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Route,
+    Switch,
+} from 'react-router-dom';
 import { ApolloProvider } from 'react-apollo';
 import moment from 'moment';
 import { SnackbarProvider } from 'notistack';
@@ -48,9 +52,11 @@ const App = () => {
               <MuiPickersUtilsProvider utils={MomentUtils} locale="cs">
                   <SnackbarProvider maxSnack={3}>
                       <Router>
-                          <Route path="/" component={Authenticated} />
-                          <Route path="/login" component={Login} />
-                          <Route path="/forgot-password" component={ForgotPassword} />
+                          <Switch>
+                              <Route path="/forgot-password" component={ForgotPassword} />
+                              <Route path="/login" component={Login} />
+                              <Route path="/" component={Authenticated} />
+                          </Switch>
                       </Router>
                   </SnackbarProvider>
               </MuiPickersUtilsProvider>

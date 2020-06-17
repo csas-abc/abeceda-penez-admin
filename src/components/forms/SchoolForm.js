@@ -18,7 +18,6 @@ import includes from 'ramda/src/includes';
 import filter from 'ramda/src/filter';
 import DialogContent from '@material-ui/core/DialogContent';
 import join from 'ramda/src/join';
-import path from 'ramda/src/path';
 
 const styles =  {
     paper: {
@@ -26,7 +25,7 @@ const styles =  {
     },
 };
 
-const BranchModal = ({
+const SchoolForm = ({
     classes,
     changeClassroomSchool,
     schoolsQuery,
@@ -191,36 +190,6 @@ const BranchModal = ({
                     value={pathOr('', ['alternate', 'phone'])(school)}
                 />
             </FormControl>
-
-            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
-                Učitel
-            </Typography>
-            <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="teacherName">Jméno</InputLabel>
-                <Input
-                    id="teacherName"
-                    name="teacherName"
-                    value={pathOr('', ['teachers', 0, 'name'])(school)}
-                />
-            </FormControl>
-            <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="teacherEmail">E-mail</InputLabel>
-                <Input
-                    id="teacherEmail"
-                    name="teacherEmail"
-                    value={pathOr('', ['teachers', 0, 'email'])(school)}
-                />
-            </FormControl>
-            <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="teacherPhone">Telefon</InputLabel>
-                <Input
-                    id="teacherPhone"
-                    name="teacherPhone"
-                    value={pathOr('', ['teachers', 0, 'phone'])(school)}
-                />
-            </FormControl>
-
-
             <Button
                 fullWidth
                 variant="contained"
@@ -271,4 +240,4 @@ export default compose(
     ),
     schoolsQuery,
     withStyles(styles)
-)(BranchModal);
+)(SchoolForm);
