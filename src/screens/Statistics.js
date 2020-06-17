@@ -7,101 +7,44 @@ import Layout from '../components/Layout';
 
 const Statitics = ({ client }) => {
     const { enqueueSnackbar } = useSnackbar();
+
+    const displaySnackbar = query => {
+        enqueueSnackbar(
+            'Odkaz na soubor byl odeslán e-mailem',
+            {
+                variant: 'success',
+                autoHideDuration: 4000,
+                anchorOrigin: {
+                    horizontal: 'center',
+                    vertical: 'top',
+                },
+            },
+        );
+        client.query({
+            query: gql`${query}`
+        })
+    };
+    const ReportButton = ({value, query}) => {
+        return (
+            <Button
+                variant="raised"
+                color="primary"
+                style={{ margin: '10px' }}
+                onClick={() => displaySnackbar(`${query}`)}
+            >
+                {value}
+            </Button>
+        );
+    }
+
     return (
         <Layout title="Statistika">
-            <Button
-                variant="raised"
-                color="primary"
-                style={{ margin: '10px' }}
-                onClick={() => {
-                    enqueueSnackbar(
-                        'Odkaz na soubor byl odeslán e-mailem',
-                        {
-                            variant: 'success',
-                            autoHideDuration: 4000,
-                            anchorOrigin: {
-                                horizontal: 'center',
-                                vertical: 'top',
-                            },
-                        },
-                    );
-                    client.query({
-                        query: gql`
-                        query ExportSchools { exportSchools }`
-                    })
-                }}
-            >
-                Unikátní školy
-            </Button>
-            <Button
-                variant="raised"
-                color="primary"
-                style={{ margin: '10px' }}
-                onClick={() => {
-                    enqueueSnackbar(
-                        'Odkaz na soubor byl odeslán e-mailem',
-                        {
-                            variant: 'success',
-                            autoHideDuration: 4000,
-                            anchorOrigin: {
-                                horizontal: 'center',
-                                vertical: 'top',
-                            },
-                        },
-                    );
-                    client.query({
-                        query: gql`
-                        query ExportMoney { exportMoney }`
-                    })
-                }}
-            >
-                Výdělky po regionech
-            </Button>
-            <Button
-                variant="raised"
-                color="primary"
-                style={{ margin: '10px' }}
-                onClick={() => {
-                    enqueueSnackbar(
-                        'Odkaz na soubor byl odeslán e-mailem',
-                        {
-                            variant: 'success',
-                            autoHideDuration: 4000,
-                            anchorOrigin: {
-                                horizontal: 'center',
-                                vertical: 'top',
-                            },
-                        },
-                    );
-                    client.query({
-                        query: gql`
-                        query ExportEmails { exportEmails }`
-                    })
-                }}
-            >
-                E-maily účastníků
-            </Button>
-            <Button
-                variant="raised"
-                color="primary"
-                style={{ margin: '10px' }}
-            >
-                TODO: Kontakty
-            </Button>
-            <Button
-                variant="raised"
-                color="primary"
-                style={{ margin: '10px' }}
-            >
-                TODO: Přehled škol/tříd
-            </Button>
-            <Button
-                variant="raised"
-                color="primary"
-                style={{ margin: '10px' }}
-            >
-                TODO: Pobočky
-            </Button>
+            <ReportButton value="Unikátní školy" query="query ExportSchools { exportSchools }"></ReportButton>
+            <ReportButton value="Výdělky po regionech" query="query ExportMoney { exportMoney }"></ReportButton>
+            <ReportButton value="E-maily účastníků" query="query ExportEmails { exportEmails }"></ReportButton>
+            <ReportButton value="Kontakty" query="query ExportContacts { exportContacts }"></ReportButton>
+            <ReportButton value="Přehled škol/tříd" query="query ExportOverview { exportOverview }"></ReportButton>
+            <ReportButton value="Pobočky" query="query ExportBranches { exportBranches }"></ReportButton>
         </Layout>
     );
 };
