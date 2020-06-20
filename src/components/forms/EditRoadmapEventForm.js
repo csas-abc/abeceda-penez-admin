@@ -54,6 +54,9 @@ const EditRoadmapEventModal = ({
     const [evaluation, setEvaluation] = useState(propOr('', 'evaluation')(roadmapEvent));
     const [internalClient, setInternalClient] = useState(propOr('', 'internalClient')(roadmapEvent));
     const [finMaterial, setFinMaterial] = useState(propOr('', 'finMaterial')(roadmapEvent));
+    // const [photoLink, setPhotoLink] = useState(propOr('', 'photoLink')(roadmapEvent));
+    // TBD in next commit - steven
+
     const [loading, setLoading] = useState(false);
     return (
         <form
@@ -253,6 +256,18 @@ const EditRoadmapEventModal = ({
             </FormControl>
             <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="finMaterial">Finanční podklady</InputLabel>
+                <Input
+                    id="finMaterial"
+                    name="finMaterial"
+                    multiline
+                    rows={3}
+                    rowsMax={5}
+                    value={finMaterial}
+                    onChange={(e) => setFinMaterial(e.target.value)}
+                />
+            </FormControl>
+            <FormControl margin="normal" fullWidth>
+                <InputLabel htmlFor="finMaterial">Odkaz na fotku</InputLabel>
                 <Input
                     id="finMaterial"
                     name="finMaterial"

@@ -62,7 +62,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
           },
           MUIDataTableHeadCell: {
               fixedHeaderCommon: {
-                  paddingTop: "60px" 
+                  paddingTop: "60px"
               }
           }
         }
@@ -292,7 +292,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         print: false,
         // filter: false,
         responsive: 'scroll',
-        rowsPerPage: 1000,
+        rowsPerPage: 50,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
         onFilterChange: (column, filterLists) => {
             setColumns(mapIndexed((column, index) => ({
@@ -399,11 +399,9 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 />
             ) : null}
             <div>
-            <div style={{ width: '100%', height: '100%' }}>
                 {query.loading ? <CircularProgress /> : null}
                 <MuiThemeProvider theme={() => getMuiTheme()}>
                 <MUIDataTable
-                    
                     columns={columns}
                     options={options}
                     data={map((classroom) => {
@@ -445,7 +443,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 />
                 </MuiThemeProvider>
             </div>
-       </div>
+    
         </React.Fragment>
     );
 };

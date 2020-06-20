@@ -15,6 +15,7 @@ import Login from './screens/Login';
 import Authenticated from './Authenticated';
 import initApolloClient from './initApolloClient';
 import ForgotPassword from './screens/ForgotPassword';
+import "./styles/index.css";
 
 import 'moment/locale/cs';
 

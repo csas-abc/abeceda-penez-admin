@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import moment from 'moment';
 import map from 'ramda/src/map';
 import prop from 'ramda/src/prop';
@@ -56,6 +57,31 @@ const RoadmapEventsTable = ({
     classes,
     client,
 }) => {
+
+    const getMuiTheme = () => createMuiTheme({
+        overrides: {
+            MUIDataTable: {
+                responsiveScroll: {
+                    maeginTop: '50px'
+                }
+            },
+          MUIDataTableToolbar: {
+            root: {
+              zIndex: 1000,
+              position: "fixed",
+              top: "155px",
+              float: "right",
+              right: "10px",
+            }
+          },
+          MUIDataTableHeadCell: {
+              fixedHeaderCommon: {
+                  paddingTop: "60px",
+              }
+          }
+        }
+      });
+
     const [createEventModal, setCreateEventModal] = useState(false);
     const [editEventModal, setEditEventModal] = useState(false);
     const [roadmapEventsQuery, setRoadmapsEventsQuery] = useState(null);
@@ -202,7 +228,7 @@ const RoadmapEventsTable = ({
         download: false,
         print: false,
         responsive: 'scroll',
-        rowsPerPage: 1000,
+        rowsPerPage: 50,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
         onFilterChange: (column, filterLists) => {
             setColumns(mapIndexed((column, index) => ({
@@ -325,9 +351,9 @@ const RoadmapEventsTable = ({
                     }}
                     eventId={editEventModal}
                 />
-            ) : null}
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px' }}>
-                <div style={{ display: 'flex' }}>
+            ) : null} 
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px'}}>
+                <div style={{ display: 'flex', position: 'fixed' }}>
                     <FormControl margin="none">
                         <InputLabel htmlFor="year">Rok</InputLabel>
                         <Input
@@ -346,16 +372,21 @@ const RoadmapEventsTable = ({
                     >
                         Načíst akce
                     </Button>
-                </div>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setCreateEventModal(true)}
-                >
-                    Vytvořit akci
-                </Button>
             </div>
+            </div>
+            <Button
+                       variant="contained"
+                       color="primary"
+                       onClick={() => setCreateEventModal(true)}
+                       style={{display: 'flex', padding: '12px', float: 'right', position: 'fixed', right: '47px', top: '100px'}}
+                        >
+                         Vytvořit akci
+             </Button>
+        
+            <MuiThemeProvider theme={() => getMuiTheme()}>
             <MUIDataTable
+                className="roadMapEvents"
+                id="roadmapEvents"
                 columns={columns}
                 options={options}
                 data={map((event) => {
@@ -377,10 +408,12 @@ const RoadmapEventsTable = ({
                         pathOr('-', ['internalClient'])(event),
                         pathOr('-', ['address'])(event),
                         pathOr('-', ['finMaterial'])(event),
+                        pathOr('-', ['photoLink'])(event),
                         pathOr('-', ['note'])(event),
                     ]
                 })(roadmapEventsQuery.roadmapEvents || [])}
-            />
+                />
+            </MuiThemeProvider>
         </React.Fragment>
     );
 };
