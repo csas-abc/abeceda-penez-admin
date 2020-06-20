@@ -3,6 +3,7 @@ import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import moment from 'moment';
 import map from 'ramda/src/map';
 import prop from 'ramda/src/prop';
+import project from 'ramda/src/project';
 import pathOr from 'ramda/src/pathOr';
 import toString from 'ramda/src/toString';
 import o from 'ramda/src/o';
@@ -60,11 +61,6 @@ const RoadmapEventsTable = ({
 
     const getMuiTheme = () => createMuiTheme({
         overrides: {
-            MUIDataTable: {
-                responsiveScroll: {
-                    maeginTop: '50px'
-                }
-            },
           MUIDataTableToolbar: {
             root: {
               zIndex: 1000,
@@ -100,11 +96,7 @@ const RoadmapEventsTable = ({
         });
     }, [client, year]);
 
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
-
-    const [columns, setColumns] = useState([
+    const initialCols = [
         {
             options: {
                 filter: false,
@@ -219,7 +211,25 @@ const RoadmapEventsTable = ({
                 filter: false,
             }
         },
-    ]);
+    ];
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem('roadmapCols'));
+        if (data) {
+            for (let i = 0; i < data.length; i++) {
+               initialCols[i].options.display = data[i].display
+            }
+            setColumns(initialCols);
+        } else {
+            setColumns(initialCols);
+        }
+    },[]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
+    const [columns, setColumns] = useState([]);
 
     const options = {
         filterType: 'multiselect',
@@ -249,6 +259,21 @@ const RoadmapEventsTable = ({
             }))(tableData.columns);
             const sortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(newCols);
             const oldSortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(columns);
+            
+            const names = project(['name'], newCols);
+            const options = project(['options'], newCols);
+            const arr = [];
+            
+            for (let i = 0; i < names.length; i++) {
+                arr.push({ 
+                    name: names[i].name,
+                    display:  options[i].options.display
+                });
+            }
+            
+            
+            
+            localStorage.setItem('roadmapCols', JSON.stringify(arr));
 
             if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);

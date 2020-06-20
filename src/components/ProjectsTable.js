@@ -7,6 +7,7 @@ import map from 'ramda/src/map';
 import toLower from 'ramda/src/toLower';
 import path from 'ramda/src/path';
 import prop from 'ramda/src/prop';
+import project from 'ramda/src/project';
 import sort from 'ramda/src/sort';
 import find from 'ramda/src/find';
 import reverse from 'ramda/src/reverse';
@@ -48,7 +49,8 @@ const styles = theme => ({
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery }) => {
-
+    
+   const isCoreUser = all(['CORE'])(meQuery);
    const getMuiTheme = () => createMuiTheme({
         overrides: {
           MUIDataTableToolbar: {
@@ -67,11 +69,8 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
           }
         }
       });
-
-    const isCoreUser = all(['CORE'])(meQuery);
-    const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
-    const [projectDetail, setProjectDetail] = useState(null);
-    const [columns, setColumns] = useState([
+   
+    const initialCols = [
         {
             name: 'Projekt',
             options: {
@@ -272,17 +271,35 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 sort: false,
             }
         }
-    ]);
+    ]; 
+
+    const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
+    const [projectDetail, setProjectDetail] = useState(null);
+    const [columns, setColumns] = useState([]);
+
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem('projectsCols'));
+        if (data) {
+            for (let i = 0; i < data.length; i++) {
+               initialCols[i].options.display = data[i].display
+            }
+            setColumns(initialCols);
+        } else {
+            setColumns(initialCols);
+        }
+    },[]);
+
     useEffect(() => {
         setProjectDetail(defaultDetail);
     }, [defaultDetail]);
+
     if (query.error) return (
         <SnackbarContent
             className={classes.errorMessage}
             message="Načtení se nezdařilo"
         />
     );
-
+    
     const options = {
         filterType: 'multiselect',
         selectableRows: 'none',
@@ -314,6 +331,19 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
             const sortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(newCols);
             const oldSortColumn = find((col) => !!path(['options', 'sortDirection'])(col))(columns);
 
+            const names = project(['name'], newCols);
+            const options = project(['options'], newCols);
+            const arr = [];
+            
+            for (let i = 0; i < names.length; i++) {
+                arr.push({ 
+                    name: names[i].name,
+                    display:  options[i].options.display
+                });
+            }
+            
+            localStorage.setItem('projectsCols', JSON.stringify(arr));
+            
             if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);
             }
