@@ -278,10 +278,12 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
     const [columns, setColumns] = useState([]);
 
     useEffect(() => {
-        const data = JSON.parse(localStorage.getItem('projectsCols'));
-        if (data) {
-            for (let i = 0; i < data.length; i++) {
-               initialCols[i].options.display = data[i].display
+        const filterCols = JSON.parse(localStorage.getItem('projectsCols'));
+        const filterData = JSON.parse(localStorage.getItem('projectsFilter'));
+        if (filterCols && filterData) {
+            for (let i = 0; i < filterCols.length; i++) {
+               initialCols[i].options.display = filterCols[i].display
+               initialCols[i].options.filterList = filterData[i].filterList
             }
             setColumns(initialCols);
         } else {
@@ -312,13 +314,24 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         rowsPerPage: 50,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
         onFilterChange: (column, filterLists) => {
-            setColumns(mapIndexed((column, index) => ({
+            setColumns(mapIndexed((column, i) => ({
                 ...column,
                 options: {
                     ...column.options,
-                    filterList: filterLists[index],
+                    filterList: filterLists[i],
                 }
             }))(columns));
+
+            const toStorage = [];
+            for (let i = 0; i < columns.length; i++) {
+                toStorage.push({ 
+                    name: columns[i].name,
+                    filterList:  filterLists[i]
+                });
+            }
+
+            localStorage.setItem('filterCols', JSON.stringify(toStorage));
+
         },
         onTableChange: (actionName, tableData) => {
             const newCols = mapIndexed((column, index) => ({
@@ -333,16 +346,16 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
 
             const names = project(['name'], newCols);
             const options = project(['options'], newCols);
-            const arr = [];
+            const toStorage = [];
             
             for (let i = 0; i < names.length; i++) {
-                arr.push({ 
+                toStorage.push({ 
                     name: names[i].name,
                     display:  options[i].options.display
                 });
             }
             
-            localStorage.setItem('projectsCols', JSON.stringify(arr));
+            localStorage.setItem('projectsCols', JSON.stringify(toStorage));
             
             if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);

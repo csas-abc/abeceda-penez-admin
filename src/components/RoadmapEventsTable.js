@@ -214,10 +214,12 @@ const RoadmapEventsTable = ({
     ];
 
     useEffect(() => {
-        const data = JSON.parse(localStorage.getItem('roadmapCols'));
-        if (data) {
-            for (let i = 0; i < data.length; i++) {
-               initialCols[i].options.display = data[i].display
+        const filterCols = JSON.parse(localStorage.getItem('roadmapCols'));
+        const filterData = JSON.parse(localStorage.getItem('roadmapFilter'));
+        if (filterCols && filterData) {
+            for (let i = 0; i < filterCols.length; i++) {
+               initialCols[i].options.display = filterCols[i].display
+               initialCols[i].options.filterList = filterData[i].filterList
             }
             setColumns(initialCols);
         } else {
@@ -248,6 +250,16 @@ const RoadmapEventsTable = ({
                     filterList: filterLists[index],
                 }
             }))(columns));
+
+            const toStorage = [];
+            for (let i = 0; i < columns.length; i++) {
+                toStorage.push({ 
+                    name: columns[i].name,
+                    filterList:  filterLists[i]
+                });
+            }
+            
+            localStorage.setItem('roadmapFilter', JSON.stringify(toStorage));
         },
         onTableChange: (actionName, tableData) => {
             const newCols = mapIndexed((column, index) => ({
@@ -262,18 +274,16 @@ const RoadmapEventsTable = ({
             
             const names = project(['name'], newCols);
             const options = project(['options'], newCols);
-            const arr = [];
+            const toStorage = [];
             
             for (let i = 0; i < names.length; i++) {
-                arr.push({ 
+                toStorage.push({ 
                     name: names[i].name,
                     display:  options[i].options.display
                 });
             }
             
-            
-            
-            localStorage.setItem('roadmapCols', JSON.stringify(arr));
+            localStorage.setItem('roadmapCols', JSON.stringify(toStorage));
 
             if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);
@@ -363,8 +373,10 @@ const RoadmapEventsTable = ({
         <React.Fragment>
             {createEventModal ? (
                 <CreateRoadmapEventModal
-                    onClose={() => {
-                        
+                    onClose={(refetch) => {
+                        if (refetch) {
+                            roadmapEventsQuery.refetch();
+                        }
                         setCreateEventModal(false)
                     }}
                 />
@@ -411,7 +423,6 @@ const RoadmapEventsTable = ({
             <MuiThemeProvider theme={() => getMuiTheme()}>
             <MUIDataTable
                 className="roadMapEvents"
-                id="roadmapEvents"
                 columns={columns}
                 options={options}
                 data={map((event) => {
