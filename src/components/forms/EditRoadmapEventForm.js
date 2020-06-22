@@ -26,7 +26,7 @@ const styles =  {
     },
 };
 
-const EditRoadmapEventModal = ({
+const EditRoadmapEventForm = ({
     onClose,
     classes,
     updateRoadmapEventMutation,
@@ -55,43 +55,12 @@ const EditRoadmapEventModal = ({
     const [internalClient, setInternalClient] = useState(propOr('', 'internalClient')(roadmapEvent));
     const [finMaterial, setFinMaterial] = useState(propOr('', 'finMaterial')(roadmapEvent));
     // const [photoLink, setPhotoLink] = useState(propOr('', 'photoLink')(roadmapEvent));
-    // TBD in next commit - steven
+    // TODO: photos
 
     const [loading, setLoading] = useState(false);
     return (
         <form
-            className={classes.form}
-            onSubmit={(e) => {
-                setLoading(true);
-                e.preventDefault();
-                updateRoadmapEventMutation({
-                    variables: {
-                        id: roadmapEvent.id,
-                        name,
-                        region,
-                        segment,
-                        from,
-                        to,
-                        description,
-                        address,
-                        budgetMMA: parseInt(budgetMMA, 10),
-                        budgetMSE: parseInt(budgetMSE, 10),
-                        budgetEXHYP: parseInt(budgetEXHYP, 10),
-                        overBudget: parseInt(overBudget, 10),
-                        nps,
-                        note,
-                        evaluation,
-                        internalClient,
-                        finMaterial,
-                    }
-                }).then((res) => {
-                    setLoading(false);
-                    onClose(true);
-                }).catch((e) => {
-                    setLoading(false);
-                    console.error('ERROR', e);
-                })
-            }}
+            id="editEventForm"
         >
             <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="name">Název</InputLabel>
@@ -267,14 +236,14 @@ const EditRoadmapEventModal = ({
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="finMaterial">Odkaz na fotku</InputLabel>
+                <InputLabel htmlFor="photoLink">Odkaz na fotku</InputLabel>
                 <Input
-                    id="finMaterial"
-                    name="finMaterial"
+                    id="photoLink"
+                    name="photoLink"
                     multiline
                     rows={3}
                     rowsMax={5}
-                    value={finMaterial}
+                    value={finMaterial} // value to be changed to photoLink
                     onChange={(e) => setFinMaterial(e.target.value)}
                 />
             </FormControl>
@@ -300,17 +269,55 @@ const EditRoadmapEventModal = ({
                         type="submit"
                         disabled={loading}
                         onClick={() => {
-                            enqueueSnackbar(
-                                'Akce byla uložena',
-                                {
-                                    variant: 'success',
-                                    autoHideDuration: 4000,
-                                    anchorOrigin: {
-                                        horizontal: 'center',
-                                        vertical: 'top',
+                            setLoading(true);
+                            updateRoadmapEventMutation({
+                                variables: {
+                                    id: roadmapEvent.id,
+                                    name,
+                                    region,
+                                    segment,
+                                    from,
+                                    to,
+                                    description,
+                                    address,
+                                    budgetMMA: parseInt(budgetMMA, 10),
+                                    budgetMSE: parseInt(budgetMSE, 10),
+                                    budgetEXHYP: parseInt(budgetEXHYP, 10),
+                                    overBudget: parseInt(overBudget, 10),
+                                    nps,
+                                    note,
+                                    evaluation,
+                                    internalClient,
+                                    finMaterial,
+                                }
+                            }).catch((e) => {
+                                enqueueSnackbar(
+                                    'Akce nebyla uložena',
+                                    {
+                                        variant: 'error',
+                                        autoHideDuration: 4000,
+                                        anchorOrigin: {
+                                            horizontal: 'center',
+                                            vertical: 'top',
+                                        },
                                     },
-                                },
-                            );
+                                );
+                                setLoading(false);
+                                console.error('ERROR', e);
+                            });
+                            const form = document.getElementById("editEventForm");
+                                enqueueSnackbar(
+                                    'Akce byla uložena',
+                                    {
+                                        variant: 'success',
+                                        autoHideDuration: 4000,
+                                        anchorOrigin: {
+                                            horizontal: 'center',
+                                            vertical: 'top',
+                                        },
+                                    },
+                                );
+                                setTimeout(() => form.submit(), 800);
                         }}
                     >
                         {loading ? <CircularProgress /> : 'Uložit'}
@@ -322,7 +329,6 @@ const EditRoadmapEventModal = ({
                         onClick={() => setDeleteItem(roadmapEvent.id)}
                         disabled={loading}
                     >
-
                         Smazat
                     </Button>
                 </div>
@@ -399,4 +405,4 @@ export default compose(
     meQuery,
     updateRoadmapEventMutation,
     withStyles(styles),
-)(EditRoadmapEventModal);
+)(EditRoadmapEventForm);

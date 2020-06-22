@@ -11,8 +11,38 @@ import { useSnackbar } from 'notistack';
 
 
 const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
+    
     const { enqueueSnackbar } = useSnackbar();
 
+    const submitForm = () => {
+                     deleteMutation({
+                         variables: {
+                         id: eventId,
+                     }}).catch(err => {
+                             enqueueSnackbar(
+                                      'Akce nebyla smazána',
+                                      {  variant: 'error',
+                                         autoHideDuration: 4000,
+                                         anchorOrigin: {
+                                         horizontal: 'center',
+                                         vertical: 'top',
+                                       },
+                                      },
+                            );
+                        });
+                     const form = document.getElementById("editEventForm");
+                     enqueueSnackbar(
+                          'Akce byla smazána',
+                          {  variant: 'success',
+                             autoHideDuration: 4000,
+                             anchorOrigin: {
+                             horizontal: 'center',
+                             vertical: 'top',
+                             },
+                     });
+                     setTimeout(() => form.submit(), 800);
+    }
+    
     return (
     <Dialog
         open
@@ -25,26 +55,10 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button onClick={() => onClose(false)}>NE</Button>
                 <Button
+                    // type="submit"
+                    id="deleteEventButton"
                     onClick={() => {
-                        deleteMutation({
-                            variables: {
-                                id: eventId,
-                            },
-                        }).then(() => {
-                            
-                            enqueueSnackbar(
-                                'Akce byla smazána',
-                                {
-                                    variant: 'success',
-                                    autoHideDuration: 4000,
-                                    anchorOrigin: {
-                                        horizontal: 'center',
-                                        vertical: 'top',
-                                    },
-                                },
-                            );
-                            onClose(true);
-                        });
+                        submitForm();   
                     }}
                 >
                     ANO

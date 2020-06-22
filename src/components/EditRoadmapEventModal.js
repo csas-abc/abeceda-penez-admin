@@ -38,11 +38,8 @@ const EditRoadmapEventModal = ({
             {deleteEvent ? (
                 <DeleteRoadmapEventConfirmationModal
                     eventId={deleteEvent}
-                    onClose={(refetch) => {
-                        if (refetch) {
-                            onClose(true);
-                            roadmapEventQuery.refetch();
-                        }
+                    onClose={() => {
+                        onClose(true);
                         setDeleteEvent(null);
                     }}
                 />

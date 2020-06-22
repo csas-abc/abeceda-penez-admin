@@ -374,16 +374,13 @@ const RoadmapEventsTable = ({
             {createEventModal ? (
                 <CreateRoadmapEventModal
                     onClose={(refetch) => {
-                        if (refetch) {
-                            roadmapEventsQuery.refetch();
-                        }
                         setCreateEventModal(false)
                     }}
                 />
             ) : null}
             {editEventModal ? (
                 <EditRoadmapEventModal
-                    onClose={() => {
+                    onClose={(refetch) => {
                         setEditEventModal(false)
                     }}
                     eventId={editEventModal}

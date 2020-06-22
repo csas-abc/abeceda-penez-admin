@@ -64,7 +64,21 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                     className={classes.form}
                     onSubmit={(e) => {
                         setLoading(true);
-                        e.preventDefault();
+                        if (!name || !region || !segment || !from || !to) {
+                             e.preventDefault();  // !!! update table without refresh TBD
+                             enqueueSnackbar(
+                                'Vyplňte prosím povinná pole',
+                                {
+                                    variant: 'error',
+                                    autoHideDuration: 4000,
+                                    anchorOrigin: {
+                                        horizontal: 'center',
+                                        vertical: 'top',
+                                    },
+                                },
+                            );
+                            setLoading(false);
+                        } else {
                         createRoadmapEventMutation({
                             variables: {
                                 name,
@@ -86,10 +100,12 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             }
                         }).then((res) => {
                             setLoading(false);
+                            onClose(true);
+                        }).catch((e) => {
                             enqueueSnackbar(
-                                'Akce byla vytvořena',
+                                'Akce nebyla vytvořena',
                                 {
-                                    variant: 'success',
+                                    variant: 'error',
                                     autoHideDuration: 4000,
                                     anchorOrigin: {
                                         horizontal: 'center',
@@ -97,14 +113,12 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                                     },
                                 },
                             );
-                            onClose(true);
-                        }).catch((e) => {
                             setLoading(false);
                             console.error('ERROR', e);
-                        })
+                        })}
                     }}
                 >
-                    <FormControl margin="normal" fullWidth>
+                    <FormControl margin="normal" required fullWidth>
                         <InputLabel htmlFor="name">Název</InputLabel>
                         <Input
                             id="name"
@@ -147,24 +161,24 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             <MenuItem key="více segmentové" value="více segmentové">více segmentové</MenuItem>
                         </Select>
                     </FormControl>
-                    <FormControl margin="normal" fullWidth>
+                    <FormControl margin="normal" required fullWidth>
                         <DatePicker
                             id="from"
                             name="from"
                             value={from}
                             onChange={setFrom}
-                            label="Od"
+                            label="Od*"
                             format="DD.MM.YYYY HH:mm"
                             ampm={false}
                         />
                     </FormControl>
-                    <FormControl margin="normal" fullWidth>
+                    <FormControl margin="normal" required fullWidth>
                         <DatePicker
                             id="to"
                             name="to"
                             value={to}
                             onChange={setTo}
-                            label="Do"
+                            label="Do*"
                             format="DD.MM.YYYY HH:mm"
                             ampm={false}
                         />
@@ -277,6 +291,18 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             value={finMaterial}
                             onChange={(e) => setFinMaterial(e.target.value)}
                         />
+                    </FormControl>
+                    <FormControl margin="normal" fullWidth>
+                      <InputLabel htmlFor="photoLink">Odkaz na fotku</InputLabel>
+                        <Input
+                            id="photoLink"
+                            name="photoLink"
+                            multiline
+                            rows={3}
+                            rowsMax={5}
+                            value={finMaterial} // TODO: value to be changed to photoLink
+                            onChange={(e) => setFinMaterial(e.target.value)}
+                       />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
                         <InputLabel htmlFor="note">Poznámka</InputLabel>
