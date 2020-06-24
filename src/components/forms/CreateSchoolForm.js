@@ -187,7 +187,7 @@ const CreateSchoolForm = ({
                 Ředitel
             </Typography>
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="directorName">Jméno a příjmené</InputLabel>
+                <InputLabel htmlFor="directorName">Jméno a příjmení</InputLabel>
                 <Input
                     id="directorName"
                     name="directorName"
@@ -218,7 +218,7 @@ const CreateSchoolForm = ({
                 Zástupce
             </Typography>
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="alternateName">Jméno a příjmené</InputLabel>
+                <InputLabel htmlFor="alternateName">Jméno a příjmení</InputLabel>
                 <Input
                     id="alternateName"
                     name="alternateName"

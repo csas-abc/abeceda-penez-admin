@@ -83,7 +83,7 @@ const EditContactForm = ({
             }}
         >
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="name">Jméno a příjmené</InputLabel>
+                <InputLabel htmlFor="name">Jméno a příjmení</InputLabel>
                 <Input
                     id="name"
                     name="name"
