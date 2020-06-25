@@ -7,7 +7,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-
 import { graphql } from 'react-apollo';
 import Select from '@material-ui/core/Select';
 import replace from 'ramda/src/replace';
@@ -29,6 +28,7 @@ const CreateSchoolForm = ({
     classes,
     createSchoolMutation,
     createContactMutation,
+    schoolsQuery,
     onClose,
 }) => {
     const { enqueueSnackbar } = useSnackbar();
@@ -49,66 +49,112 @@ const CreateSchoolForm = ({
     const [alternatePhone, setAlternatePhone] = useState('');
     const [alternateEmail, setAlternateEmail] = useState('');
 
+    
+
     return (
         <form
             className={classes.form}
             onSubmit={(e) => {
-                e.preventDefault();
-                setLoading(true);
-                createSchoolMutation({
-                    variables: {
-                        name,
-                        region,
-                        note,
-                        street,
-                        city,
-                        status,
-                    }
-                }).then((red) => {
-                    const contactsRequests = [
-                        createContactMutation({
-                            variables: {
-                                name: directorName,
-                                phone: directorPhone,
-                                email: directorEmail,
-                                schoolId: red.data.createSchool.id,
-                                contactType: 'DIRECTOR',
-                            }
-                        }),
-                        createContactMutation({
-                            variables: {
-                                name: alternateName,
-                                phone: alternatePhone,
-                                email: alternateEmail,
-                                schoolId: red.data.createSchool.id,
-                                contactType: 'ALTERNATE',
-                            }
-                        }),
-                    ];
-                    return Promise.all(contactsRequests);
-                }).then(() => {
-                    setLoading(false);
-                    onClose();
+                if (name === '' || region === '' || street === '' || city === '' || status === '') {
+                    e.preventDefault();
                     enqueueSnackbar(
-                        'Škola byla úspěšně uložena',
+                        'Vyplňte prosím povinná pole',
                         {
-                            variant: 'success',
+                            variant: 'error',
                             autoHideDuration: 4000,
                             anchorOrigin: {
                                 horizontal: 'center',
                                 vertical: 'top',
                             },
                         }
-                    )
-                }).catch((e) => {
-                    setLoading(false);
-                    enqueueSnackbar(replace('GraphQL error: ', '')(e.message), { variant: 'error' });
-                    console.error('ERROR', e);
-                })
+                    )                    
+                } else {
+                    e.preventDefault();
+                    setLoading(true);
+                    let exists = false;
+                    schoolsQuery.schools.map(school => {
+                        let zipCodeExisting = school.city
+                        if (zipCodeExisting === null) {
+                            zipCodeExisting = '';
+                        }
+                        zipCodeExisting = zipCodeExisting.slice(0, 6).replace(/ /g,'');
+                        const zipCodeNew = city.slice(0, 6).replace(/ /g,'');
+                        if (zipCodeExisting === zipCodeNew && school.street === street) {
+                            exists = true;
+                        }
+                    });
+                    if (exists) {
+                        enqueueSnackbar(
+                            'Škola s touto ulicí a PSČ již existuje',
+                            {
+                                variant: 'error',
+                                autoHideDuration: 4000,
+                                anchorOrigin: {
+                                    horizontal: 'center',
+                                    vertical: 'top',
+                                },
+                            }
+                            ) 
+                            onClose();
+                    } else {
+                        createSchoolMutation({
+                            variables: {
+                                name,
+                                region,
+                                note,
+                                street,
+                                city,
+                                status,
+                            }
+                        }).then((red) => {
+                            const contactsRequests = [
+                                createContactMutation({
+                                    variables: {
+                                        name: directorName,
+                                        phone: directorPhone,
+                                        email: directorEmail,
+                                        schoolId: red.data.createSchool.id,
+                                        contactType: 'DIRECTOR',
+                                    }
+                                }),
+                                createContactMutation({
+                                    variables: {
+                                        name: alternateName,
+                                        phone: alternatePhone,
+                                        email: alternateEmail,
+                                        schoolId: red.data.createSchool.id,
+                                        contactType: 'ALTERNATE',
+                                    }
+                                }),
+                            ];
+                            return Promise.all(contactsRequests);
+                        }).then(() => {
+                            setLoading(false);
+                            onClose();
+                            enqueueSnackbar(
+                                'Škola byla úspěšně uložena',
+                                {
+                                    variant: 'success',
+                                    autoHideDuration: 4000,
+                                    anchorOrigin: {
+                                        horizontal: 'center',
+                                        vertical: 'top',
+                                    },
+                                }
+                            )
+                        }).catch((e) => {
+                            setLoading(false);
+                            enqueueSnackbar(replace('GraphQL error: ', '')(e.message), { variant: 'error' });
+                            console.error('ERROR', e);
+                        }) 
+                    }
+                    
+                }
+                
             }}
         >
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="name">Název</InputLabel>
+                <InputLabel htmlFor="name">Název*</InputLabel>
                 <Input
                     id="name"
                     name="name"
@@ -116,8 +162,8 @@ const CreateSchoolForm = ({
                     onChange={(e) => setName(e.target.value)}
                 />
             </FormControl>
-            <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="region">Region</InputLabel>
+            <FormControl margin="normal" fullWidth>
+                <InputLabel htmlFor="region">Region*</InputLabel>
                 <Select
                     inputProps={{
                         id: 'region',
@@ -144,7 +190,7 @@ const CreateSchoolForm = ({
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="street">Ulice a č.p.</InputLabel>
+                <InputLabel htmlFor="street">Ulice a č.p.*</InputLabel>
                 <Input
                     id="street"
                     name="street"
@@ -156,7 +202,7 @@ const CreateSchoolForm = ({
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
-                <InputLabel htmlFor="city">PSČ a město</InputLabel>
+                <InputLabel htmlFor="city">PSČ a město *</InputLabel>
                 <Input
                     id="city"
                     name="city"
@@ -167,8 +213,8 @@ const CreateSchoolForm = ({
                     onChange={(e) => setCity(e.target.value)}
                 />
             </FormControl>
-            <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="status">Status</InputLabel>
+            <FormControl margin="normal" fullWidth>
+                <InputLabel htmlFor="status">Status*</InputLabel>
                 <Select
                     inputProps={{
                         id: 'schoolStatus',
@@ -321,8 +367,22 @@ const createContactMutation = gql`
     }
 `;
 
+const schoolsQuery = graphql(gql`
+    {
+        schools {
+            ${schoolAttributes}
+        }
+    }
+`, {
+    name: 'schoolsQuery',
+    options: {
+        fetchPolicy: 'cache-and-network',
+    }
+});
+
 export default compose(
     meQuery,
+    schoolsQuery,
     graphql(
         createSchoolMutation,
         {
@@ -335,5 +395,6 @@ export default compose(
             name: 'createContactMutation',
         },
     ),
+    
     withStyles(styles),
 )(CreateSchoolForm);

@@ -7,7 +7,7 @@ import ProjectsTable from '../components/ProjectsTable';
 import classroomAttributes from '../constants/classroomAttributes';
 
 const Projects = ({ classroomsQuery }) => (
-    <Layout title="Přehled">
+    <Layout title="Přehled projektů">
         <ProjectsTable query={classroomsQuery} dataSelector={prop('classrooms')} />
     </Layout>
 );

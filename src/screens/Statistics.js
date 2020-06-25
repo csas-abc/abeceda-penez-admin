@@ -5,7 +5,7 @@ import { withApollo } from 'react-apollo';
 import Button from '@material-ui/core/Button';
 import Layout from '../components/Layout';
 
-const Statitics = ({ client }) => {
+const Statistics = ({ client }) => {
     const { enqueueSnackbar } = useSnackbar();
 
     const displaySnackbar = query => {
@@ -63,4 +63,4 @@ const Statitics = ({ client }) => {
     );
 };
 
-export default withApollo(Statitics);
+export default withApollo(Statistics);

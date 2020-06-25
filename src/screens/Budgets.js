@@ -257,11 +257,6 @@ const Budgets = ({ client }) => {
                         <TableBody>
                             <TableRow>
                                 <TableCell>
-                                    Minibox
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell>
                                     Objednané toolboxy
                                 </TableCell>
                                 <TableCell>

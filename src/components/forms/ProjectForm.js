@@ -96,7 +96,8 @@ const ProjectForm = ({
                                 vertical: 'top',
                             },
                         }
-                    )
+                    );
+                    onClose(true);
                 }).catch((e) => {
                     console.error('ERROR', e);
                 });
