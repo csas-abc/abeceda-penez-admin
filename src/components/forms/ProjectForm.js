@@ -162,6 +162,16 @@ const ProjectForm = ({
                     format="DD.MM.YYYY"
                 />
             </FormControl>
+            <FormControl margin="normal" fullWidth>
+                <DatePicker
+                    id="excursionDate"
+                    name="excursionDate"
+                    value={excursionDate}
+                    onChange={setExcursionDate}
+                    label="Termín exkurze"
+                    format="DD.MM.YYYY"
+                />
+            </FormControl>
             {classroom.type === 'CORE' ? [
                 <FormControl margin="normal" fullWidth key="visitInProduction">
                     <DatePicker
@@ -184,16 +194,6 @@ const ProjectForm = ({
                     />
                 </FormControl>,
             ] : null}
-            <FormControl margin="normal" fullWidth>
-                <DatePicker
-                    id="excursionDate"
-                    name="excursionDate"
-                    value={excursionDate}
-                    onChange={setExcursionDate}
-                    label="Termín exkurze"
-                    format="DD.MM.YYYY"
-                />
-            </FormControl>
             <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="semester">Pololetí</InputLabel>
                 <Select
