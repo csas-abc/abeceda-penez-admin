@@ -129,7 +129,7 @@ const EditSchoolForm = ({ school, updateSchoolMutation }) => {
                     onChange={(e) => setStatus(e.target.value)}
                 >
                     {map((schoolStatus) => (
-                        <MenuItem key={schoolStatus} value={schoolStatus}>{`${schoolStatus}   (${SchoolStatusesHints[schoolStatus]})`}</MenuItem>
+                        <MenuItem key={schoolStatus} value={schoolStatus}><b>{schoolStatus}</b>&nbsp;(<i>{SchoolStatusesHints[schoolStatus]}</i>)</MenuItem>
                     ))(SchoolStatuses)}
                 </Select>
             </FormControl>
