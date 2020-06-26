@@ -13,8 +13,10 @@ import map from 'ramda/src/map';
 import MenuItem from '@material-ui/core/MenuItem';
 import Regions from '../../constants/Regions';
 import SchoolStatuses from '../../constants/SchoolStatuses';
+import SchoolStatusesHints from '../../constants/SchoolStatusesHints';
 
 const EditSchoolForm = ({ school, updateSchoolMutation }) => {
+
     const { enqueueSnackbar } = useSnackbar();
     // const [loading, setLoading] = useState(false);
 
@@ -127,7 +129,7 @@ const EditSchoolForm = ({ school, updateSchoolMutation }) => {
                     onChange={(e) => setStatus(e.target.value)}
                 >
                     {map((schoolStatus) => (
-                        <MenuItem key={schoolStatus} value={schoolStatus}>{schoolStatus}</MenuItem>
+                        <MenuItem key={schoolStatus} value={schoolStatus}>{`${schoolStatus}   (${SchoolStatusesHints[schoolStatus]})`}</MenuItem>
                     ))(SchoolStatuses)}
                 </Select>
             </FormControl>

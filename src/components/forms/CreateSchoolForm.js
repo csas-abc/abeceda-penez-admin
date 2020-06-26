@@ -16,6 +16,7 @@ import { useSnackbar } from 'notistack';
 import schoolAttributes from '../../constants/schoolAttributes';
 import Regions from '../../constants/Regions';
 import SchoolStatuses from '../../constants/SchoolStatuses';
+import SchoolStatusesHints from '../../constants/SchoolStatusesHints';
 import Typography from '@material-ui/core/Typography';
 
 const styles =  {
@@ -224,7 +225,7 @@ const CreateSchoolForm = ({
                     onChange={(e) => setStatus(e.target.value)}
                 >
                     {map((schoolStatus) => (
-                        <MenuItem key={schoolStatus} value={schoolStatus}>{schoolStatus}</MenuItem>
+                        <MenuItem key={schoolStatus} value={schoolStatus}>{`${schoolStatus}   (${SchoolStatusesHints[schoolStatus]})`}</MenuItem>
                     ))(SchoolStatuses)}
                 </Select>
             </FormControl>
