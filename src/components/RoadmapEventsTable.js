@@ -60,6 +60,9 @@ const RoadmapEventsTable = ({
 }) => {
 
     const getMuiTheme = () => createMuiTheme({
+        typography: {
+            useNextVariants: true,
+          },
         overrides: {
           MUIDataTableToolbar: {
             root: {
@@ -225,7 +228,7 @@ const RoadmapEventsTable = ({
         } else {
             setColumns(initialCols);
         }
-    },[initialCols]);
+    },[]);
 
     useEffect(() => {
         loadData();

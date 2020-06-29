@@ -20,6 +20,9 @@ import "./styles/index.css";
 import 'moment/locale/cs';
 
 const theme = createMuiTheme({
+    typography: {
+        useNextVariants: true,
+      },
     overrides: {
         MuiTableCell: {
             root: {

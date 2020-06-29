@@ -68,6 +68,9 @@ const Schools = ({ schoolsQuery }) => {
 
 
     const getMuiTheme = () => createMuiTheme({
+        typography: {
+            useNextVariants: true,
+          },
         overrides: {
           MUIDataTableToolbar: {
             root: {

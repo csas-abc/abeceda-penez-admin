@@ -51,6 +51,9 @@ const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom
 const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery }) => {
    const isCoreUser = all(['CORE'])(meQuery);
    const getMuiTheme = () => createMuiTheme({
+        typography: {
+        useNextVariants: true,
+         },
         overrides: {
           MUIDataTableToolbar: {
             root: {
