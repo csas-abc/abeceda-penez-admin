@@ -49,7 +49,6 @@ const styles = theme => ({
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery }) => {
-    
    const isCoreUser = all(['CORE'])(meQuery);
    const getMuiTheme = () => createMuiTheme({
         overrides: {

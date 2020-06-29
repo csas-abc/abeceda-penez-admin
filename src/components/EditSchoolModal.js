@@ -13,6 +13,8 @@ import compose from 'ramda/src/compose';
 import withStyles from '@material-ui/core/styles/withStyles';
 import EditSchoolForm from './forms/EditSchoolForm';
 import EditContactForm from './forms/EditContactForm';
+import ClassroomsTable from './ClassroomsTable';
+import classroomAttributes from '../constants/classroomAttributes';
 
 const styles =  {
     paper: {
@@ -20,9 +22,20 @@ const styles =  {
     },
 };
 
-const EditSchoolModal = ({ schoolQuery, onClose, classes }) => {
+const EditSchoolModal = ({ schoolQuery, onClose, classes, classroomsQuery }) => {
     const [activeTab, setActiveTab] = useState('SCHOOL');
     const school = schoolQuery.school;
+    const allClassrooms = classroomsQuery.classrooms;
+    const schoolClassrooms = [];
+
+    allClassrooms.forEach(classroom => {
+                    if (school !== undefined && school !== null && classroom.school !== undefined && classroom.school !== null ) {
+                        if (school.id === classroom.school.id) {
+                           schoolClassrooms.push(classroom)
+                        }
+                    } 
+                });
+
     return (
         <Dialog
             open
@@ -38,7 +51,7 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes }) => {
                 {schoolQuery.loading ? (
                     <CircularProgress />
                 ) : (
-                    <React.Fragment>
+                    <>
                         <Tabs
                             value={activeTab}
                             onChange={(e, value) => setActiveTab(value)}
@@ -57,6 +70,10 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes }) => {
                                 label="Zástupce"
                                 value="ALTERNATE"
                             />
+                            <Tab
+                                label="Aktivní třídy"
+                                value="CLASSROOMS"
+                            />
                         </Tabs>
                         <TabPanel value={activeTab} id="SCHOOL">
                             <EditSchoolForm
@@ -73,7 +90,10 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes }) => {
                                 contact={school.alternate || {}}
                             />
                         </TabPanel>
-                    </React.Fragment>
+                        <TabPanel value={activeTab} id="CLASSROOMS">
+                            <ClassroomsTable data={schoolClassrooms} />
+                        </TabPanel>
+                    </>
                 )}
             </DialogContent>
         </Dialog>
@@ -100,7 +120,21 @@ const schoolQuery = graphql(gql`
     })
 });
 
+const schoolClassroomsQuery = graphql(gql`
+    {
+        classrooms {
+            ${classroomAttributes}
+        }
+    }
+`, {
+    name: 'classroomsQuery',
+    options: {
+        fetchPolicy: 'cache-and-network',
+    }
+});
+
 export default compose(
     withStyles(styles),
-    schoolQuery
+    schoolQuery,
+    schoolClassroomsQuery
 )(EditSchoolModal);

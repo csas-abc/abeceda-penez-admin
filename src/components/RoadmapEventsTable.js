@@ -225,7 +225,7 @@ const RoadmapEventsTable = ({
         } else {
             setColumns(initialCols);
         }
-    },[]);
+    },[initialCols]);
 
     useEffect(() => {
         loadData();

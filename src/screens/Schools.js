@@ -18,6 +18,7 @@ import pathOr from 'ramda/src/pathOr';
 import CreateSchoolModal from '../components/CreateSchoolModal';
 import EditSchoolModal from '../components/EditSchoolModal';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 const mapIndexed = addIndex(map);
 
@@ -65,6 +66,26 @@ const Schools = ({ schoolsQuery }) => {
         },
     ]);
 
+
+    const getMuiTheme = () => createMuiTheme({
+        overrides: {
+          MUIDataTableToolbar: {
+            root: {
+              zIndex: 1000,
+              position: "fixed",
+              top: "90px",
+              float: "right",
+              right: "10px",
+            }
+          },
+          MUIDataTableHeadCell: {
+              fixedHeaderCommon: {
+                  paddingTop: "60px"
+              }
+          }
+        }
+      });
+
     const options = {
         filterType: 'multiselect',
         selectableRows: 'none',
@@ -72,7 +93,7 @@ const Schools = ({ schoolsQuery }) => {
         download: false,
         print: false,
         responsive: 'scroll',
-        rowsPerPage: 1000,
+        rowsPerPage: 50,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
         onFilterChange: (column, filterLists) => {
             setColumns(mapIndexed((column, index) => ({
@@ -132,6 +153,7 @@ const Schools = ({ schoolsQuery }) => {
                 </Button>
             </div>
             {schoolsQuery.loading ? <CircularProgress /> : (
+                <MuiThemeProvider theme={() => getMuiTheme()}>
                 <MUIDataTable
                     columns={columns}
                     options={options}
@@ -149,6 +171,7 @@ const Schools = ({ schoolsQuery }) => {
                         ]
                     })(schoolsQuery.schools || [])}
                 />
+                </MuiThemeProvider>
             )}
         </Layout>
     );

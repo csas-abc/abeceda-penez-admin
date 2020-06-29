@@ -73,7 +73,7 @@ const CreateSchoolForm = ({
                     e.preventDefault();
                     setLoading(true);
                     let exists = false;
-                    schoolsQuery.schools.map(school => {
+                    schoolsQuery.schools.forEach(school => {
                         let zipCodeExisting = school.city
                         if (zipCodeExisting === null) {
                             zipCodeExisting = '';
