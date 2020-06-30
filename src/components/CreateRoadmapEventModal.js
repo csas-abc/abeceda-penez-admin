@@ -46,6 +46,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
     const [evaluation, setEvaluation] = useState('');
     const [internalClient, setInternalClient] = useState('');
     const [finMaterial, setFinMaterial] = useState('');
+    const [photoLink, setPhotoLink] = useState('');
 
     const [loading, setLoading] = useState(false);
     return (
@@ -97,6 +98,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                                 evaluation,
                                 internalClient,
                                 finMaterial,
+                                photoLink
                             }
                         }).then((res) => {
                             setLoading(false);
@@ -234,7 +236,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             name="budgetEXHYP"
                             value={budgetEXHYP}
                             type="number"
-                            onChange={(e) => setBudgetEXHYP(e.target.value)}
+                            onChange={e => setBudgetEXHYP(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -244,7 +246,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             name="overBudget"
                             value={overBudget}
                             type="number"
-                            onChange={(e) => setOverBudget(e.target.value)}
+                            onChange={e => setOverBudget(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -253,7 +255,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             id="nps"
                             name="nps"
                             value={nps}
-                            onChange={(e) => setNps(e.target.value)}
+                            onChange={e => setNps(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -265,7 +267,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             rows={3}
                             rowsMax={5}
                             value={evaluation}
-                            onChange={(e) => setEvaluation(e.target.value)}
+                            onChange={e => setEvaluation(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -277,7 +279,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             rows={3}
                             rowsMax={5}
                             value={internalClient}
-                            onChange={(e) => setInternalClient(e.target.value)}
+                            onChange={e => setInternalClient(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -289,7 +291,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             rows={3}
                             rowsMax={5}
                             value={finMaterial}
-                            onChange={(e) => setFinMaterial(e.target.value)}
+                            onChange={e => setFinMaterial(e.target.value)}
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -300,8 +302,8 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             multiline
                             rows={3}
                             rowsMax={5}
-                            value={finMaterial} // TODO: value to be changed to photoLink
-                            onChange={(e) => setFinMaterial(e.target.value)}
+                            value={photoLink}
+                            onChange={e => setPhotoLink(e.target.value)}
                        />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
@@ -313,7 +315,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             rows={3}
                             rowsMax={5}
                             value={note}
-                            onChange={(e) => setNote(e.target.value)}
+                            onChange={e => setNote(e.target.value)}
                         />
                     </FormControl>
                     <Button
@@ -347,6 +349,7 @@ const createRoadmapEventMutation = graphql(gql`
         $note: String
         $evaluation: String
         $internalClient: String
+        $photoLink: String
         $finMaterial: String
         $region: String
     ) {
@@ -365,6 +368,7 @@ const createRoadmapEventMutation = graphql(gql`
             note: $note
             evaluation: $evaluation
             internalClient: $internalClient
+            photoLink: $photoLink
             finMaterial: $finMaterial
             region: $region
         }) {

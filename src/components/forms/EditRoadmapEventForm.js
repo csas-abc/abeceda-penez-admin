@@ -54,8 +54,7 @@ const EditRoadmapEventForm = ({
     const [evaluation, setEvaluation] = useState(propOr('', 'evaluation')(roadmapEvent));
     const [internalClient, setInternalClient] = useState(propOr('', 'internalClient')(roadmapEvent));
     const [finMaterial, setFinMaterial] = useState(propOr('', 'finMaterial')(roadmapEvent));
-    // const [photoLink, setPhotoLink] = useState(propOr('', 'photoLink')(roadmapEvent));
-    // TODO: photos
+    const [photoLink, setPhotoLink] = useState(propOr('', 'photoLink')(roadmapEvent));
 
     const [loading, setLoading] = useState(false);
     return (
@@ -68,7 +67,7 @@ const EditRoadmapEventForm = ({
                     id="name"
                     name="name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={e => setName(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
@@ -80,7 +79,7 @@ const EditRoadmapEventForm = ({
                         name: 'region'
                     }}
                     value={region}
-                    onChange={(e) => setRegion(e.target.value)}
+                    onChange={e => setRegion(e.target.value)}
                 >
                     {map((region) => (
                         <MenuItem key={region} value={region}>{region}</MenuItem>
@@ -95,7 +94,7 @@ const EditRoadmapEventForm = ({
                         name: 'segment'
                     }}
                     value={segment}
-                    onChange={(e) => setSegment(e.target.value)}
+                    onChange={e => setSegment(e.target.value)}
                 >
                     <MenuItem key="MMA" value="MMA">MMA</MenuItem>
                     <MenuItem key="MSE" value="MSE">MSE</MenuItem>
@@ -135,7 +134,7 @@ const EditRoadmapEventForm = ({
                     rows={3}
                     rowsMax={5}
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={e => setDescription(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -147,7 +146,7 @@ const EditRoadmapEventForm = ({
                     rows={3}
                     rowsMax={5}
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={e => setAddress(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -157,7 +156,7 @@ const EditRoadmapEventForm = ({
                     name="budgetMMA"
                     value={budgetMMA}
                     type="number"
-                    onChange={(e) => setBudgetMMA(e.target.value)}
+                    onChange={e => setBudgetMMA(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -167,7 +166,7 @@ const EditRoadmapEventForm = ({
                     name="budgetMSE"
                     value={budgetMSE}
                     type="number"
-                    onChange={(e) => setBudgetMSE(e.target.value)}
+                    onChange={e => setBudgetMSE(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -177,7 +176,7 @@ const EditRoadmapEventForm = ({
                     name="budgetEXHYP"
                     value={budgetEXHYP}
                     type="number"
-                    onChange={(e) => setBudgetEXHYP(e.target.value)}
+                    onChange={e => setBudgetEXHYP(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -187,7 +186,7 @@ const EditRoadmapEventForm = ({
                     name="overBudget"
                     value={overBudget}
                     type="number"
-                    onChange={(e) => setOverBudget(e.target.value)}
+                    onChange={e => setOverBudget(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -196,7 +195,7 @@ const EditRoadmapEventForm = ({
                     id="nps"
                     name="nps"
                     value={nps}
-                    onChange={(e) => setNps(e.target.value)}
+                    onChange={e => setNps(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -208,7 +207,7 @@ const EditRoadmapEventForm = ({
                     rows={3}
                     rowsMax={5}
                     value={evaluation}
-                    onChange={(e) => setEvaluation(e.target.value)}
+                    onChange={e => setEvaluation(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -220,7 +219,7 @@ const EditRoadmapEventForm = ({
                     rows={3}
                     rowsMax={5}
                     value={internalClient}
-                    onChange={(e) => setInternalClient(e.target.value)}
+                    onChange={e => setInternalClient(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -232,7 +231,7 @@ const EditRoadmapEventForm = ({
                     rows={3}
                     rowsMax={5}
                     value={finMaterial}
-                    onChange={(e) => setFinMaterial(e.target.value)}
+                    onChange={e => setFinMaterial(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -243,8 +242,8 @@ const EditRoadmapEventForm = ({
                     multiline
                     rows={3}
                     rowsMax={5}
-                    value={finMaterial} // value to be changed to photoLink
-                    onChange={(e) => setFinMaterial(e.target.value)}
+                    value={photoLink}
+                    onChange={e => setPhotoLink(e.target.value)}
                 />
             </FormControl>
             <FormControl margin="normal" fullWidth>
@@ -256,7 +255,7 @@ const EditRoadmapEventForm = ({
                     rows={3}
                     rowsMax={5}
                     value={note}
-                    onChange={(e) => setNote(e.target.value)}
+                    onChange={e => setNote(e.target.value)}
                 />
             </FormControl>
             <RoadmapEventPhotos event={roadmapEvent} />
@@ -289,6 +288,7 @@ const EditRoadmapEventForm = ({
                                     evaluation,
                                     internalClient,
                                     finMaterial,
+                                    photoLink
                                 }
                             }).catch((e) => {
                                 enqueueSnackbar(
@@ -355,6 +355,7 @@ const updateRoadmapEventMutation = graphql(gql`
         $evaluation: String
         $internalClient: String
         $finMaterial: String
+        $photoLink: String
         $region: String
     ) {
         updateEvent(data: {
@@ -374,6 +375,7 @@ const updateRoadmapEventMutation = graphql(gql`
             evaluation: $evaluation
             internalClient: $internalClient
             finMaterial: $finMaterial
+            photoLink: $photoLink
             region: $region
         }) {
             ${roadmapEventAttributes}

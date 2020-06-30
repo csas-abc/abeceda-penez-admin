@@ -134,25 +134,25 @@ const RoadmapEventsTable = ({
             }
         },
         {
-            name: 'budget MMA',
+            name: 'Budget MMA',
             options: {
                 filter: false,
             }
         },
         {
-            name: 'budget MSE',
+            name: 'Budget MSE',
             options: {
                 filter: false,
             }
         },
         {
-            name: 'budget EXHYP',
+            name: 'Budget EXHYP',
             options: {
                 filter: false,
             }
         },
         {
-            name: 'nad rámec budgetu',
+            name: 'Nad rámec budgetu',
             options: {
                 filter: false,
             }
@@ -164,19 +164,19 @@ const RoadmapEventsTable = ({
             }
         },
         {
-            name: 'hodnocení',
+            name: 'Hodnocení',
             options: {
                 filter: false,
             }
         },
         {
-            name: 'interní klient',
+            name: 'Interní klient',
             options: {
                 filter: false,
             }
         },
         {
-            name: 'adresa',
+            name: 'Adresa',
             options: {
                 filter: false,
                 customBodyRender: (address) => (
@@ -187,11 +187,11 @@ const RoadmapEventsTable = ({
             }
         },
         {
-            name: 'finanční podklady',
+            name: 'Finanční podklady',
             options: {
                 filter: false,
                 customBodyRender: (link) => (
-                    <a rel="noopener noreferrer"  target="_blank" href={link}>
+                    <a rel="noopener noreferrer"  target="_blank" href={"http://" + link}>
                         ODKAZ
                     </a>
                 ),
@@ -202,14 +202,14 @@ const RoadmapEventsTable = ({
             options: {
                 filter: false,
                 customBodyRender: (link) => (
-                    <a rel="noopener noreferrer"  target="_blank" href={link}>
+                    <a rel="noopener noreferrer"  target="_blank" href={"http://" + link}>
                         ODKAZ
                     </a>
                 ),
             }
         },
         {
-            name: 'poznámka',
+            name: 'Poznámka',
             options: {
                 filter: false,
             }

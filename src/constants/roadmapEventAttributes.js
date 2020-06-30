@@ -24,6 +24,7 @@ export default `
     evaluation
     internalClient
     finMaterial
+    photoLink
     region
     photos {
         id

@@ -81,11 +81,6 @@ export default `
     area
     school {
         ${schoolAttributes}
-    }    teacher {
-        id
-        name
-        email
-        phone
-    }
+    }    
 
 `;
