@@ -8,7 +8,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
-import path from 'ramda/src/path';
 import prop from 'ramda/src/prop';
 import map from 'ramda/src/map';
 import withStyles from '@material-ui/core/styles/withStyles';
@@ -24,10 +23,24 @@ const SelectUnassignedUserModal = ({
     onClose,
     classes,
     unassignedVolunteersQuery,
+    unassignedCoreUsersQuery,
     assignUserMutation,
     teamId,
 }) => {
     const [loading, setLoading] = useState(false);
+    const unassignedUsers = [];
+    const coreUsers = unassignedCoreUsersQuery.unassignedCoreUsers;
+    const volunteers = unassignedVolunteersQuery.unassignedVolunteers;
+
+    if (coreUsers && volunteers) {
+        coreUsers.forEach(el => {
+            unassignedUsers.push(el);
+        });
+        volunteers.forEach(el => {
+            unassignedUsers.push(el);
+        });
+    }
+
     return (
         <Dialog
             open
@@ -68,7 +81,7 @@ const SelectUnassignedUserModal = ({
                                     {`${prop('firstname')(user)} ${prop('lastname')(user)} (${prop('email')(user)})`}
                                 </ListItemText>
                             </ListItem>
-                        ))(path(['unassignedVolunteers'])(unassignedVolunteersQuery) || [])}
+                        ))(unassignedUsers) || []}
                     </List>
                 )}
             </DialogContent>
@@ -89,6 +102,23 @@ export default compose(
         `,
         {
             name: 'unassignedVolunteersQuery',
+            options: {
+                fetchPolicy: 'network-only',
+            }
+        }
+    ),
+    graphql(
+        gql`query UnassignedCoreUsers {
+            unassignedCoreUsers {
+                id
+                email
+                firstname
+                lastname
+            }
+        }
+        `,
+        {
+            name: 'unassignedCoreUsersQuery',
             options: {
                 fetchPolicy: 'network-only',
             }
