@@ -18,6 +18,7 @@ import isEmpty from 'ramda/src/isEmpty';
 import isNil from 'ramda/src/isNil';
 import MenuItem from '@material-ui/core/MenuItem';
 import Regions from '../constants/Regions';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Budgets = ({ client }) => {
     const [year, setYear] = useState(2020);
@@ -27,8 +28,10 @@ const Budgets = ({ client }) => {
     const [subscribed, setSubscribed] = useState(0);
     const [fairs, setFairs] = useState(0);
     const [toolboxes, setToolboxes] = useState(0);
+    const [coreToolboxes, setCoreToolboxes] = useState(0);
     const [region, setRegion] = useState('');
     const [budgets, setBudgets] = useState(null);
+    const [isLoading, setLoading] = useState(false);
 
     const saveFilter = () => {
         localStorage.setItem(`budgets-${region}`, JSON.stringify({
@@ -72,6 +75,40 @@ const Budgets = ({ client }) => {
             }
         })
     }
+    const fetchToolboxes = () => {
+        setLoading(true);
+        client.query({
+            query: gql`query ToolboxOrder {
+                toolboxOrders {
+                    classroom {
+                        id
+                    }
+                    address
+                    author {
+                        region
+                        roles {
+                            name
+                        }
+                    }
+                }
+            }`,
+            fetchPolicy: 'network-only',
+            variables: {
+                year: parseInt(year),
+                region,
+            }
+        }).then((res) => {
+            const arr = [];
+            res.data.toolboxOrders.forEach(toolbox => {
+                if (toolbox.author.region === region && toolbox.author.roles[0].name === 'CORE') {
+                    arr.push(toolbox.author.region);
+                    setCoreToolboxes(arr.length);
+                }
+            });
+            setLoading(false);
+
+        })
+    }
     return (
         <Layout title="Budgety">
             <div style={{ padding: '16px', display: 'flex', alignItems: 'center' }}>
@@ -109,6 +146,7 @@ const Budgets = ({ client }) => {
                     style={{ margin: '12px' }}
                     onClick={() => {
                         fetchBudgets();
+                        fetchToolboxes();
                     }}
                 >
                     Načíst budgety
@@ -272,7 +310,7 @@ const Budgets = ({ client }) => {
                                     </FormControl>
                                 </TableCell>
                                 <TableCell>
-                                    {pathOr(0, ['toolboxes'])(budgets)}
+                                    {isLoading ? <CircularProgress/> : coreToolboxes }
                                 </TableCell>
                                 <TableCell>
                                     {parseInt(toolboxes) * pathOr(0, ['toolboxes'])(budgets)}

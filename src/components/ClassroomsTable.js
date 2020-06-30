@@ -33,7 +33,7 @@ text-align: left;
 padding: 8px;
 `
 
-const ClassroomsTable = ({ classes, data, dataSelector, defaulTdetail }) => {
+const ClassroomsTable = ({ classes, data }) => {
 
     if (data.error) return (
         <SnackbarContent
