@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import FairsTable from '../components/FairsTable';
 
 const CoreFairs = () => (
-    <Layout title="Jarmarky - TBD RMKT settings">
+    <Layout title="Jarmarky">
         <FairsTable />
     </Layout>
 );

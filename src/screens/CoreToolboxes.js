@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import ToolboxesTable from '../components/ToolboxesTable';
 
 const  CoreToolboxes = () => (
-    <Layout title="Toolboxy - TBD RMKT settings">
+    <Layout title="Toolboxy">
         <ToolboxesTable />
     </Layout>
 );
