@@ -230,7 +230,7 @@ const CreateSchoolForm = ({
                 </Select>
             </FormControl>
 
-            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
+            <Typography style={{ marginTop: '24px', marginBottom: 0 }}>
                 Ředitel
             </Typography>
             <FormControl margin="normal" fullWidth>
@@ -261,7 +261,7 @@ const CreateSchoolForm = ({
                 />
             </FormControl>
 
-            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
+            <Typography style={{ marginTop: '24px', marginBottom: 0 }}>
                 Zástupce
             </Typography>
             <FormControl margin="normal" fullWidth>

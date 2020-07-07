@@ -28,13 +28,16 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes, classroomsQuery }) => 
     const allClassrooms = classroomsQuery.classrooms;
     const schoolClassrooms = [];
 
-    allClassrooms.forEach(classroom => {
-                    if (school !== undefined && school !== null && classroom.school !== undefined && classroom.school !== null ) {
-                        if (school.id === classroom.school.id) {
-                           schoolClassrooms.push(classroom)
-                        }
-                    } 
-                });
+   if (allClassrooms) {
+
+       allClassrooms.forEach(classroom => {
+           if (school !== undefined && school !== null && classroom.school !== undefined && classroom.school !== null ) {
+               if (school.id === classroom.school.id) {
+                   schoolClassrooms.push(classroom)
+                }
+            } 
+        }); 
+   }
 
     return (
         <Dialog

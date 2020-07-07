@@ -1,4 +1,4 @@
-import React, { useCallback }from 'react';
+import React from 'react';
 import { useSnackbar } from 'notistack';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';

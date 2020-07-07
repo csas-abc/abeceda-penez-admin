@@ -51,8 +51,8 @@ const ToolboxesTable = ({
 }) => {
     const [selected, setSelected] = useState([]);
     const [toolboxDetail, setToolboxDetail] = useState(null);
-    const isAdmin = compose(
-        contains('ADMIN'),
+    const isAdminOrCore = compose(
+        contains('ADMIN') || contains('CORE'),
         pluck('name'),
         defaultTo([]),
         path(['me', 'roles']),
@@ -66,7 +66,7 @@ const ToolboxesTable = ({
     );
     return (
         <React.Fragment>
-            {isAdmin ? (
+            {isAdminOrCore ? (
                 <div>
                     <Button
                         variant="outlined"
@@ -92,7 +92,7 @@ const ToolboxesTable = ({
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        {isAdmin ? <TableCell /> : null}
+                        {isAdminOrCore ? <TableCell /> : null}
                         <TableCell>Stav</TableCell>
                         <TableCell>Do agentury odeslal</TableCell>
                         <TableCell>Adresát</TableCell>
@@ -111,7 +111,7 @@ const ToolboxesTable = ({
                     {compose(
                         map((toolbox) => (
                             <TableRow key={toolbox.id}>
-                                {isAdmin ? (
+                                {isAdminOrCore ? (
                                     <TableCell>
                                         <Checkbox
                                             checked={contains(toolbox.id)(selected)}
@@ -127,19 +127,19 @@ const ToolboxesTable = ({
                                         />
                                     </TableCell>
                                 ) : null}
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {path(['state'])(toolbox)}
                                 </TableCell>
                                 <TableCell>
                                     {path(['sendAdmin', 'email'])(toolbox) ? `${path(['sendAdmin', 'firstname'])(toolbox)} ${path(['sendAdmin', 'lastname'])(toolbox)} (${path(['sendAdmin', 'email'])(toolbox)})` : '-'}
                                 </TableCell>
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {path(['recipient'])(toolbox)}
                                 </TableCell>
                                 <TableCell>
                                     {path(['address'])(toolbox)}
                                 </TableCell>
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {compose(
                                         map((user) => (
                                             <React.Fragment key={user.id}>
@@ -150,20 +150,20 @@ const ToolboxesTable = ({
                                         path(['classroom', 'team', 'users']),
                                     )(toolbox)}
                                 </TableCell>
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {`${path(['author', 'firstname'])(toolbox)} ${path(['author', 'lastname'])(toolbox)}`}
                                 </TableCell>
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {path(['classroom', 'classroomName'])(toolbox)}
                                 </TableCell>
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {path(['classroom', 'fairDate'])(toolbox) ? moment(path(['classroom', 'fairDate'])(toolbox)).format('L') : '-'}
                                 </TableCell>
-                                <TableCell onClick={() => isAdmin ? setToolboxDetail(toolbox) : null}>
+                                <TableCell onClick={() => isAdminOrCore ? setToolboxDetail(toolbox) : null}>
                                     {path(['childrenCount'])(toolbox) || '-'}
                                 </TableCell>
                                 <TableCell>
-                                    {!isAdmin && propEq('state', 'Předáno do agentury')(toolbox) ? (
+                                    {!isAdminOrCore && propEq('state', 'Předáno do agentury')(toolbox) ? (
                                         <Button
                                             variant="outlined"
                                             onClick={() => registerOrderMutation({
@@ -177,7 +177,7 @@ const ToolboxesTable = ({
                                     ) : (path(['registrationDate'])(toolbox) ? moment(path(['registrationDate'])(toolbox)).format('L') : '-')}
                                 </TableCell>
                                 <TableCell>
-                                    {!isAdmin && propEq('state', 'Agentura eviduje')(toolbox) ? (
+                                    {!isAdminOrCore && propEq('state', 'Agentura eviduje')(toolbox) ? (
                                         <Button
                                             variant="outlined"
                                             onClick={() => {
