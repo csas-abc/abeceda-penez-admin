@@ -134,7 +134,7 @@ const SchoolForm = ({
                     }}
                 />
             </FormControl>
-            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
+            <Typography variant="h5" style={{ marginTop: '24px', marginBottom: 0 }}>
                 Ředitel
             </Typography>
             <FormControl margin="normal" fullWidth>
@@ -163,7 +163,7 @@ const SchoolForm = ({
                 />
             </FormControl>
 
-            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
+            <Typography variant="h5" style={{ marginTop: '24px', marginBottom: 0 }}>
                 Zástupce
             </Typography>
             <FormControl margin="normal" fullWidth>

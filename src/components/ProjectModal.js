@@ -41,7 +41,7 @@ const ProjectModal = ({
     onClose,
     classes,
     classroomQuery: { classroom = {}, ...classroomQuery },
-    defaultTab = ProjectModalTabs.PROJECT_STATE,
+    defaultTab,
     meQuery,
 }) => {
     const [activeTab, setActiveTab] = useState(defaultTab);
@@ -157,7 +157,7 @@ const ProjectModal = ({
                                 classroom={classroom}
                                 editDisabled={editDisabled()}
                             />
-                            <Typography variant="headline" style={{ marginTop: '24px', marginBottom: 0 }}>
+                            <Typography variant="h5" style={{ marginTop: '24px', marginBottom: 0 }}>
                                 Učitel
                             </Typography>
                             <EditContactForm

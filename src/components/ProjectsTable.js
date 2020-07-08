@@ -380,7 +380,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
             return !!found;
         },
         onCellClick: (colData, colMetadata) => {
-            setDefaultTab(colMetadata.colIndex === 1 ? ProjectModalTabs.NOTE : ProjectModalTabs.PROJECT_DETAIL);
+            setDefaultTab(ProjectModalTabs.PROJECT_DETAIL);
             const classroom = dataSelector(query)[colMetadata.dataIndex];
             setProjectDetail(classroom);
         },

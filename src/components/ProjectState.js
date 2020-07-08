@@ -57,7 +57,7 @@ const ProjectState = ({
     const editable = includes('CORE')(userRoles) && !activePhase.finished;
     return (
         <div style={{ padding: '16px' }}>
-            <Typography variant="headline">
+            <Typography variant="h5">
                 Krok: {`${activePhase.number} - ${activePhase.name}`}
             </Typography>
             <List>
