@@ -55,7 +55,7 @@ const Statistics = ({ client }) => {
     }
 
     return (
-        <Layout title="Statistika">
+        <Layout title="Reporty">
             <ReportButton value="Unikátní školy" query="query ExportSchools { exportSchools }"></ReportButton>
             <ReportButton value="Výdělky po regionech" query="query ExportMoney { exportMoney }"></ReportButton>
             <ReportButton value="E-maily účastníků" query="query ExportEmails { exportEmails }"></ReportButton>

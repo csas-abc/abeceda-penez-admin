@@ -347,7 +347,7 @@ const ProjectForm = ({
                             style={{ marginLeft: '16px' }}
                             onClick={() => setFinishConfirmModal(true)}
                         >
-                            Ukončit projekt
+                            Archivovat
                         </Button>
                     ) : null}
                 </div>
