@@ -77,7 +77,24 @@ const RoadmapEventsTable = ({
               fixedHeaderCommon: {
                   paddingTop: "60px",
               }
-          }
+          },
+          MUIDataTableFilterList: {
+              root: {
+                  position: "absolute",
+                  zIndex: 1001
+              }
+          },
+          MUIDataTablePagination: {
+              root: {
+                  position: "fixed",
+                  right: "10px"
+              }
+          },
+          MUIDataTable: {
+              responsiveScroll: {
+                  maxHeight: "70vh !important",
+              }
+          },
         }
       });
 
@@ -215,20 +232,24 @@ const RoadmapEventsTable = ({
             }
         },
     ];
-
+    
+    const filterCols = JSON.parse(localStorage.getItem('roadmapCols'));
+    const filterData = JSON.parse(localStorage.getItem('roadmapFilter'));
     useEffect(() => {
-        const filterCols = JSON.parse(localStorage.getItem('roadmapCols'));
-        const filterData = JSON.parse(localStorage.getItem('roadmapFilter'));
-        if (filterCols && filterData) {
+        const cols = [...initialCols];
+        if (filterCols || filterData) {
             for (let i = 0; i < filterCols.length; i++) {
-               initialCols[i].options.display = filterCols[i].display
-               initialCols[i].options.filterList = filterData[i].filterList
+               cols[i].options.display = filterCols[i].display;
+		    if (filterData) {
+		         cols[i].options.filterList = filterData[i].filterList;
+		    }
             }
-            setColumns(initialCols);
+            setColumns(cols);
         } else {
             setColumns(initialCols);
         }
     },[]);
+
 
     useEffect(() => {
         loadData();

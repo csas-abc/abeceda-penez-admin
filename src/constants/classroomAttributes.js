@@ -4,6 +4,11 @@ export default `
     id
     excursionDate
     classroomName
+    creator {
+        id
+        firstname
+        lastname
+    }
     schoolAddress
     directorName
     directorEmail

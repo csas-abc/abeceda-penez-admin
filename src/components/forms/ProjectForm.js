@@ -303,8 +303,8 @@ const ProjectForm = ({
                 <div>
                     <Button
                         variant="contained"
-                        color="primary"
                         className={classes.submit}
+                        color="primary"
                         onClick={() => {
                             exportMutation({
                                 variables: {
@@ -317,6 +317,19 @@ const ProjectForm = ({
                     >
                         Export
                     </Button>
+                    <Button
+                    variant="contained"
+                    style={{
+                        backgroundColor: 'red',
+                        color: 'white',
+                        marginLeft: '20px'
+                    }}
+                    className={classes.submit}
+                    type="submit"
+                    disabled={editDisabled}
+                >
+                    Smazat
+                </Button>
                     {isAdmin ? ([
                         <Button
                             variant="contained"
@@ -326,7 +339,7 @@ const ProjectForm = ({
                             onClick={() => setArchiveConfirmModal(true)}
                             key="archive"
                         >
-                            {classroom.archived ? 'Obnovit' : 'Přesunout do Archivu'}
+                            {classroom.archived ? 'Obnovit' : 'Archivovat'}
                         </Button>,
                         <Button
                             variant="contained"
@@ -351,6 +364,7 @@ const ProjectForm = ({
                         </Button>
                     ) : null}
                 </div>
+              
                 <Button
                     variant="contained"
                     color="primary"

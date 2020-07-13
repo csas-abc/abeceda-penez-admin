@@ -55,7 +55,6 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button onClick={() => onClose(false)}>NE</Button>
                 <Button
-                    // type="submit"
                     id="deleteEventButton"
                     onClick={() => {
                         submitForm();   

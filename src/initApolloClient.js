@@ -5,7 +5,7 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { persistCache } from 'apollo-cache-persist';
 
-const ENDPOINT = 'abeceda.adane.cz';
+const ENDPOINT = 'abeceda.notix.cloud';
 // const ENDPOINT = 'localhost:4000';
 
 export default async() => {

@@ -49,30 +49,43 @@ const styles = theme => ({
 const getActivePhase = (classroom) => find((phase) => !phase.finished)(classroom.phases || []);
 
 const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery }) => {
-   const isCoreUser = all(['CORE'])(meQuery);
-   const getMuiTheme = () => createMuiTheme({
+    const isCoreUser = all(['CORE'])(meQuery);
+    const getMuiTheme = () => createMuiTheme({
         typography: {
-        useNextVariants: true,
-         },
+            useNextVariants: true,
+        },
         overrides: {
-          MUIDataTableToolbar: {
-            root: {
-              zIndex: 1000,
-              position: "fixed",
-              top: "90px",
-              float: "right",
-              right: "10px",
+            MUIDataTableToolbar: {
+                root: {
+                    zIndex: 1000,
+                    position: "fixed",
+                    top: "90px",
+                    float: "right",
+                    right: "10px",
+                }
+            },
+            MUIDataTableHeadCell: {
+                fixedHeaderCommon: {
+                    paddingTop: "60px"
+                }
             }
-          },
-          MUIDataTableHeadCell: {
-              fixedHeaderCommon: {
-                  paddingTop: "60px"
-              }
-          }
         }
-      });
-   
+    });
+    
     const initialCols = [
+        {
+            name: '',
+            options: {
+                filter: false,
+                sort: false,
+            },
+        },
+        {
+            name: 'Zakladatel',
+            options: {
+                filter: false,
+            }
+        },
         {
             name: 'Projekt',
             options: {
@@ -80,11 +93,127 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
             }
         },
         {
-            name: '',
+            name: 'Škola',
             options: {
                 filter: false,
-                sort: false,
             },
+        },
+        {
+            name: 'Pobočka',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Pololetí',
+            options: {
+                filter: true,
+            },
+        },
+        {
+            name: 'Termín návštěvy školy',
+            options: {
+                filter: false,
+                customBodyRender: (value) => (
+                    <div
+                    style={{
+                        padding: '24px',
+                        backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
+                    }}
+                    >
+                        {value}
+                    </div>
+                ),
+            },
+        },
+        {
+            name: 'Termín exkurze',
+            options: {
+                filter: false,
+                customBodyRender: (value) => (
+                    <div
+                    style={{
+                        padding: '24px',
+                        backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
+                    }}
+                    >
+                        {value}
+                    </div>
+                ),
+            },
+        },
+        ...isCoreUser ? [
+            {
+                name: 'Datum návštěvy při výrobě',
+                options: {
+                    filter: false,
+                }
+            },
+            {
+                name: 'Datum kávy s učitelem',
+                options: {
+                    filter: false,
+                }
+            },
+        ] : [],
+        {
+            name: 'Termín jarmarku',
+            options: {
+                filter: false,
+                customBodyRender: (value) => (
+                    <div
+                    style={{
+                        padding: '24px',
+                        backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
+                    }}
+                    >
+                        {value}
+                    </div>
+                ),
+            },
+        },
+        {
+            name: 'Toolbox',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Název firmy',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'V čem děti podnikají',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Výdělek použití',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Výdělek (Kč)',
+            options: {
+                filter: false,
+            },
+        },
+        {
+            name: 'Oblast',
+            options: {
+                filter: false,
+            }
+        },
+        {
+            name: 'Typ',
+            options: {
+                filter: true,
+                sort: false,
+            }
         },
         {
             name: 'Tým',
@@ -107,7 +236,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                     })(values)
                 },
             },
-
+            
         },
         ...isCoreUser ? [] : [
             {
@@ -150,129 +279,6 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 },
             },
         ],
-        {
-            name: 'Oblast',
-            options: {
-                filter: false,
-            }
-        },
-        {
-            name: 'Pobočka',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'Škola',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'Termín návštěvy školy',
-            options: {
-                filter: false,
-                customBodyRender: (value) => (
-                    <div
-                        style={{
-                            padding: '24px',
-                            backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
-                        }}
-                    >
-                        {value}
-                    </div>
-                ),
-            },
-        },
-        ...isCoreUser ? [
-            {
-                name: 'Datum návštěvy při výrobě',
-                options: {
-                    filter: false,
-                }
-            },
-            {
-                name: 'Datum kávy s učitelem',
-                options: {
-                    filter: false,
-                }
-            },
-        ] : [],
-        {
-            name: 'Pololetí',
-            options: {
-                filter: true,
-            },
-        },
-        {
-            name: 'Toolbox',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'Termín exkurze',
-            options: {
-                filter: false,
-                customBodyRender: (value) => (
-                    <div
-                        style={{
-                            padding: '24px',
-                            backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
-                        }}
-                    >
-                        {value}
-                    </div>
-                ),
-            },
-        },
-        {
-            name: 'Název firmy',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'V čem děti podnikají',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'Termín jarmarku',
-            options: {
-                filter: false,
-                customBodyRender: (value) => (
-                    <div
-                        style={{
-                            padding: '24px',
-                            backgroundColor: (!value || value !== '-') ? 'lightgreen' : 'transparent',
-                        }}
-                    >
-                        {value}
-                    </div>
-                ),
-            },
-        },
-        {
-            name: 'Výdělek použití',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'Výdělek (Kč)',
-            options: {
-                filter: false,
-            },
-        },
-        {
-            name: 'Typ',
-            options: {
-                filter: true,
-                sort: false,
-            }
-        }
     ]; 
 
     const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
@@ -280,14 +286,17 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
     const [columns, setColumns] = useState([]);
 
     useEffect(() => {
-        const filterCols = JSON.parse(localStorage.getItem('projectsCols'));
-        const filterData = JSON.parse(localStorage.getItem('projectsFilter'));
-        if (filterCols && filterData) {
+        const filterCols = JSON.parse(localStorage.getItem('projectCols'));
+        const filterData = JSON.parse(localStorage.getItem('projectFilter'));
+	    const cols = [...initialCols];
+        if (filterCols || filterData) {
             for (let i = 0; i < filterCols.length; i++) {
-               initialCols[i].options.display = filterCols[i].display
-               initialCols[i].options.filterList = filterData[i].filterList
+               cols[i].options.display = filterCols[i].display;
+		    if (filterData) {
+		         cols[i].options.filterList = filterData[i].filterList;
+		    }
             }
-            setColumns(initialCols);
+            setColumns(cols);
         } else {
             setColumns(initialCols);
         }
@@ -332,7 +341,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 });
             }
 
-            localStorage.setItem('filterCols', JSON.stringify(toStorage));
+            localStorage.setItem('projectFilter', JSON.stringify(toStorage));
 
         },
         onTableChange: (actionName, tableData) => {
@@ -357,7 +366,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 });
             }
             
-            localStorage.setItem('projectsCols', JSON.stringify(toStorage));
+            localStorage.setItem('projectCols', JSON.stringify(toStorage));
             
             if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);
@@ -451,10 +460,34 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                     options={options}
                     data={map((classroom) => {
                         return [
-                            path(['classroomName'])(classroom) || '-',
                             <Button>
                                 <Edit />
                             </Button>,
+                            join(' ')([
+                                path(['creator', 'firstname'])(classroom) || '-',
+                                path(['creator', 'lastname'])(classroom) || '-'
+                            ]) || '-',
+                            path(['classroomName'])(classroom) || '-',
+                            join(', ')([
+                                path(['school', 'street'])(classroom) || '-',
+                                path(['school', 'city'])(classroom) || '-'
+                                ]),
+                                path(['branchAddress'])(classroom) || '-',
+                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}. pololetí ${path(['year'])(classroom)}/${path(['year'])(classroom) + 1}` : '-',
+                            path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
+                            path(['excursionDate'])(classroom) ? moment(path(['excursionDate'])(classroom)).format('L') : '-',
+                            ...isCoreUser ? [
+                                path(['visitInProduction'])(classroom) ? moment(path(['visitInProduction'])(classroom)).format('L') : '-',
+                                path(['coffeeWithTeacher'])(classroom) ? moment(path(['coffeeWithTeacher'])(classroom)).format('L') : '-',
+                            ] : [],
+                            path(['fairDate'])(classroom) ? moment(path(['fairDate'])(classroom)).format('L') : '-',
+                            path(['toolboxOrder', 'state'])(classroom) || '-',
+                            path(['companyName'])(classroom) || '-',
+                            path(['businessDescription'])(classroom) || '-',
+                            path(['businessPurpose'])(classroom) || '-',
+                            path(['moneyGoalAmount'])(classroom) || '-',
+                            prop('area')(classroom) || '-',
+                            classroom.type ? (classroom.type === 'CORE' ? 'RMKT' : 'Dobrovolník') : '-',
                             compose(
                                 defaultTo([]),
                                 path(['team', 'users']),
@@ -463,26 +496,6 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                                 classroom.team.users.map((user) => user.region),
                                 getActivePhase(classroom),
                             ],
-                            prop('area')(classroom) || '-',
-                            path(['branchAddress'])(classroom) || '-',
-                            join(', ')([
-                                path(['school', 'street'])(classroom) || '-',
-                                path(['school', 'city'])(classroom) || '-'
-                            ]),
-                            path(['schoolMeeting'])(classroom) ? moment(path(['schoolMeeting'])(classroom)).format('L') : '-',
-                            ...isCoreUser ? [
-                                path(['visitInProduction'])(classroom) ? moment(path(['visitInProduction'])(classroom)).format('L') : '-',
-                                path(['coffeeWithTeacher'])(classroom) ? moment(path(['coffeeWithTeacher'])(classroom)).format('L') : '-',
-                            ] : [],
-                            path(['semester'])(classroom) ? `${path(['semester'])(classroom)}. pololetí ${path(['year'])(classroom)}/${path(['year'])(classroom) + 1}` : '-',
-                            path(['toolboxOrder', 'state'])(classroom) || '-',
-                            path(['excursionDate'])(classroom) ? moment(path(['excursionDate'])(classroom)).format('L') : '-',
-                            path(['companyName'])(classroom) || '-',
-                            path(['businessDescription'])(classroom) || '-',
-                            path(['fairDate'])(classroom) ? moment(path(['fairDate'])(classroom)).format('L') : '-',
-                            path(['businessPurpose'])(classroom) || '-',
-                            path(['moneyGoalAmount'])(classroom) || '-',
-                            classroom.type ? (classroom.type === 'CORE' ? 'RMKT' : 'Dobrovolník') : '-',
                         ]
                     })(dataSelector(query) || [])}
                 />
