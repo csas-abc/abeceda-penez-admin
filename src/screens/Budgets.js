@@ -283,7 +283,7 @@ const Budgets = ({ client }) => {
                             </TableRow>
                         </TableBody>
                     </Table>
-                    <Table>
+                    <Table style={{ marginBottom: 60 }}>
                         <TableHead>
                             <TableRow>
                                 <TableCell></TableCell>

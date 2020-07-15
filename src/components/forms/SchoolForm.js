@@ -92,7 +92,7 @@ const SchoolForm = ({
                                             setSchoolSearchDialog(false);
                                         }}
                                     >
-                                        {schoolRec.name}
+                                        {schoolRec.name + ", " + schoolRec.city + ", " + schoolRec.street}
                                     </Button>
                                 )),
                                 filter((schoolRec) => (
@@ -108,12 +108,12 @@ const SchoolForm = ({
                 </Dialog>
             ) : null}
             <FormControl margin="normal" required fullWidth>
-                <InputLabel htmlFor="school">Název</InputLabel>
+                <InputLabel style={{position: "relative", top: "-10px"}} htmlFor="school">Název</InputLabel>
                 <Input
                     id="school"
                     name="school"
                     value={school.name}
-                    onChange={() => {}}
+                    // onChange={() => {}}
                     onClick={() => {
                         setSchoolSearchDialog(true);
                     }}

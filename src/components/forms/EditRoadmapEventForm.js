@@ -18,7 +18,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Regions from '../../constants/Regions';
 import DatePicker from 'material-ui-pickers/DateTimePicker';
 import { all } from '../../utils/permissions';
-import RoadmapEventPhotos from '../RoamapEventPhotos';
 
 const styles =  {
     paper: {
@@ -258,7 +257,6 @@ const EditRoadmapEventForm = ({
                     onChange={e => setNote(e.target.value)}
                 />
             </FormControl>
-            <RoadmapEventPhotos event={roadmapEvent} />
             {isEditable ? (
                 <div style={{ display: 'flex' }}>
                     <Button

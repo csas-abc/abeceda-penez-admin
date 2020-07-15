@@ -68,7 +68,24 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 fixedHeaderCommon: {
                     paddingTop: "60px"
                 }
-            }
+            },
+            MUIDataTableFilterList: {
+                root: {
+                    position: "absolute",
+                    zIndex: 1001
+                }
+            },
+            MUIDataTablePagination: {
+                root: {
+                    position: "fixed",
+                    right: "10px"
+                }
+            },
+            MUIDataTable: {
+                responsiveScroll: {
+                    maxHeight: "70vh !important",
+                }
+            },
         }
     });
     
@@ -285,14 +302,14 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
     const [projectDetail, setProjectDetail] = useState(null);
     const [columns, setColumns] = useState([]);
 
+    const filterCols = JSON.parse(localStorage.getItem('projectCols'));
+    const filterData = JSON.parse(localStorage.getItem('projectFilter'));
     useEffect(() => {
-        const filterCols = JSON.parse(localStorage.getItem('projectCols'));
-        const filterData = JSON.parse(localStorage.getItem('projectFilter'));
 	    const cols = [...initialCols];
         if (filterCols || filterData) {
             for (let i = 0; i < filterCols.length; i++) {
                cols[i].options.display = filterCols[i].display;
-		    if (filterData) {
+		    if (filterData && cols[i].options.filterList && filterData[i].filterList) {
 		         cols[i].options.filterList = filterData[i].filterList;
 		    }
             }
