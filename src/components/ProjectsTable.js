@@ -329,11 +329,6 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
             message="Načtení se nezdařilo"
         />
     );
-    
-    const getElementByXpath = (path) => {
-        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-      }
-      
 
     const options = {
         filterType: 'multiselect',
