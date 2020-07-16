@@ -100,7 +100,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         {
             name: 'Zakladatel',
             options: {
-                filter: false,
+                filter: true,
             }
         },
         {
@@ -309,7 +309,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         if (filterCols || filterData) {
             for (let i = 0; i < filterCols.length; i++) {
                cols[i].options.display = filterCols[i].display;
-		    if (filterData && cols[i].options.filterList && filterData[i].filterList) {
+		    if (filterData) {
 		         cols[i].options.filterList = filterData[i].filterList;
 		    }
             }
@@ -330,6 +330,11 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
         />
     );
     
+    const getElementByXpath = (path) => {
+        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      }
+      
+
     const options = {
         filterType: 'multiselect',
         selectableRows: 'none',

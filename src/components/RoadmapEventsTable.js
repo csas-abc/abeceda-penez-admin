@@ -267,6 +267,11 @@ const RoadmapEventsTable = ({
         rowsPerPage: 50,
         rowsPerPageOptions: [10, 50, 100, 200, 500, 1000],
         onFilterChange: (column, filterLists) => {
+            const getElementByXpath = (path) => {
+                return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+              }
+              
+              console.log(getElementByXpath("/html/body/div[4]/div[2]/ul/li[1]/div/span"));
             setColumns(mapIndexed((column, index) => ({
                 ...column,
                 options: {
@@ -383,8 +388,6 @@ const RoadmapEventsTable = ({
             setEditEventModal(roadmapEventsQuery.roadmapEvents[dataIndex].id)
         }
     };
-
-
 
     if (!roadmapEventsQuery || roadmapEventsQuery.loading) return <CircularProgress />;
     if (roadmapEventsQuery.error) return (
