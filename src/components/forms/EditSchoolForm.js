@@ -15,10 +15,9 @@ import Regions from '../../constants/Regions';
 import SchoolStatuses from '../../constants/SchoolStatuses';
 import SchoolStatusesHints from '../../constants/SchoolStatusesHints';
 
-const EditSchoolForm = ({ school, updateSchoolMutation }) => {
+const EditSchoolForm = ({ onClose, school, updateSchoolMutation, deleteSchool }) => {
 
     const { enqueueSnackbar } = useSnackbar();
-    // const [loading, setLoading] = useState(false);
 
     const [name, setName] = useState(school.name || '');
     const [region, setRegion] = useState(school.region || '');
@@ -29,34 +28,6 @@ const EditSchoolForm = ({ school, updateSchoolMutation }) => {
 
     return (
         <form
-            onSubmit={(e) => {
-                e.preventDefault();
-                updateSchoolMutation({
-                    variables: {
-                        id: school.id,
-                        name,
-                        region,
-                        note,
-                        street,
-                        city,
-                        status,
-                    }
-                }).then(() => {
-                    enqueueSnackbar(
-                        'Škola byla úspěšně uložena',
-                        {
-                            variant: 'success',
-                            autoHideDuration: 4000,
-                            anchorOrigin: {
-                                horizontal: 'center',
-                                vertical: 'top',
-                            },
-                        }
-                    )
-                }).catch((e) => {
-                    console.error('ERROR', e);
-                })
-            }}
         >
             <FormControl margin="normal" fullWidth>
                 <InputLabel htmlFor="name">Název</InputLabel>
@@ -133,53 +104,123 @@ const EditSchoolForm = ({ school, updateSchoolMutation }) => {
                     ))(SchoolStatuses)}
                 </Select>
             </FormControl>
-            <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-            >
-                Uložit
-            </Button>
+                <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={e => {
+                            e.preventDefault();
+                            updateSchoolMutation({
+                                variables: {
+                                    id: school.id,
+                                    name,
+                                    region,
+                                    note,
+                                    street,
+                                    city,
+                                    status,
+                                }
+                            }).then(() => {
+                                onClose(true);
+                                enqueueSnackbar(
+                                    'Škola byla úspěšně uložena',
+                                    {
+                                        variant: 'success',
+                                        autoHideDuration: 4000,
+                                        anchorOrigin: {
+                                            horizontal: 'center',
+                                            vertical: 'top',
+                                        },
+                                    }
+                                )
+                            }).catch((e) => {
+                                console.error('ERROR', e);
+                            })
+                        }}
+                        style={{
+                            marginTop: "10px"
+                        }}
+                        
+                        >
+                        Uložit
+                </Button>
+                <Button
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        onClick={e => {
+                            e.preventDefault();
+                            deleteSchool({
+                                variables: {
+                                    id: school.id
+                                }
+                            }).then(() => {
+                                onClose(true);
+                                enqueueSnackbar(
+                                    'Škola byla úspěšně smazána',
+                                    {
+                                        variant: 'success',
+                                        autoHideDuration: 4000,
+                                        anchorOrigin: {
+                                            horizontal: 'center',
+                                            vertical: 'top',
+                                        },
+                                    }
+                                )
+                            }).catch((e) => {
+                                console.error('ERROR', e);
+                            })
+                        }}
+                        style={{
+                            marginTop: "10px"
+                        }}
+                        >
+                        Smazat
+                </Button>
         </form>
     );
 };
 
-const updateSchoolMutation = gql`
-    mutation UpdateSchool(
-        $id: ID!
-        $name: String
-        $region: String
-        $note: String
-        $street: String
-        $city: String
-        $status: String
-    ) {
-        updateSchool(
-            data: {
-                id: $id
-                name: $name
-                region: $region
-                note: $note
-                street: $street
-                city: $city
-                status: $status
-            }
-        ) {
-            ${schoolAttributes}
+const updateSchoolMutation = graphql(gql`
+mutation UpdateSchool(
+    $id: ID!
+    $name: String
+    $region: String
+    $note: String
+    $street: String
+    $city: String
+    $status: String
+) {
+    updateSchool(
+        data: {
+            id: $id
+            name: $name
+            region: $region
+            note: $note
+            street: $street
+            city: $city
+            status: $status
         }
+    ) {
+        ${schoolAttributes}
     }
-`;
-
-EditSchoolForm.propTypes = {
-
-};
+}
+`,
+    {
+        name: 'updateSchoolMutation',
+    },
+)
+const deleteSchool = graphql(gql`
+mutation DeleteSchool($id: ID!) {
+    deleteSchool(id: $id)
+}
+`,
+    {
+        name: 'deleteSchool',
+    },
+)
 
 export default compose(
-    graphql(
-        updateSchoolMutation,
-        {
-            name: 'updateSchoolMutation',
-        },
-    ),
+    updateSchoolMutation,
+    deleteSchool
 )(EditSchoolForm);

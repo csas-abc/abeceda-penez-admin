@@ -63,7 +63,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
             <DialogContent>
                 <form
                     className={classes.form}
-                    onSubmit={(e) => {
+                    onSubmit={e => {
                         setLoading(true);
                         if (!name || !region || !segment || !from || !to) {
                              e.preventDefault();  // !!! update table without refresh TBD
@@ -80,6 +80,7 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                             );
                             setLoading(false);
                         } else {
+                        e.preventDefault();
                         createRoadmapEventMutation({
                             variables: {
                                 name,
@@ -100,10 +101,10 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                                 finMaterial,
                                 photoLink
                             }
-                        }).then((res) => {
+                        }).then(res => {
                             setLoading(false);
                             onClose(true);
-                        }).catch((e) => {
+                        }).catch(e => {
                             enqueueSnackbar(
                                 'Akce nebyla vytvořena',
                                 {
@@ -148,7 +149,6 @@ const CreateRoadmapEventModal = ({ onClose, classes, createRoadmapEventMutation,
                     <FormControl margin="normal" required fullWidth>
                         <InputLabel htmlFor="segment">Segment</InputLabel>
                         <Select
-                            // disabled={isCoreUser}
                             inputProps={{
                                 id: 'segment',
                                 name: 'segment'

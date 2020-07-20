@@ -265,7 +265,8 @@ const EditRoadmapEventForm = ({
                         color="primary"
                         type="submit"
                         disabled={loading}
-                        onClick={() => {
+                        onClick={e => {
+                            e.preventDefault();
                             setLoading(true);
                             updateRoadmapEventMutation({
                                 variables: {
@@ -288,7 +289,21 @@ const EditRoadmapEventForm = ({
                                     finMaterial,
                                     photoLink
                                 }
-                            }).catch((e) => {
+                            }).then(() => {
+                                setLoading(false);
+                                onClose(true);
+                                enqueueSnackbar(
+                                    'Akce byla uložena',
+                                    {
+                                        variant: 'success',
+                                        autoHideDuration: 4000,
+                                        anchorOrigin: {
+                                            horizontal: 'center',
+                                            vertical: 'top',
+                                        },
+                                    },
+                                );
+                            }).catch(e => {
                                 enqueueSnackbar(
                                     'Akce nebyla uložena',
                                     {
@@ -303,19 +318,6 @@ const EditRoadmapEventForm = ({
                                 setLoading(false);
                                 console.error('ERROR', e);
                             });
-                            const form = document.getElementById("editEventForm");
-                                enqueueSnackbar(
-                                    'Akce byla uložena',
-                                    {
-                                        variant: 'success',
-                                        autoHideDuration: 4000,
-                                        anchorOrigin: {
-                                            horizontal: 'center',
-                                            vertical: 'top',
-                                        },
-                                    },
-                                );
-                                setTimeout(() => form.submit(), 800);
                         }}
                     >
                         {loading ? <CircularProgress /> : 'Uložit'}
@@ -381,6 +383,9 @@ const updateRoadmapEventMutation = graphql(gql`
     }
 `, {
     name: 'updateRoadmapEventMutation',
+    options: {
+        fetchPolicy: 'no-cache'
+    }
 });
 
 const meQuery = graphql(gql`

@@ -299,8 +299,21 @@ const ProjectForm = ({
                     </FormControl>
                 </React.Fragment>
             ) : null}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
+            <div style={{
+                          
+                          position: "sticky", 
+                          bottom: -25,
+                          width: "100%", 
+                          margin: "0 auto", 
+                          backgroundColor: "white",
+                          display: 'flex', 
+                          padding: "10px 0 20px 0",
+                          width: "100%",
+                        }}>
+                <div style={{
+                    justifyContent: 'flex-start',
+                    marginRight: "auto"
+           }}>  
                     <Button
                         variant="contained"
                         className={classes.submit}
@@ -318,18 +331,15 @@ const ProjectForm = ({
                         Export
                     </Button>
                     <Button
-                    variant="contained"
-                    style={{
-                        backgroundColor: 'red',
-                        color: 'white',
-                        marginLeft: '20px'
-                    }}
-                    className={classes.submit}
-                    type="submit"
-                    disabled={editDisabled}
-                >
-                    Smazat
-                </Button>
+                            variant="contained"
+                            color="secondary"
+                            className={classes.submit}
+                            style={{ marginLeft: '16px' }}
+                            onClick={() => setDeleteConfirmModal(true)}
+                            key="trash"
+                        >
+                            {classroom.deleted ? 'Obnovit' : 'Smazat'}
+                    </Button>
                     {isAdmin ? ([
                         <Button
                             variant="contained"
@@ -340,16 +350,6 @@ const ProjectForm = ({
                             key="archive"
                         >
                             {classroom.archived ? 'Obnovit' : 'Archivovat'}
-                        </Button>,
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                            style={{ marginLeft: '16px' }}
-                            onClick={() => setDeleteConfirmModal(true)}
-                            key="trash"
-                        >
-                            {classroom.deleted ? 'Obnovit' : 'Přesunout do koše'}
                         </Button>
                     ]) : null}
                     {isCore && !isFinished && isCoreClassroom ? (
@@ -363,7 +363,7 @@ const ProjectForm = ({
                             Archivovat
                         </Button>
                     ) : null}
-                </div>
+              </div> 
               
                 <Button
                     variant="contained"
@@ -371,7 +371,7 @@ const ProjectForm = ({
                     className={classes.submit}
                     type="submit"
                     disabled={editDisabled}
-                >
+                    >
                     Uložit
                 </Button>
             </div>

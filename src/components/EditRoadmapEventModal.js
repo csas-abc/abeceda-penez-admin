@@ -21,7 +21,8 @@ const styles =  {
 const EditRoadmapEventModal = ({
     onClose,
     classes,
-    roadmapEventQuery
+    roadmapQuery,
+    roadmapEventQuery,
 }) => {
     const roadmapEvent = propOr({}, 'roadmapEvent')(roadmapEventQuery);
     const [deleteEvent, setDeleteEvent] = useState(null);
@@ -37,9 +38,11 @@ const EditRoadmapEventModal = ({
         >
             {deleteEvent ? (
                 <DeleteRoadmapEventConfirmationModal
+                    roadmapQuery={roadmapQuery}
                     eventId={deleteEvent}
-                    onClose={() => {
+                    onClose={refetch => {
                         onClose(true);
+                        roadmapQuery.refetch();
                         setDeleteEvent(null);
                     }}
                 />

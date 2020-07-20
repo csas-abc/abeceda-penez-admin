@@ -46,19 +46,11 @@ const styles = theme => ({
 
 const mapIndexed = addIndex(map);
 
-const roadmapEventsQueryDef = gql`
-    query RoadmapEvents($year: Int){
-        roadmapEvents(year: $year) {
-            ${roadmapEventAttributes}
-        }
-    }
-`;
-
 const RoadmapEventsTable = ({
     classes,
     client,
+    roadmapQuery
 }) => {
-
     const getMuiTheme = () => createMuiTheme({
         typography: {
             useNextVariants: true,
@@ -97,25 +89,14 @@ const RoadmapEventsTable = ({
           },
         }
       });
-
-    const [createEventModal, setCreateEventModal] = useState(false);
-    const [editEventModal, setEditEventModal] = useState(false);
-    const [roadmapEventsQuery, setRoadmapsEventsQuery] = useState(null);
-    const [year, setYear] = useState(moment().year().toString());
-
-    const loadData = useCallback(() => {
-        client.query({
-            query: roadmapEventsQueryDef,
-            fetchPolicy: 'network-only',
-            variables: {
-                year: Number(year),
-            },
-        }).then((res) => {
-            console.log('RES', res);
-            setRoadmapsEventsQuery(res.data);
-        });
-    }, [client, year]);
-
+      const [createEventModal, setCreateEventModal] = useState(false);
+      const [editEventModal, setEditEventModal] = useState(false);
+      const [roadmapEventsQuery, setRoadmapsEventsQuery] = useState(null);
+      const [year, setYear] = useState(moment().year().toString());
+      
+    // console.log(query.roadmapEvents);
+    const loadData = useCallback(() => setRoadmapsEventsQuery(roadmapQuery), [setRoadmapsEventsQuery]);
+                    
     const initialCols = [
         {
             options: {
@@ -381,7 +362,7 @@ const RoadmapEventsTable = ({
         onCellClick: (colData, { colIndex, dataIndex }) => {
             if (colIndex === 12) return;
             if (colIndex === 13) return;
-            setEditEventModal(roadmapEventsQuery.roadmapEvents[dataIndex].id)
+            setEditEventModal(roadmapQuery.roadmapEvents[dataIndex].id)
         }
     };
 
@@ -398,14 +379,17 @@ const RoadmapEventsTable = ({
                 <CreateRoadmapEventModal
                     onClose={(refetch) => {
                         setCreateEventModal(false)
+                        roadmapQuery.refetch();
                     }}
                 />
             ) : null}
             {editEventModal ? (
                 <EditRoadmapEventModal
+                    roadmapQuery={roadmapQuery}
                     onClose={(refetch) => {
-                        setEditEventModal(false)
-                    }}
+                        setEditEventModal(false);
+                            roadmapQuery.refetch();
+                        }}
                     eventId={editEventModal}
                 />
             ) : null} 
@@ -467,7 +451,7 @@ const RoadmapEventsTable = ({
                         pathOr('-', ['photoLink'])(event),
                         pathOr('-', ['note'])(event),
                     ]
-                })(roadmapEventsQuery.roadmapEvents || [])}
+                })(roadmapQuery.roadmapEvents || [])}
                 />
             </MuiThemeProvider>
         </React.Fragment>

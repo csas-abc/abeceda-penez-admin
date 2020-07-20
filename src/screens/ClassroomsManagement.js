@@ -13,6 +13,7 @@ import CreateClassroomModal from '../components/CreateClassroomModal';
 const ClassroomManagement = ({ myClassroomsQuery }) => {
     const [createClassroomForm, setCreateClassroomForm] = useState(false);
     const [lastCreatedClassroomId, setLastCreatedClassroomId] = useState(null);
+
     return (
         <Layout title="Třídy">
             {createClassroomForm ? (
@@ -53,6 +54,9 @@ const myClassroomsQuery = graphql(gql`
 `, {
     name: 'myClassroomsQuery',
     options: {
+        variables: {
+             deleted: false
+        },
         fetchPolicy: 'cache-and-network',
     }
 });

@@ -139,9 +139,10 @@ const Schools = ({ schoolsQuery }) => {
             ) : null}
             {editSchool ? (
                 <EditSchoolModal
+                    schoolsQuery={schoolsQuery}
                     id={editSchool}
                     onClose={(refetch) => {
-                        // maybe re-fetch?
+                        schoolsQuery.refetch();
                         setEditSchool(null);
                     }}
                 />

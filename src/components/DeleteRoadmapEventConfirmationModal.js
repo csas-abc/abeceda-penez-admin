@@ -18,7 +18,9 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
                      deleteMutation({
                          variables: {
                          id: eventId,
-                     }}).catch(err => {
+                     }}).then(() => {
+                    onClose(true);
+                     }).catch(err => {
                              enqueueSnackbar(
                                       'Akce nebyla smazána',
                                       {  variant: 'error',
@@ -30,7 +32,6 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
                                       },
                             );
                         });
-                     const form = document.getElementById("editEventForm");
                      enqueueSnackbar(
                           'Akce byla smazána',
                           {  variant: 'success',
@@ -40,7 +41,6 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
                              vertical: 'top',
                              },
                      });
-                     setTimeout(() => form.submit(), 800);
     }
     
     return (
@@ -56,8 +56,9 @@ const DeleteConfirmationModal = ({ onClose, eventId, deleteMutation }) => {
                 <Button onClick={() => onClose(false)}>NE</Button>
                 <Button
                     id="deleteEventButton"
-                    onClick={() => {
-                        submitForm();   
+                    onClick={e => {
+                        e.preventDefault();
+                        submitForm();
                     }}
                 >
                     ANO

@@ -22,7 +22,7 @@ const styles =  {
     },
 };
 
-const EditSchoolModal = ({ schoolQuery, onClose, classes, classroomsQuery }) => {
+const EditSchoolModal = ({ schoolQuery, onClose, classes, classroomsQuery, schoolsQuery }) => {
     const [activeTab, setActiveTab] = useState('SCHOOL');
     const school = schoolQuery.school;
     const allClassrooms = classroomsQuery.classrooms;
@@ -80,6 +80,10 @@ const EditSchoolModal = ({ schoolQuery, onClose, classes, classroomsQuery }) => 
                         <TabPanel value={activeTab} id="SCHOOL">
                             <EditSchoolForm
                                 school={school}
+                                onClose={() => {
+                                    schoolsQuery.refetch();
+                                    onClose(true)
+                                }}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id="DIRECTOR">
