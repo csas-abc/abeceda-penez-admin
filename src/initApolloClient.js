@@ -5,7 +5,7 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
 import { persistCache } from 'apollo-cache-persist';
 
-const ENDPOINT = 'abeceda.adane.cz';
+// const ENDPOINT = 'abeceda.adane.cz';
 // const ENDPOINT = 'localhost:4000';
 
 export default async() => {
@@ -23,13 +23,13 @@ export default async() => {
     });
 
     // init HTTP connection
-    const httpLink = createUploadLink({ uri: `https://${ENDPOINT}` });
+    const httpLink = createUploadLink({ uri: `/api` });
     // const httpLink = createUploadLink({ uri: `http://${ENDPOINT}` });
     const httpLinkAuth = middlewareLink.concat(httpLink);
 
     // init WebSocket connection
     const wsLink = new WebSocketLink({
-        uri: `wss://${ENDPOINT}`,
+        uri: `wss://abeceda.notix.cloud`,
         options: {
             reconnect: true,
             connectionParams: {
