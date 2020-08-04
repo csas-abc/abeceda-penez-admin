@@ -6,30 +6,30 @@ import { getMainDefinition } from 'apollo-utilities';
 import { persistCache } from 'apollo-cache-persist';
 
 // const ENDPOINT = 'abeceda.adane.cz';
-const ENDPOINT = 'localhost:4000';
+// const ENDPOINT = 'localhost:4000';
 
 export default async() => {
     /** INIT HTTPS & WS CONNECTION TO GRAPH-QL SERVER **/
 
-    // inject auth header to HTPP request
+        // inject auth header to HTPP request
     const middlewareLink = new ApolloLink((operation, forward) => {
-        const token = localStorage.getItem('token');
-        operation.setContext({
-            headers: {
-                Authorization: token,
-            },
+            const token = localStorage.getItem('token');
+            operation.setContext({
+                headers: {
+                    Authorization: token,
+                },
+            });
+            return forward(operation);
         });
-        return forward(operation);
-    });
 
     // init HTTP connection
-    // const httpLink = createUploadLink({ uri: `https://${ENDPOINT}` });
-    const httpLink = createUploadLink({ uri: `http://${ENDPOINT}` });
+    const httpLink = createUploadLink({ uri: `/api` });
+    // const httpLink = createUploadLink({ uri: `http://${ENDPOINT}` });
     const httpLinkAuth = middlewareLink.concat(httpLink);
 
     // init WebSocket connection
     const wsLink = new WebSocketLink({
-        uri: `ws://${ENDPOINT}`,
+        uri: `wss://abeceda.notix.cloud`,
         options: {
             reconnect: true,
             connectionParams: {
@@ -49,7 +49,7 @@ export default async() => {
     );
 
     /** INIT GRAPH-QL CACHE **/
-    // sync in-memory cache with localStorage and recover after every reload
+        // sync in-memory cache with localStorage and recover after every reload
     const cache = new InMemoryCache();
 
     // connect apollo cache to localStorage (or recover cache from localStorage)
