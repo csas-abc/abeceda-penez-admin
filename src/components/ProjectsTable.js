@@ -263,15 +263,6 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 options: {
                     filter: true,
                     sort: false,
-                    customBodyRender: (value) => (
-                        <div>
-                            {(value || []).map((region, index) => (
-                                <React.Fragment key={index}>
-                                    {region}<br />
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    ),
                 }
             },
             {
@@ -512,7 +503,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                                 path(['team', 'users']),
                             )(classroom),
                             ...isCoreUser ? [] : [
-                                classroom.team.users.map((user) => user.region),
+                                !!classroom.school ? classroom.school.region : '-',
                                 getActivePhase(classroom),
                             ],
                         ]

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
-import Button from '@material-ui/core/Button';
 import gql from 'graphql-tag';
 import compose from 'ramda/src/compose';
 import schoolAttributes from '../../constants/schoolAttributes';
@@ -14,6 +13,19 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Regions from '../../constants/Regions';
 import SchoolStatuses from '../../constants/SchoolStatuses';
 import SchoolStatusesHints from '../../constants/SchoolStatusesHints';
+import styled from "styled-components";
+import SubmitButton from "../SubmitButton.component";
+
+const Buttons = styled.div`
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+background-color: white;
+display: flex;
+padding: 10px 20px;
+border-radius: 4px;
+`
 
 const EditSchoolForm = ({ onClose, school, updateSchoolMutation, deleteSchool }) => {
 
@@ -89,7 +101,7 @@ const EditSchoolForm = ({ onClose, school, updateSchoolMutation, deleteSchool })
                     onChange={(e) => setCity(e.target.value)}
                 />
             </FormControl>
-            <FormControl margin="normal" required fullWidth>
+            <FormControl margin="normal" required fullWidth style={{ marginBottom: 50 }}>
                 <InputLabel htmlFor="status">Status</InputLabel>
                 <Select
                     inputProps={{
@@ -104,11 +116,9 @@ const EditSchoolForm = ({ onClose, school, updateSchoolMutation, deleteSchool })
                     ))(SchoolStatuses)}
                 </Select>
             </FormControl>
-                <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        onClick={e => {
+             <Buttons>
+                <SubmitButton
+                        color="primary" value="Uložit" actionHandler={e => {
                             e.preventDefault();
                             updateSchoolMutation({
                                 variables: {
@@ -140,15 +150,9 @@ const EditSchoolForm = ({ onClose, school, updateSchoolMutation, deleteSchool })
                         style={{
                             marginTop: "10px"
                         }}
-                        
-                        >
-                        Uložit
-                </Button>
-                <Button
-                        fullWidth
-                        variant="contained"
-                        color="secondary"
-                        onClick={e => {
+
+                        />
+                <SubmitButton color="secondary" value="Smazat" actionHandler={e => {
                             e.preventDefault();
                             deleteSchool({
                                 variables: {
@@ -174,9 +178,8 @@ const EditSchoolForm = ({ onClose, school, updateSchoolMutation, deleteSchool })
                         style={{
                             marginTop: "10px"
                         }}
-                        >
-                        Smazat
-                </Button>
+                        />
+             </Buttons>
         </form>
     );
 };

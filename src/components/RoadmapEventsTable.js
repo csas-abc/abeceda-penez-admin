@@ -12,9 +12,7 @@ import Edit from '@material-ui/icons/Edit';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { withApollo } from 'react-apollo';
-import gql from 'graphql-tag';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import roadmapEventAttributes from '../constants/roadmapEventAttributes';
 import Button from '@material-ui/core/Button';
 import CreateRoadmapEventModal from './CreateRoadmapEventModal';
 import EditRoadmapEventModal from './EditRoadmapEventModal';
@@ -94,7 +92,6 @@ const RoadmapEventsTable = ({
       const [roadmapEventsQuery, setRoadmapsEventsQuery] = useState(null);
       const [year, setYear] = useState(moment().year().toString());
       
-    // console.log(query.roadmapEvents);
     const loadData = useCallback(() => setRoadmapsEventsQuery(roadmapQuery), [setRoadmapsEventsQuery]);
                     
     const initialCols = [
@@ -189,7 +186,7 @@ const RoadmapEventsTable = ({
             options: {
                 filter: false,
                 customBodyRender: (link) => (
-                    <a rel="noopener noreferrer"  target="_blank" href={"http://" + link}>
+                    <a rel="noopener noreferrer"  target="_blank" href={link}>
                         ODKAZ
                     </a>
                 ),
@@ -200,7 +197,7 @@ const RoadmapEventsTable = ({
             options: {
                 filter: false,
                 customBodyRender: (link) => (
-                    <a rel="noopener noreferrer"  target="_blank" href={"http://" + link}>
+                    <a rel="noopener noreferrer"  target="_blank" href={link}>
                         ODKAZ
                     </a>
                 ),

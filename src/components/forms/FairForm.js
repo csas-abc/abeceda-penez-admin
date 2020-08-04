@@ -21,6 +21,18 @@ import path from 'ramda/src/path';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useSnackbar } from 'notistack';
 import { any } from '../../utils/permissions';
+import styled from "styled-components";
+
+const FixedButton = styled.div`
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+background-color: white;
+display: flex;
+padding: 10px 20px;
+border-radius: 4px;
+`
 
 const styles =  {
     paper: {
@@ -226,7 +238,7 @@ const FairModal = ({
                     disabled={isAgency}
                 />
             </FormControl>
-            <FormControl margin="normal" fullWidth>
+            <FormControl margin="normal" fullWidth style={{ marginBottom: 60 }}>
                 <InputLabel htmlFor="kioskPlace">Prostor ČS?</InputLabel>
                 <Select
                     inputProps={{
@@ -242,16 +254,18 @@ const FairModal = ({
                     <MenuItem value="Pobočka je v OC">Pobočka je v OC</MenuItem>
                 </Select>
             </FormControl>
-            <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                type="submit"
-                disabled={editDisabled && !isAgency}
-            >
-                Uložit
-            </Button>
+                    <FixedButton>
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.submit}
+                                    type="submit"
+                                    disabled={editDisabled && !isAgency}
+                                >
+                                    Uložit
+                                </Button>
+                    </FixedButton>
         </form>
     );
 };

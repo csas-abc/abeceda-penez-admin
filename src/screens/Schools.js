@@ -47,7 +47,7 @@ const Schools = ({ schoolsQuery }) => {
             }
         },
         {
-            name: 'Poznamka',
+            name: 'Poznámka',
             options: {
                 filter: false,
             }

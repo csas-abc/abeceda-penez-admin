@@ -19,7 +19,19 @@ import propEq from 'ramda/src/propEq';
 import ArchiveConfirmationModal from '../ArchiveConfirmationModal';
 import FinishConfirmationModal from '../FinishConfirmationModal';
 import DeleteConfirmationModal from '../DeleteConfirmationModal';
+import styled from "styled-components";
 
+
+const FixedButtons = styled.div`
+position: absolute;
+bottom: 0;
+left: 0;
+right: 0;
+background-color: white;
+display: flex;
+padding: 10px 20px;
+border-radius: 4px;
+`
 const styles = {
     paper: {
         alignSelf: 'flex-start',
@@ -289,7 +301,7 @@ const ProjectForm = ({
                         />
                     </FormControl>
                     <FormControl margin="normal" fullWidth>
-                        <InputLabel htmlFor="area">Oblast</InputLabel>
+                        <InputLabel htmlFor="area" style={{ marginBottom: 130 }}>Oblast</InputLabel>
                         <Input
                             id="area"
                             name="area"
@@ -299,17 +311,7 @@ const ProjectForm = ({
                     </FormControl>
                 </React.Fragment>
             ) : null}
-            <div style={{
-                          
-                          position: "sticky", 
-                          bottom: -25,
-                          width: "100%", 
-                          margin: "0 auto", 
-                          backgroundColor: "white",
-                          display: 'flex', 
-                          padding: "10px 0 20px 0",
-                          width: "100%",
-                        }}>
+            <FixedButtons>
                 <div style={{
                     justifyContent: 'flex-start',
                     marginRight: "auto"
@@ -374,7 +376,7 @@ const ProjectForm = ({
                     >
                     Uložit
                 </Button>
-            </div>
+            </FixedButtons>
         </form>
     );
 };

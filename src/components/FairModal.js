@@ -20,7 +20,7 @@ const FairModal = ({
         open
         onClose={onClose}
         fullWidth
-        maxWidth="md"
+        maxWidth="false"
         classes={{
             paperWidthMd: classes.paper,
         }}

@@ -14,7 +14,7 @@ import contains from 'ramda/src/contains';
 import TabPanel from './TabPanel';
 import ProjectForm from './forms/ProjectForm';
 import BranchForm from './forms/BranchForm';
-import SchoolForm from './forms/SchoolForm';
+import SchoolForms from '../containers/SchoolForms.container';
 import TeamUsersForm from './forms/TeamUsersForm';
 import MessagesForm from './forms/MessagesForm';
 import AdminNoteForm from './forms/AdminNoteForm';
@@ -28,8 +28,6 @@ import classroomAttributes from '../constants/classroomAttributes';
 import { CircularProgress } from '@material-ui/core';
 import ProjectModalTabs from '../constants/ProjectModalTabs';
 import { any } from '../utils/permissions';
-import EditContactForm from './forms/EditContactForm';
-import Typography from '@material-ui/core/Typography';
 
 const styles =  {
     paper: {
@@ -103,6 +101,10 @@ const ProjectModal = ({
                                 value={ProjectModalTabs.SCHOOL}
                             />
                             <Tab
+                                label="Toolbox"
+                                value={ProjectModalTabs.TOOLBOX}
+                            />
+                            <Tab
                                 label="Jarmark"
                                 value={ProjectModalTabs.FAIR}
                             />
@@ -118,10 +120,6 @@ const ProjectModal = ({
                                     value={ProjectModalTabs.MESSAGES}
                                 />
                             ) : null}
-                            <Tab
-                                label="Toolbox"
-                                value={ProjectModalTabs.TOOLBOX}
-                            />
                             <Tab
                                 label="Poznámka"
                                 value={ProjectModalTabs.NOTE}
@@ -153,18 +151,20 @@ const ProjectModal = ({
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.SCHOOL}>
-                            <SchoolForm
-                                classroom={classroom}
-                                editDisabled={editDisabled()}
+                            <SchoolForms
+                                  classes={classes}
+                                  classroom={classroom}
+                                  editDisabled={editDisabled()}
+                                  onClose={onClose}
                             />
-                            <Typography variant="h5" style={{ marginTop: '24px', marginBottom: 0 }}>
-                                Učitel
-                            </Typography>
-                            <EditContactForm
-                                contact={propOr({}, 'teacher')(classroom)}
+                        </TabPanel>
+                        <TabPanel value={activeTab} id={ProjectModalTabs.TOOLBOX}>
+                            <ToolboxForm
+                                toolbox={prop('toolboxOrder')(classroom)}
                                 classroomId={prop('id')(classroom)}
-                                onClose={onClose}
+                                classroomQuery={classroomQuery}
                                 editDisabled={editDisabled()}
+                                classroom={classroom}
                             />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.FAIR}>
@@ -181,15 +181,6 @@ const ProjectModal = ({
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.MESSAGES}>
                             <MessagesForm userRoles={userRoles} team={propOr({}, 'team')(classroom)} />
-                        </TabPanel>
-                        <TabPanel value={activeTab} id={ProjectModalTabs.TOOLBOX}>
-                            <ToolboxForm
-                                toolbox={prop('toolboxOrder')(classroom)}
-                                classroomId={prop('id')(classroom)}
-                                classroomQuery={classroomQuery}
-                                editDisabled={editDisabled()}
-                                classroom={classroom}
-                            />
                         </TabPanel>
                         <TabPanel value={activeTab} id={ProjectModalTabs.NOTE}>
                             <AdminNoteForm

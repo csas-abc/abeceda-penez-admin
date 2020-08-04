@@ -32,7 +32,6 @@ const Budgets = ({ client }) => {
     const [region, setRegion] = useState('');
     const [budgets, setBudgets] = useState(null);
     const [isLoading, setLoading] = useState(false);
-
     const saveFilter = () => {
         localStorage.setItem(`budgets-${region}`, JSON.stringify({
             budgetMMA,

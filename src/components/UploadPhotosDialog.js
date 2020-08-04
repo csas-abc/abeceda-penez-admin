@@ -14,7 +14,7 @@ import map from 'ramda/src/map';
 import replace from 'ramda/src/replace';
 import { CircularProgress } from '@material-ui/core';
 
-const styles =  (theme) => ({
+const styles = theme => ({
     paper: {
         alignSelf: 'flex-start',
     },
