@@ -10,7 +10,7 @@ import prop from 'ramda/src/prop';
 import pathOr from 'ramda/src/pathOr';
 import pluck from 'ramda/src/pluck';
 import compose from 'ramda/src/compose';
-import contains from 'ramda/src/contains';
+import includes from 'ramda/src/includes';
 import TabPanel from './TabPanel';
 import ProjectForm from './forms/ProjectForm';
 import BranchForm from './forms/BranchForm';
@@ -53,10 +53,19 @@ const ProjectModal = ({
     const classroomRegion = pathOr('', ['team', 'users', 0, 'region'])(classroom);
     const classroomType = propOr('', 'type')(classroom);
     const editDisabled = () => {
-        if (contains('ADMIN')(userRoles)) {
+        if (includes('ADMIN')(userRoles)) {
             return false;
         }
-        if (contains('CORE')(userRoles)) {
+        if (
+            classroom.projectType === 'VAP' &&
+            (
+                includes('ADMIN')(userRoles) ||
+                includes('CORE')(userRoles)
+            )
+        ) {
+            return false;
+        }
+        if (includes('CORE')(userRoles)) {
             if (classroomType !== 'CORE') return true;
             return userRegion !== classroomRegion;
         }

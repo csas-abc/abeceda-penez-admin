@@ -12,8 +12,7 @@ import Archive from './screens/Archive';
 import Statistics from './screens/Statistics';
 import ClassroomsManagement from './screens/ClassroomsManagement';
 import SecondGradesManagement from './screens/SecondGradesManagement';
-import MAPManagement from './screens/MAPManagement';
-import VAPManagement from './screens/VAPManagement';
+import VAPProjects from './screens/VAPProjects';
 import SeniorAPManagement from './screens/SeniorAPManagement';
 import Forum from './screens/Forum';
 import compose from 'ramda/src/compose';
@@ -97,8 +96,7 @@ const Authenticated = ({ client, history: { push } }) => {
             <Route path="/deleted" exact component={DeletedClassrooms} />
             <Route path="/classrooms-management" exact component={ClassroomsManagement} />
             <Route path="/second-grades-management" exact component={SecondGradesManagement} />
-            <Route path="/map-management" exact component={MAPManagement} />
-            <Route path="/vap-management" exact component={VAPManagement} />
+            <Route path="/vap-projects" exact component={VAPProjects} />
             <Route path="/senior-ap-management" exact component={SeniorAPManagement} />
             <Route path="/forum" exact component={Forum} />
             <Route path="/statistics" exact component={Statistics} />

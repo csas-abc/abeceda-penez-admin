@@ -71,7 +71,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
           }
         }
       });
-   
+
     const initialCols = [
         {
             name: 'Projekt',
@@ -130,8 +130,9 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 name: 'Stav projektu',
                 options: {
                     filter: false,
-                    customBodyRender: (phase) => {
-                        const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
+                    customBodyRender: (phases = []) => {
+                        const phase = getActivePhase({ phases });
+                        const cellString = phase ? `${phase.number}/${phases.length}: ${phase.name}` : 'Dokončeno';
                         return (
                             <div>
                                 {cellString}
@@ -143,8 +144,9 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                             </div>
                         );
                     },
-                    search: (query, phase) => {
-                        const cellString = phase ? `${phase.number}/8: ${phase.name}` : 'Dokončeno';
+                    search: (query, phases = []) => {
+                        const phase = getActivePhase({ phases });
+                        const cellString = phase ? `${phase.number}/${phases.length}: ${phase.name}` : 'Dokončeno';
                         return includes(query ? query.toLowerCase() : '')(cellString ? cellString.toLowerCase() : '');
                     },
                 },
@@ -273,7 +275,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 sort: false,
             }
         }
-    ]; 
+    ];
 
     const [defaultTab, setDefaultTab] = useState(ProjectModalTabs.PROJECT_DETAIL);
     const [projectDetail, setProjectDetail] = useState(null);
@@ -303,7 +305,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
             message="Načtení se nezdařilo"
         />
     );
-    
+
     const options = {
         filterType: 'multiselect',
         selectableRows: 'none',
@@ -326,7 +328,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
 
             const toStorage = [];
             for (let i = 0; i < columns.length; i++) {
-                toStorage.push({ 
+                toStorage.push({
                     name: columns[i].name,
                     filterList:  filterLists[i]
                 });
@@ -349,16 +351,16 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
             const names = project(['name'], newCols);
             const options = project(['options'], newCols);
             const toStorage = [];
-            
+
             for (let i = 0; i < names.length; i++) {
-                toStorage.push({ 
+                toStorage.push({
                     name: names[i].name,
                     display:  options[i].options.display
                 });
             }
-            
+
             localStorage.setItem('projectsCols', JSON.stringify(toStorage));
-            
+
             if (prop('name')(oldSortColumn) !== prop('name')(sortColumn) || path(['options', 'sortDirection'])(oldSortColumn) !== path(['options', 'sortDirection'])(sortColumn)) {
                 setColumns(newCols);
             }
@@ -461,7 +463,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                             )(classroom),
                             ...isCoreUser ? [] : [
                                 classroom.team.users.map((user) => user.region),
-                                getActivePhase(classroom),
+                                classroom.phases,
                             ],
                             prop('area')(classroom) || '-',
                             path(['branchAddress'])(classroom) || '-',
@@ -488,7 +490,7 @@ const ProjectsTable = ({ classes, query, dataSelector, defaultDetail, meQuery })
                 />
                 </MuiThemeProvider>
             </div>
-    
+
         </React.Fragment>
     );
 };

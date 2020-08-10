@@ -14,7 +14,7 @@ const Projects = ({ classroomsQuery }) => (
 
 const classroomsQuery = graphql(gql`
     {
-        classrooms {
+        classrooms(projectType: AP) {
             ${classroomAttributes}
         }
     }

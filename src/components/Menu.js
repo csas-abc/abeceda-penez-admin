@@ -21,7 +21,7 @@ import Today from '@material-ui/icons/Today';
 import Domain from '@material-ui/icons/Domain';
 import { withStyles } from '@material-ui/core';
 import logo from '../assets/cs-logo.svg';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
 import { all, any, none } from '../utils/permissions';
@@ -38,6 +38,9 @@ const styles = theme => ({
     nested: {
         paddingLeft: '73px',
     },
+    active: {
+        backgroundColor: 'rgb(235, 235, 235)',
+    }
 });
 
 const Menu = ({ classes, meQuery }) => (
@@ -50,55 +53,63 @@ const Menu = ({ classes, meQuery }) => (
             <List>
                 {all(['ADMIN'])(meQuery) ? (
                     <React.Fragment>
-                        <ListItem button component={Link} to="/">
+                        <ListItem button component={NavLink} to="/" exact activeClassName={classes.active}>
                             <ListItemIcon><Subject /></ListItemIcon>
                             <ListItemText primary="AP 4.třídy" />
                         </ListItem>
-                        <ListItem button component={Link} to="/core-projects">
+                        <ListItem button component={NavLink} to="/core-projects" exact activeClassName={classes.active}>
                             <ListItemIcon><Subject /></ListItemIcon>
                             <ListItemText primary="Přehled RMKT" />
                         </ListItem>
-                        <ListItem button component={Link} to="/teams">
-                            <ListItemIcon><People /></ListItemIcon>
-                            <ListItemText primary="Správa týmů" />
-                        </ListItem>
                     </React.Fragment>
                 ) : null}
+                {any(['ADMIN', 'CORE'])(meQuery) ? (
+                    <ListItem button component={NavLink} to="/vap-projects" exact activeClassName={classes.active}>
+                        <ListItemIcon><Subject /></ListItemIcon>
+                        <ListItemText primary="VAP" />
+                    </ListItem>
+                ) : null}
+                {all(['ADMIN'])(meQuery) ? (
+                    <ListItem button component={NavLink} to="/teams" exact activeClassName={classes.active}>
+                        <ListItemIcon><People /></ListItemIcon>
+                        <ListItemText primary="Správa týmů" />
+                    </ListItem>
+                ) : null}
                 {any(['ADMIN', 'AGENCY'])(meQuery) ? (
-                    <ListItem button component={Link} to="/toolboxes">
+                    <ListItem button component={NavLink} to="/toolboxes" exact activeClassName={classes.active}>
                         <ListItemIcon><Work /></ListItemIcon>
                         <ListItemText primary="Toolboxy" />
                     </ListItem>
                 ) : null}
                 {any(['ADMIN', 'AGENCY', 'CORE_AGENCY'])(meQuery) ? (
-                    <ListItem button component={Link} to="/fairs">
+                    <ListItem button component={NavLink} to="/fairs" exact activeClassName={classes.active}>
                         <ListItemIcon><Mood /></ListItemIcon>
                         <ListItemText primary="Jarmarky" />
                     </ListItem>
                 ) : null}
                 {all(['ADMIN'])(meQuery) ? (
                     <React.Fragment>
-                        <ListItem button component={Link} to="/users">
+                        <ListItem button component={NavLink} to="/users" exact activeClassName={classes.active}>
                             <ListItemIcon><Person /></ListItemIcon>
                             <ListItemText primary="Uživatelé" />
                         </ListItem>
-                        <ListItem button component={Link} to="/statistics">
+                        <ListItem button component={NavLink} to="/statistics" exact activeClassName={classes.active}>
                             <ListItemIcon><Assessment /></ListItemIcon>
                             <ListItemText primary="Reporty" />
                         </ListItem>
-                        <ListItem button component={Link} to="/budgets">
+                        <ListItem button component={NavLink} to="/budgets" exact activeClassName={classes.active}>
                             <ListItemIcon><Money /></ListItemIcon>
                             <ListItemText primary="Budgety" />
                         </ListItem>
-                        <ListItem button component={Link} to="/schools">
+                        <ListItem button component={NavLink} to="/schools" exact activeClassName={classes.active}>
                             <ListItemIcon><Domain /></ListItemIcon>
                             <ListItemText primary="Školy" />
                         </ListItem>
                     </React.Fragment>
-                    ) : null}
+                ) : null}
                 {all(['CORE'])(meQuery) ? (
                     <React.Fragment>
-                        <ListItem button component={Link} to="/classrooms-management">
+                        <ListItem button component={NavLink} to="/classrooms-management" exact activeClassName={classes.active}>
                             <ListItemIcon><Subject /></ListItemIcon>
                             <ListItemText primary="AP 4.třídy" />
                         </ListItem>
@@ -112,9 +123,11 @@ const Menu = ({ classes, meQuery }) => (
                                     <ListItem
                                         key={region}
                                         button
-                                        component={Link}
+                                        component={NavLink}
                                         to={`/core-region/${region}`}
                                         className={classes.nested}
+                                        exact
+                                        activeClassName={classes.active}
                                     >
                                         <ListItemText primary={region} />
                                     </ListItem>
@@ -124,36 +137,36 @@ const Menu = ({ classes, meQuery }) => (
                     </React.Fragment>
                 ) : null}
                 {none(['AGENCY', 'CORE_AGENCY', 'CORE'])(meQuery) ? (
-                    <ListItem button component={Link} to="/forum">
+                    <ListItem button component={NavLink} to="/forum" exact activeClassName={classes.active}>
                         <ListItemIcon><Message /></ListItemIcon>
                         <ListItemText primary="Forum" />
                     </ListItem>
                 ) : null}
                 {any(['ADMIN', 'CORE']) ? (
-                    <ListItem button component={Link} to="/roadmap">
+                    <ListItem button component={NavLink} to="/roadmap" exact activeClassName={classes.active}>
                         <ListItemIcon><Today /></ListItemIcon>
                         <ListItemText primary="Akce RMKT" />
                     </ListItem>
                 ) : null}
                 {any(['CORE'])(meQuery) ? (
                     <React.Fragment>
-                        <ListItem button component={Link} to="/budgets">
+                        <ListItem button component={NavLink} to="/budgets" exact activeClassName={classes.active}>
                             <ListItemIcon><Money /></ListItemIcon>
                             <ListItemText primary="Budgety" />
                         </ListItem>
-                        <ListItem button component={Link} to="/schools">
+                        <ListItem button component={NavLink} to="/schools" exact activeClassName={classes.active}>
                             <ListItemIcon><Domain /></ListItemIcon>
                             <ListItemText primary="Školy" />
                         </ListItem>
-                        <ListItem button component={Link} to="/statistics">
+                        <ListItem button component={NavLink} to="/statistics" exact activeClassName={classes.active}>
                             <ListItemIcon><Assessment /></ListItemIcon>
                             <ListItemText primary="Reporty" />
                         </ListItem>
-                        <ListItem button component={Link} to="/core-toolboxes">
+                        <ListItem button component={NavLink} to="/core-toolboxes" exact activeClassName={classes.active}>
                             <ListItemIcon><Work /></ListItemIcon>
                             <ListItemText primary="Toolboxy" />
                         </ListItem>
-                        <ListItem button component={Link} to="/core-fairs">
+                        <ListItem button component={NavLink} to="/core-fairs" exact activeClassName={classes.active}>
                             <ListItemIcon><Mood /></ListItemIcon>
                             <ListItemText primary="Jarmarky" />
                         </ListItem>
@@ -161,13 +174,13 @@ const Menu = ({ classes, meQuery }) => (
 
                 ) : null}
                 {any(['ADMIN', 'SUPER_ADMIN', 'CORE'])(meQuery) ? (
-                    <ListItem button component={Link} to="/archive">
+                    <ListItem button component={NavLink} to="/archive" exact activeClassName={classes.active}>
                         <ListItemIcon><Archive /></ListItemIcon>
                         <ListItemText primary="Archiv" />
                     </ListItem>
                 ) : null}
                 {any(['ADMIN'])(meQuery) ? (
-                    <ListItem button component={Link} to="/deleted">
+                    <ListItem button component={NavLink} to="/deleted" exact activeClassName={classes.active}>
                         <ListItemIcon><Delete /></ListItemIcon>
                         <ListItemText primary="Koš" />
                     </ListItem>

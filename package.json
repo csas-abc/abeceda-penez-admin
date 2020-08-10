@@ -17,6 +17,7 @@
     "apollo-utilities": "^1.2.1",
     "graphql": "^14.3.0",
     "graphql-tag": "^2.10.1",
+    "http-proxy-middleware": "^1.0.5",
     "material-ui-dropzone": "^2.4.1",
     "material-ui-pickers": "^2.2.4",
     "moment": "^2.24.0",
